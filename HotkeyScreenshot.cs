@@ -6,13 +6,14 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using System.Windows.Forms;
 
 namespace ScreenGrab
 {
-    internal class HotkeyScreenshot
+    internal class HotkeyScreenshot : NativeWindow
     {
         // == WinAPI Imports == //
         [DllImport("user32.dll")]
@@ -35,12 +36,13 @@ namespace ScreenGrab
 
         // == Hotkey varibale registration == //
         // Modifier key codes //
-        private const uint MOD_CONTROL = 0x0002; // modifier key for control
-        private const uint MOD_SHIFT   = 0x0004; // modifier key for shift
-        private const uint MOD_ALT     = 0x0001; // modifier key for alt
-        private const uint VK_Z        = 0x5A;   // virtual key code for Z key
-        private const uint VK_X        = 0x58;   // virtual key code for X key
+        private const uint MOD_CONTROL = 0x0002;       // modifier key for control
+        private const uint MOD_SHIFT = 0x0004;         // modifier key for shift
+        private const uint MOD_ALT = 0x0001;           // modifier key for alt
+        private const uint VK_Z = 0x5A;                // virtual key code for Z key
+        private const uint VK_X = 0x58;                // virtual key code for X key
         // Hotkey IDs //
+        private const int WM_HOTKEY = 0x0312;          // Windows message ID for hotkey
         private const int HOTKEY_ID_ACTIVE_WINDOW = 1; // ID for active window screenshot hotkey
         private const int HOTKEY_ID_REGION_SELECT = 2; // ID for region select screenshot hotkey
         private readonly int _ActiveWindowHotkeyId;    // instance variable for active window hotkey ID
@@ -48,14 +50,79 @@ namespace ScreenGrab
         private bool _registeredActive;                // instance variable for window handle
         private bool _registeredRegion;                // instance variable to track if region select hotkey is registered
 
-        // funtion to register hotkeys
+        // == Register hotkeys == //
         public HotkeyScreenshot(Form ownerForm)
         {
             // attach to form handle
             AssignHandle(ownerForm.Handle);
 
             // generate unique hotkey IDs
-            _Active
+            _ActiveWindowHotkeyId = GetHashCode();
+            _RegionSelectHotkeyId = GetHashCode() + 1;
+
+            // Control + Shift + Z for active window screenshot
+            _registeredActive = RegisterHotKey(ownerForm.Handle, _ActiveWindowHotkeyId, MOD_CONTROL | MOD_SHIFT, VK_Z);
+            // Control + Shift + X for region select screenshot
+            _registeredRegion = RegisterHotKey(ownerForm.Handle, _RegionSelectHotkeyId, MOD_CONTROL | MOD_SHIFT, VK_X);
+
+            // error handling for hotkey registration
+            if (!_registeredActive || !_registeredRegion)
+            {
+                MessageBox.Show("Failed to register one or more hotkeys.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new InvalidOperationException("Failed to register one or more hotkeys.");
+            }
+        }
+
+        // == Handle window messages to detect hotkey presses == //
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_HOTKEY)                   // check if message is hotkey press
+            {
+                int id = m.WParam.ToInt32();          // get hotkey ID
+                if (id == _ActiveWindowHotkeyId)      // check if active window hotkey was pressed
+                {
+                    CaptureActiveWindow();
+                }
+                else if (id == _RegionSelectHotkeyId) // check if region select hotkey was pressed
+                {
+                    CaptureRegion();
+                }
+            }
+            base.WndProc(ref m);
+        }
+
+        // == Capture active window and and save to clipboard and onedrive == //
+        private void CaptureActiveWindow()
+        {
+            IntPtr hWnd = GetForegroundWindow();                // get handle of active window
+            if (hWnd == IntPtr.Zero)                            // validate handle
+            {
+                MessageBox.Show("No active window detected.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (!GetWindowRect(hWnd, out RECT rect))           // validate getting window dimensions
+            {
+                MessageBox.Show("Failed to get window dimensions.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            int width = rect.Right - rect.Left;               // calculate width
+            int height = rect.Bottom - rect.Top;              // calculate height
+            if (width <= 0 || height <= 0)                    // validate dimensions
+            {
+                MessageBox.Show("Invalid window dimensions.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Rectangle area = new Rectangle(rect.Left, rect.Top, width, height); // define capture area
+            CaptureAndSave(area, "Active Window");                              // capture and save screenshot
+        }
+        // == Capture selected region and save to clipboard and onedrive == //
+        private void CaptureRegion()
+        {
+        }
+
+        // == Capture specified area and save to clipboard and onedrive == //
+        private void CaptureAndSave(Rectangle area, string prefix)
+        {
         }
     }
 }
