@@ -58,7 +58,7 @@ namespace ScreenGrab
 
             // generate unique hotkey IDs
             _ActiveWindowHotkeyId = GetHashCode();
-            _RegionSelectHotkeyId = GetHashCode() + 1;
+            _RegionSelectHotkeyId = GetHashCode() ^ 0x5A5A5A5A;
 
             // Control + Shift + Z for active window screenshot
             _registeredActive = RegisterHotKey(ownerForm.Handle, _ActiveWindowHotkeyId, MOD_CONTROL | MOD_SHIFT, VK_Z);
@@ -118,11 +118,56 @@ namespace ScreenGrab
         // == Capture selected region and save to clipboard and onedrive == //
         private void CaptureRegion()
         {
+            using (var selector = new RegionSelectForm())
+            {
+                if (selector.ShowDialog() != DialogResult.OK)             // user cancelled
+                {
+                    return;
+                }
+                Rectangle selectedArea = selector.SelectedRegion;        // get selected region
+                if (selectedArea.Width <= 0 || selectedArea.Height <= 0) // validate selected area
+                {
+                    MessageBox.Show("Invalid selected region.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                CaptureAndSave(selectedArea, "Region Select");           // capture and save screenshot
+            }
+        }
+
+        // == Form for region selection == //
+        private class RegionSelectForm : Form
+        {
+            // variable declarations
+            private bool _isSelecting;                         // flag to track if selection is in progress
+            private Point _startPoint;                         // starting point of selection
+            private Rectangle _selectedArea = Rectangle.Empty; // selected area rectangle
+            public Rectangle SelectedRegion => _selectedArea;  // public property to access selected region
+
+
         }
 
         // == Capture specified area and save to clipboard and onedrive == //
         private void CaptureAndSave(Rectangle area, string prefix)
         {
+        }
+
+        // == Cleanup: Unregister hotkeys when done == //
+        public void Dispose()
+        {
+            // cleanup active window hotkey
+            if (_registeredActive)
+            {
+                UnregisterHotKey(Handle, _ActiveWindowHotkeyId);
+                _registeredActive = false;
+            }
+            // cleanup region select hotkey
+            if (_registeredRegion)
+            {
+                UnregisterHotKey(Handle, _RegionSelectHotkeyId);
+                _registeredRegion = false;
+            }
+            // release native window handle
+            ReleaseHandle();
         }
     }
 }
