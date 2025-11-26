@@ -9,6 +9,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
+using System.Runtime.Serialization;
 using System.Windows.Forms;
 
 namespace ScreenGrab
@@ -143,12 +144,79 @@ namespace ScreenGrab
             private Rectangle _selectedArea = Rectangle.Empty; // selected area rectangle
             public Rectangle SelectedRegion => _selectedArea;  // public property to access selected region
 
+            // start region select on left mouse click
+            private void onMouseDown(object? sender, MouseEventArgs e)
+            {
+                if (e.Button != MouseButtons.Left) return; // only start selection on left mouse button
+                if (e.Button == MouseButtons.Left)         // start selection
+                {
+                    _isSelecting = true;
+                    _startPoint = e.Location;
+                    _selectedArea = Rectangle.Empty;       // reset selected area upon new mouse click
+                    Invalidate();
+                }
+            }
 
+            // update selection rectangle on mouse move
+            private void OnMouseMove (object? sender, MouseEventArgs e)
+            {
+                if (!_isSelecting) return;                               // do not call function if mouse is not moving
+
+                // calculate selection rectangle
+                int x1 = Math.Min(_startPoint.X, e.X);
+                int y1 = Math.Min(_startPoint.Y, e.Y);
+                int x2 = Math.Max(_startPoint.X, e.X);
+                int y2 = Math.Max(_startPoint.Y, e.Y);
+
+                _selectedArea = new Rectangle(x1, y1, x2 - x1, y2 - y1); // update selected area
+                Invalidate();                                            // request redraw
+            }
+
+            // finalize selection on mouse up
+            private void OnMouseUp(object? sender, MouseEventArgs e)
+            {
+                if (!_isSelecting) return;                               // do not call function if mouse is not released
+                _isSelecting = false;                                    // end selection
+                if (_selectedArea.Width > 0 && _selectedArea.Height > 0) // validate selected area
+                {
+                    DialogResult = DialogResult.OK;                      // set dialog result to OK if valid area selected
+                }
+                else
+                {
+                    DialogResult = DialogResult.Cancel;                 // cancel if no valid area selected
+                }
+                Close();                                                 // close the form
+            }
+
+            // constructor to setup form properties and event handlers
+            public RegionSelectForm()
+            {
+                this.FormBorderStyle = FormBorderStyle.None;            // no border
+                this.WindowState = FormWindowState.Maximized;           // full screen
+                this.BackColor = Color.Gray;                            // white background
+                this.Opacity = 0.3;                                     // semi-transparent
+                this.TopMost = true;                                    // always on top
+                this.DoubleBuffered = true;                             // reduce flicker
+                Cursor = Cursors.Hand;
+                // attach mouse event handlers
+                this.MouseDown += new MouseEventHandler(onMouseDown);
+                this.MouseMove += new MouseEventHandler(OnMouseMove);
+                this.MouseUp   += new MouseEventHandler(OnMouseUp);
+            }
         }
 
         // == Capture specified area and save to clipboard and onedrive == //
         private void CaptureAndSave(Rectangle area, string prefix)
         {
+            using Bitmap bitmap = new Bitmap(area.Width, area.Height);     // create bitmap to hold screenshot
+            using Graphics g = Graphics.FromImage(bitmap);                 // create graphics object from bitmap
+            {             
+                g.CopyFromScreen(area.Location, Point.Empty, area.Size);   // capture screenshot from specified area
+            }
+            // save to clipboard
+            Clipboard.SetImage(bitmap);
+
+            // save to OneDrive folder
         }
 
         // == Cleanup: Unregister hotkeys when done == //
