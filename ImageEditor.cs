@@ -16,5 +16,10 @@ namespace ScreenGrab
         {
             InitializeComponent();
         }
+
+        private void ImageEditor_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

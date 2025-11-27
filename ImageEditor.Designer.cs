@@ -37,6 +37,7 @@
             ClientSize = new Size(954, 564);
             Name = "ImageEditor";
             Text = "Form2";
+            Load += ImageEditor_Load;
             ResumeLayout(false);
         }
 

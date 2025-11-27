@@ -38,20 +38,21 @@ namespace ScreenGrab
 
         // == Hotkey varibale registration == //
         // Modifier key codes //
-        private const uint MOD_CONTROL = 0x0002;       // modifier key for control
-        private const uint MOD_SHIFT = 0x0004;         // modifier key for shift
-        private const uint MOD_ALT = 0x0001;           // modifier key for alt
-        private const uint VK_Z = 0x5A;                // virtual key code for Z key
-        private const uint VK_X = 0x58;                // virtual key code for X key
-        private const uint VK_escape = 0x1B;           // virtual key code for Escape key
+        private const uint MOD_CONTROL = 0x0002;        // modifier key for control
+        private const uint MOD_SHIFT = 0x0004;          // modifier key for shift
+        private const uint MOD_ALT = 0x0001;            // modifier key for alt
+        private const uint VK_Z = 0x5A;                 // virtual key code for Z key
+        private const uint VK_X = 0x58;                 // virtual key code for X key
+        private const uint VK_escape = 0x1B;            // virtual key code for Escape key
         // Hotkey IDs //
-        private const int WM_HOTKEY = 0x0312;          // Windows message ID for hotkey
-        private const int HOTKEY_ID_ACTIVE_WINDOW = 1; // ID for active window screenshot hotkey
-        private const int HOTKEY_ID_REGION_SELECT = 2; // ID for region select screenshot hotkey
-        private readonly int _ActiveWindowHotkeyId;    // instance variable for active window hotkey ID
-        private readonly int _RegionSelectHotkeyId;    // instance variable for region select hotkey ID
-        private bool _registeredActive;                // instance variable for window handle
-        private bool _registeredRegion;                // instance variable to track if region select hotkey is registered
+        private const int WM_HOTKEY = 0x0312;           // Windows message ID for hotkey
+        private const int HOTKEY_ID_ACTIVE_WINDOW = 1;  // ID for active window screenshot hotkey
+        private const int HOTKEY_ID_REGION_SELECT = 2;  // ID for region select screenshot hotkey
+        private readonly int _ActiveWindowHotkeyId;     // instance variable for active window hotkey ID
+        private readonly int _RegionSelectHotkeyId;     // instance variable for region select hotkey ID
+        private bool _registeredActive;                 // instance variable for window handle
+        private bool _registeredRegion;                 // instance variable to track if region select hotkey is registered
+        public event Action<string>? OnScreenshotTaken; // event to notify when a screenshot is taken
 
         // == Register hotkeys == //
         public HotkeyScreenshot(Form ownerForm)
@@ -117,6 +118,7 @@ namespace ScreenGrab
             }
             Rectangle area = new Rectangle(rect.Left, rect.Top, width, height); // define capture area
             CaptureAndSave(area, "Active Window");                              // capture and save screenshot
+            
         }
         // == Capture selected region and save to clipboard and onedrive == //
         private void CaptureRegion()
@@ -259,6 +261,7 @@ namespace ScreenGrab
             try
             {
                 bitmap.Save(filePath, ImageFormat.Png);
+                OnScreenshotTaken?.Invoke(filePath); // trigger event to notify screenshot taken
             }
             catch (Exception ex)
             {

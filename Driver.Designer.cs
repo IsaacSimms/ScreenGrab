@@ -30,12 +30,12 @@
         {
             SuspendLayout();
             // 
-            // Form1
+            // Driver
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(868, 517);
-            Name = "Form1";
+            Name = "Driver";
             Text = "Form1";
             ResumeLayout(false);
         }
