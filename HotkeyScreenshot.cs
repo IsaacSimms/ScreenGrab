@@ -3,6 +3,7 @@
 ///// When control + shift + X is pressed, enable a region select screenshot mode. User can click and drag to select a region of the screen to capture. Saves PNG to clipboard and onedrive folder  /////
 
 // namespaces
+using Microsoft.VisualBasic.Devices;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -42,6 +43,7 @@ namespace ScreenGrab
         private const uint MOD_ALT = 0x0001;           // modifier key for alt
         private const uint VK_Z = 0x5A;                // virtual key code for Z key
         private const uint VK_X = 0x58;                // virtual key code for X key
+        private const uint VK_escape = 0x1B;           // virtual key code for Escape key
         // Hotkey IDs //
         private const int WM_HOTKEY = 0x0312;          // Windows message ID for hotkey
         private const int HOTKEY_ID_ACTIVE_WINDOW = 1; // ID for active window screenshot hotkey
@@ -187,6 +189,33 @@ namespace ScreenGrab
                 }
                 Close();                                                 // close the form
             }
+            // if escape key is pressed, cancel selection
+            private void EscKeyDown(object? sender, KeyEventArgs e)
+            {
+                if (e.KeyCode == Keys.Escape)
+                {
+                    _isSelecting = false;               // end selection
+                    _selectedArea = Rectangle.Empty;    // reset selected area
+                    DialogResult = DialogResult.Cancel; // set dialog result to Cancel
+                    Close();                            // close the form
+                }
+            }
+
+            // draw selection rectangle
+            protected override void OnPaint(PaintEventArgs e)
+            {
+                base.OnPaint(e);
+                if (_isSelecting && _selectedArea != Rectangle.Empty)
+                {
+                    using (var PenSelection = new Pen(Color.DarkGreen, 2))         // pen for selection rectangle
+                    {
+                        e.Graphics.DrawRectangle(PenSelection, _selectedArea);            // draw selection rectangle
+                    }
+                    using (var BrushSelection = new SolidBrush(Color.FromArgb(50, Color.LightGreen))) {
+                        e.Graphics.FillRectangle(BrushSelection, _selectedArea); // fill selection rectangle with semi-transparent color
+                    }
+                }
+            }
 
             // constructor to setup form properties and event handlers
             public RegionSelectForm()
@@ -197,11 +226,12 @@ namespace ScreenGrab
                 this.Opacity = 0.3;                                     // semi-transparent
                 this.TopMost = true;                                    // always on top
                 this.DoubleBuffered = true;                             // reduce flicker
-                Cursor = Cursors.Hand;
-                // attach mouse event handlers
+                Cursor = Cursors.Default;
+                // attach event handlers
                 this.MouseDown += new MouseEventHandler(onMouseDown);
                 this.MouseMove += new MouseEventHandler(OnMouseMove);
                 this.MouseUp   += new MouseEventHandler(OnMouseUp);
+                this.KeyDown   += new KeyEventHandler(EscKeyDown);
             }
         }
 
@@ -217,6 +247,23 @@ namespace ScreenGrab
             Clipboard.SetImage(bitmap);
 
             // save to OneDrive folder
+            string basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "OneDrive", "Screenshots");
+            if (!Directory.Exists(basePath))
+            {
+                Directory.CreateDirectory(basePath);                            // create directory if it does not exist
+            }
+            string fileName = $"{prefix}_{DateTime.Now:yyyyMMdd_HHmmss}.png";   // generate filename with prefix and timestamp
+            string filePath = Path.Combine(basePath, fileName);                 // full file path
+
+            // save bitmap as PNG
+            try
+            {
+                bitmap.Save(filePath, ImageFormat.Png);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to save screenshot: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         // == Cleanup: Unregister hotkeys when done == //
