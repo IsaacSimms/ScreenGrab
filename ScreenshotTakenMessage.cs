@@ -18,17 +18,18 @@ namespace ScreenGrab
         public ScreenshotMessageBox(string mesasge, string title, int durationInMs)
         {
             // message box properties
-            Text = title;                                         // set title
-            FormBorderStyle    = FormBorderStyle.FixedDialog;     // fixed dialog
-            this.StartPosition = FormStartPosition.Manual;        // manual position
-            this.Location      = new Point(                       // position at bottom right of primary screen
+            Text                 = title;                             // set title
+            FormBorderStyle      = FormBorderStyle.FixedDialog;       // fixed dialog
+            this.StartPosition   = FormStartPosition.Manual;          // manual position
+            this.Location        = new Point(                         // position at bottom right of primary screen
                 (Screen.PrimaryScreen?.WorkingArea.Right ?? 310) - 310,
                 (Screen.PrimaryScreen?.WorkingArea.Bottom ?? 160) - 160);
-            BackColor          = Color.White;                     //  background
-            Size               = new Size(300, 150);              // set size
-            MaximizeBox        = false;                           // disable maximize box
-            MinimizeBox        = false;                           // disable minimize box
-            TopMost            = true;                            // always on top
+            //this.FormBorderStyle = FormBorderStyle.None;              // border set in overriden onPaint method
+            BackColor            = Color.White;                       //  background
+            Size                 = new Size(300, 150);                // set size
+            MaximizeBox          = false;                             // disable maximize box
+            MinimizeBox          = false;                             // disable minimize box
+            TopMost              = true;                              // always on top
             // label for message w/ styling
             _label = new Label
             {
@@ -59,6 +60,17 @@ namespace ScreenGrab
         {
             var box = new ScreenshotMessageBox(message, title, durationInMs);
             box.Show();
+        }
+        // override OnPaint to draw border
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e); // call base method
+            // draw border
+            using (Pen pen = new Pen(Color.Black, 2))
+            {
+                Rectangle rect = new Rectangle(0,0, this.Width - 1, this.Height - 1);
+                e.Graphics.DrawRectangle(pen, rect);
+            }
         }
     }
 }
