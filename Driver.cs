@@ -10,20 +10,25 @@ namespace ScreenGrab
 {
     public partial class Driver : Form
     {
-        private HotkeyScreenshot? _hotkeyScreenshot;        //wire up HotkeyScreenshot class
+
+        private HotkeyScreenshot? _hotkeyScreenshot; // wire up HotkeyScreenshot class
         public Driver()
         {
             InitializeComponent();
-
         }
-        // override OnLoad to hide the form on startup - initialize HotkeyScreenshot class
+        // override OnLoad to hide the form on startup - initialize
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            this.Hide();                                    //hide the form on startup
-            this.ShowInTaskbar = false;                     //remove from taskbar
-            _hotkeyScreenshot = new HotkeyScreenshot(this); //initialize HotkeyScreenshot class
-            _hotkeyScreenshot.OnScreenshotTaken += HotkeyScreenshot_OnScreenshotTaken; //wire up event handler
+            this.Hide();                                                               // hide the form on startup
+            this.ShowInTaskbar = false;                                                // remove from taskbar
+            _hotkeyScreenshot = new HotkeyScreenshot(this);                            // initialize HotkeyScreenshot class
+            _hotkeyScreenshot.OnScreenshotTaken += HotkeyScreenshot_OnScreenshotTaken; // wire up event handler
+
+            // set up system tray icon
+            SystemTrayIcon.Visible = true;                                             // make icon visible
+            SystemTrayIcon.BalloonTipTitle = "ScreenGrab";                             // set balloon tip title
+
         }
         // event handler for screenshot taken event
         private void HotkeyScreenshot_OnScreenshotTaken(string filePath)
@@ -36,8 +41,8 @@ namespace ScreenGrab
         // overide OnFormClosing to clean up resources on app closing
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            _hotkeyScreenshot?.Dispose();                   //clean up HotkeyScreenshot class
-            base.OnFormClosing(e);
+            _hotkeyScreenshot?.Dispose();                  // clean up HotkeyScreenshot class
+            base.OnFormClosing(e);                         // call base method
         }
     }
 }

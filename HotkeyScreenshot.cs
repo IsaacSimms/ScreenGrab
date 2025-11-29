@@ -144,7 +144,7 @@ namespace ScreenGrab
         {
             // variable declarations
             private bool _isSelecting;                         // flag to track if selection is in progress
-            private Point _startPoint;                         // starting point of selection
+            private Point _startPointScreen;                   // starting point of selection
             private Rectangle _selectedArea = Rectangle.Empty; // selected area rectangle
             public Rectangle SelectedRegion => _selectedArea;  // public property to access selected region
 
@@ -155,7 +155,7 @@ namespace ScreenGrab
                 if (e.Button == MouseButtons.Left)         // start selection
                 {
                     _isSelecting = true;
-                    _startPoint = e.Location;
+                    _startPointScreen = PointToScreen(e.Location);
                     _selectedArea = Rectangle.Empty;       // reset selected area upon new mouse click
                     Invalidate();
                 }
@@ -165,12 +165,13 @@ namespace ScreenGrab
             private void OnMouseMove (object? sender, MouseEventArgs e)
             {
                 if (!_isSelecting) return;                               // do not call function if mouse is not moving
+                Point currentScreen = PointToScreen(e.Location);        // get current mouse position in screen coordinates
 
                 // calculate selection rectangle
-                int x1 = Math.Min(_startPoint.X, e.X);
-                int y1 = Math.Min(_startPoint.Y, e.Y);
-                int x2 = Math.Max(_startPoint.X, e.X);
-                int y2 = Math.Max(_startPoint.Y, e.Y);
+                int x1 = Math.Min(_startPointScreen.X, currentScreen.X);
+                int y1 = Math.Min(_startPointScreen.Y, currentScreen.Y);
+                int x2 = Math.Max(_startPointScreen.X, currentScreen.X);
+                int y2 = Math.Max(_startPointScreen.Y, currentScreen.Y);
 
                 _selectedArea = new Rectangle(x1, y1, x2 - x1, y2 - y1); // update selected area
                 Invalidate();                                            // request redraw
@@ -187,7 +188,7 @@ namespace ScreenGrab
                 }
                 else
                 {
-                    DialogResult = DialogResult.Cancel;                 // cancel if no valid area selected
+                    DialogResult = DialogResult.Cancel;                  // cancel if no valid area selected
                 }
                 Close();                                                 // close the form
             }
@@ -209,12 +210,18 @@ namespace ScreenGrab
                 base.OnPaint(e);
                 if (_isSelecting && _selectedArea != Rectangle.Empty)
                 {
-                    using (var PenSelection = new Pen(Color.DarkGreen, 2))         // pen for selection rectangle
+                    // convert selected area to client coordinates for drawing
+                    Rectangle clientRectangle = new Rectangle(
+                        _selectedArea.X - this.Bounds.X,
+                        _selectedArea.Y - this.Bounds.Y,
+                        _selectedArea.Width,
+                        _selectedArea.Height);
+                    using (var PenSelection = new Pen(Color.DarkRed, 4))           // pen for selection rectangle
                     {
-                        e.Graphics.DrawRectangle(PenSelection, _selectedArea);            // draw selection rectangle
+                        e.Graphics.DrawRectangle(PenSelection, clientRectangle);   // draw selection rectangle
                     }
-                    using (var BrushSelection = new SolidBrush(Color.FromArgb(50, Color.LightGreen))) {
-                        e.Graphics.FillRectangle(BrushSelection, _selectedArea); // fill selection rectangle with semi-transparent color
+                    using (var BrushSelection = new SolidBrush(Color.FromArgb(25, Color.White))) {
+                        e.Graphics.FillRectangle(BrushSelection, clientRectangle); // fill selection rectangle with semi-transparent color
                     }
                 }
             }
@@ -222,13 +229,16 @@ namespace ScreenGrab
             // constructor to setup form properties and event handlers
             public RegionSelectForm()
             {
-                this.FormBorderStyle = FormBorderStyle.None;            // no border
-                this.WindowState = FormWindowState.Maximized;           // full screen
-                this.BackColor = Color.Gray;                            // white background
-                this.Opacity = 0.3;                                     // semi-transparent
-                this.TopMost = true;                                    // always on top
-                this.DoubleBuffered = true;                             // reduce flicker
-                Cursor = Cursors.Default;
+                // setup form properties
+                var vs = System.Windows.Forms.SystemInformation.VirtualScreen; // get virtual screen dimensions
+                this.FormBorderStyle = FormBorderStyle.None;                   // no border
+                this.StartPosition = FormStartPosition.Manual;                 // manual position
+                this.Bounds = vs;                                              // cover entire virtual screen
+                this.BackColor = Color.Gray;                                   // white background
+                this.Opacity = 0.1;                                            // semi-transparent
+                this.TopMost = true;                                           // always on top
+                this.DoubleBuffered = true;                                    // reduce flicker
+                Cursor = Cursors.Cross;
                 // attach event handlers
                 this.MouseDown += new MouseEventHandler(onMouseDown);
                 this.MouseMove += new MouseEventHandler(OnMouseMove);

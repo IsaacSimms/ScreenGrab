@@ -28,7 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Driver));
+            SystemTrayIcon = new NotifyIcon(components);
             SuspendLayout();
+            // 
+            // SystemTrayIcon
+            // 
+            SystemTrayIcon.Icon = (Icon)resources.GetObject("SystemTrayIcon.Icon");
+            SystemTrayIcon.Text = "ScreenGrab";
             // 
             // Driver
             // 
@@ -41,5 +49,7 @@
         }
 
         #endregion
+
+        private NotifyIcon SystemTrayIcon;
     }
 }
