@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using System.Runtime.Serialization;
 using System.Windows.Forms;
+using System.Threading.Tasks; // for async delay (used in delayed screenshot)
 
 namespace ScreenGrab
 {
@@ -38,36 +39,48 @@ namespace ScreenGrab
 
         // == Hotkey varibale registration == //
         // Modifier key codes //
-        private const uint MOD_CONTROL = 0x0002;        // modifier key for control
-        private const uint MOD_SHIFT = 0x0004;          // modifier key for shift
-        private const uint MOD_ALT = 0x0001;            // modifier key for alt
-        private const uint VK_Z = 0x5A;                 // virtual key code for Z key
-        private const uint VK_X = 0x58;                 // virtual key code for X key
-        private const uint VK_escape = 0x1B;            // virtual key code for Escape key
+        private const uint MOD_CONTROL = 0x0002;  // modifier key for control
+        private const uint MOD_SHIFT   = 0x0004;  // modifier key for shift
+        private const uint MOD_ALT     = 0x0001;  // modifier key for alt
+        private const uint VK_Z        = 0x5A;    // virtual key code for Z key
+        private const uint VK_X        = 0x58;    // virtual key code for X key
+        private const uint VK_escape   = 0x1B;    // virtual key code for Escape key
         // Hotkey IDs //
-        private const int WM_HOTKEY = 0x0312;           // Windows message ID for hotkey
-        private const int HOTKEY_ID_ACTIVE_WINDOW = 1;  // ID for active window screenshot hotkey
-        private const int HOTKEY_ID_REGION_SELECT = 2;  // ID for region select screenshot hotkey
-        private readonly int _ActiveWindowHotkeyId;     // instance variable for active window hotkey ID
-        private readonly int _RegionSelectHotkeyId;     // instance variable for region select hotkey ID
-        private bool _registeredActive;                 // instance variable for window handle
-        private bool _registeredRegion;                 // instance variable to track if region select hotkey is registered
-        public event Action<string>? OnScreenshotTaken; // event to notify when a screenshot is taken
+        private const int            WM_HOTKEY = 0x0312;                // Windows message ID for hotkey
+        private const int            HOTKEY_ID_ACTIVE_WINDOW = 1;       // ID for active window screenshot hotkey
+        private const int            HOTKEY_ID_REGION_SELECT = 2;       // ID for region select screenshot hotkey
+        private const int            HOTKEY_ID_ACTIVE_WINDOW_DELAY = 3; // ID for active window delayed screenshot hotkey
+        private const int            HOTKEY_ID_REGION_SELECT_DELAY = 4; // ID for region select delayed screenshot hotkey
+        private readonly int         _ActiveWindowHotkeyId;             // instance variable for active window hotkey ID
+        private readonly int         _RegionSelectHotkeyId;             // instance variable for region select hotkey ID
+        private readonly int         _ActiveWindowDelayHotkeyId;        // ID for active window delayed screenshot hotkey
+        private readonly int         _RegionSelectDelayHotkeyId;        // ID for region select delayed screenshot hotkey
+        private bool                 _registeredActive;                 // instance variable for window handle
+        private bool                 _registeredRegion;                 // instance variable to track if region select hotkey is registered
+        private bool                 _registeredActiveDelay;            // instance variable to track if active window delay hotkey is registered
+        private bool                 _registeredRegionDelay;            // instance variable to track if region select delay hotkey is registered
+        public event Action<string>? OnScreenshotTaken;                 // event to notify when a screenshot is taken
 
         // == Register hotkeys == //
-        public HotkeyScreenshot(Form ownerForm)
+        public HotkeyScreenshot()
         {
             // attach to form handle
-            AssignHandle(ownerForm.Handle);
+            CreateHandle(new CreateParams());
 
             // generate unique hotkey IDs
-            _ActiveWindowHotkeyId = GetHashCode();
-            _RegionSelectHotkeyId = GetHashCode() ^ 0x5A5A5A5A;
-
+            _ActiveWindowHotkeyId      = GetHashCode();
+            _RegionSelectHotkeyId      = GetHashCode() ^ 0x5A5A5A5A;
+            _ActiveWindowDelayHotkeyId = GetHashCode() ^ 0x3C3C3C3C;
+            _RegionSelectDelayHotkeyId = GetHashCode() ^ 0x2B2B2B2B;
+            IntPtr hwnd = this.Handle;
             // Control + Shift + Z for active window screenshot
-            _registeredActive = RegisterHotKey(ownerForm.Handle, _ActiveWindowHotkeyId, MOD_CONTROL | MOD_SHIFT, VK_Z);
+            _registeredActive      = RegisterHotKey(hwnd, _ActiveWindowHotkeyId,      MOD_CONTROL | MOD_SHIFT, VK_Z);
             // Control + Shift + X for region select screenshot
-            _registeredRegion = RegisterHotKey(ownerForm.Handle, _RegionSelectHotkeyId, MOD_CONTROL | MOD_SHIFT, VK_X);
+            _registeredRegion      = RegisterHotKey(hwnd, _RegionSelectHotkeyId,      MOD_CONTROL | MOD_SHIFT, VK_X);
+            // Control + alt + Z for active window delayed screenshot
+            _registeredActiveDelay = RegisterHotKey(hwnd, _ActiveWindowDelayHotkeyId, MOD_CONTROL | MOD_ALT, VK_Z);
+            // Control + alt + X for region select delayed screenshot
+            _registeredRegionDelay = RegisterHotKey(hwnd, _RegionSelectDelayHotkeyId, MOD_CONTROL | MOD_ALT, VK_X);
 
             // error handling for hotkey registration
             if (!_registeredActive || !_registeredRegion)
@@ -80,18 +93,27 @@ namespace ScreenGrab
         // == Handle window messages to detect hotkey presses == //
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == WM_HOTKEY)                   // check if message is hotkey press
+            if (m.Msg == WM_HOTKEY)                            // check if message is hotkey press
             {
-                int id = m.WParam.ToInt32();          // get hotkey ID
-                if (id == _ActiveWindowHotkeyId)      // check if active window hotkey was pressed
+                int id = m.WParam.ToInt32();                   // get hotkey ID
+                if (id == _ActiveWindowHotkeyId)               // check if active window hotkey was pressed
                 {
                     CaptureActiveWindow();
                 }
-                else if (id == _RegionSelectHotkeyId) // check if region select hotkey was pressed
+                if (id == _RegionSelectHotkeyId)              // check if region select hotkey was pressed
                 {
                     CaptureRegion();
                 }
+                if (id == _ActiveWindowDelayHotkeyId)         // check if active window delay hotkey was pressed
+                {
+                    CaptureActiveWindowDelayed();
+                }
+                else if (id == _RegionSelectDelayHotkeyId)   // check if region select delay hotkey was pressed
+                {
+                    CaptureRegionDelayed();
+                }
             }
+            // pass message to base WndProc
             base.WndProc(ref m);
         }
 
@@ -216,7 +238,7 @@ namespace ScreenGrab
                         _selectedArea.Y - this.Bounds.Y,
                         _selectedArea.Width,
                         _selectedArea.Height);
-                    using (var PenSelection = new Pen(Color.DarkRed, 4))           // pen for selection rectangle
+                    using (var PenSelection = new Pen(Color.Red, 4))           // pen for selection rectangle
                     {
                         e.Graphics.DrawRectangle(PenSelection, clientRectangle);   // draw selection rectangle
                     }
@@ -278,21 +300,46 @@ namespace ScreenGrab
                 MessageBox.Show($"Failed to save screenshot: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        // == Capture active window after delay == //
+        private async void CaptureActiveWindowDelayed()
+        {
+            await Task.Delay(5000); // 5 second delay
+            CaptureActiveWindow();
+        }
+        // == Capture selected region after delay == //
+        private async void CaptureRegionDelayed()
+        {
+            await Task.Delay(3000); // 5 second delay
+            CaptureRegion();
+        }
 
         // == Cleanup: Unregister hotkeys when done == //
         public void Dispose()
         {
+            IntPtr hWnd = this.Handle.ToInt32();
             // cleanup active window hotkey
             if (_registeredActive)
             {
-                UnregisterHotKey(Handle, _ActiveWindowHotkeyId);
-                _registeredActive = false;
+                UnregisterHotKey(hWnd, _ActiveWindowHotkeyId);
+                _registeredActive       = false;
             }
             // cleanup region select hotkey
             if (_registeredRegion)
             {
-                UnregisterHotKey(Handle, _RegionSelectHotkeyId);
-                _registeredRegion = false;
+                UnregisterHotKey(hWnd, _RegionSelectHotkeyId);
+                _registeredRegion      = false;
+            }
+            // cleanup active window delay hotkey
+            if (_registeredActiveDelay)
+            {
+                UnregisterHotKey(hWnd, _ActiveWindowDelayHotkeyId);
+                _registeredActiveDelay = false;
+            }
+            // cleanup region select delay hotkey
+            if (_registeredRegionDelay)
+            {
+                UnregisterHotKey(hWnd, _RegionSelectDelayHotkeyId);
+                _registeredRegionDelay = false;
             }
             // release native window handle
             ReleaseHandle();

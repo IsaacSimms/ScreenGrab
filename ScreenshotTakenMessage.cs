@@ -15,7 +15,7 @@ namespace ScreenGrab
         private readonly Label _label;
 
         // constructor
-        public ScreenshotMessageBox(string mesasge, string title, int durationInMs)
+  public ScreenshotMessageBox(string message, string title, int durationInMs)
         {
             // message box properties
             Text                 = title;                             // set title
@@ -24,20 +24,21 @@ namespace ScreenGrab
             this.Location        = new Point(                         // position at bottom right of primary screen
                 (Screen.PrimaryScreen?.WorkingArea.Right ?? 310) - 310,
                 (Screen.PrimaryScreen?.WorkingArea.Bottom ?? 160) - 160);
-            //this.FormBorderStyle = FormBorderStyle.None;              // border set in overriden onPaint method
-            BackColor            = Color.White;                       //  background
-            Size                 = new Size(300, 150);                // set size
+            this.FormBorderStyle = FormBorderStyle.None;              // border set in overriden onPaint method
+            BackColor            = Color.Black;                       //  background
+            Size                 = new Size(300, 100);                // set size
             MaximizeBox          = false;                             // disable maximize box
             MinimizeBox          = false;                             // disable minimize box
             TopMost              = true;                              // always on top
             // label for message w/ styling
             _label = new Label
             {
-                Text      = mesasge,                                    // set message text
-                AutoSize  = false,                                      // disable autosize
-                Dock      = DockStyle.Fill,                             // fill form
-                TextAlign = ContentAlignment.MiddleCenter,              // center text
-                Font      = new Font("Segoe UI", 12, FontStyle.Regular) // set font 
+                Text      = message,                                     // set message text
+                AutoSize  = false,                                       // disable autosize
+                Dock      = DockStyle.Fill,                              // fill form
+                TextAlign = ContentAlignment.MiddleCenter,               // center text
+                Font      = new Font("Segoe UI", 12, FontStyle.Regular), // set font 
+                ForeColor = Color.White                                  // set text color
             };
             Controls.Add(_label);
             // timer to close message box after duration (duration set in class constructor)
@@ -60,17 +61,6 @@ namespace ScreenGrab
         {
             var box = new ScreenshotMessageBox(message, title, durationInMs);
             box.Show();
-        }
-        // override OnPaint to draw border
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e); // call base method
-            // draw border
-            using (Pen pen = new Pen(Color.Black, 2))
-            {
-                Rectangle rect = new Rectangle(0,0, this.Width - 1, this.Height - 1);
-                e.Graphics.DrawRectangle(pen, rect);
-            }
         }
     }
 }
