@@ -23,8 +23,10 @@ namespace ScreenGrab
         public HotkeyModifiers Modifiers { get; set; }
         public Keys            Key       { get; set; }
 
+        // override ToString to return hotkey as string
         public override string ToString()
         {
+            //
             string text = "";
             if (Modifiers.HasFlag(HotkeyModifiers.Control)) text += "Ctrl + ";
             if (Modifiers.HasFlag(HotkeyModifiers.Alt))     text += "Alt + ";
