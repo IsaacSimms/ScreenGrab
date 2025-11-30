@@ -29,7 +29,7 @@ namespace ScreenGrab
             }
             // get image from clipboard
             Image? clipboardImage = Clipboard.GetImage();
-            // error handle for null image
+            // error handle for null image 
             if (clipboardImage == null)
             { 
                 ScreenshotMessageBox.ShowMessage(                                // show message box on screenshot taken
