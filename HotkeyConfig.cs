@@ -39,6 +39,36 @@ namespace ScreenGrab
     // hotkey configuration class
     public class HotkeyConfig
     {
-        /// add 
+        /// add modifiers and one key to hotkey definition ///
+        // active window
+        public HotkeyDefinition ActiveWindowCapture { get; set; } = new HotkeyDefinition
+        {
+            Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
+            Key       = Keys.Z
+        };
+        // Region capture
+        public HotkeyDefinition RegionCapture { get; set; } = new HotkeyDefinition
+        {
+            Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
+            Key       = Keys.X
+        };
+        // active window delayed capture
+        public HotkeyDefinition ActiveWindowDelayedCapture { get; set; } = new HotkeyDefinition
+        {
+            Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Alt,
+            Key       = Keys.Z
+        };
+        // region delayed capture
+        public HotkeyDefinition RegionDelayedCapture { get; set; } = new HotkeyDefinition
+        {
+            Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Alt,
+            Key       = Keys.X
+        };
+        // open clipboard png in MS Paint
+        public HotkeyDefinition OpenPaint { get; set; } = new HotkeyDefinition
+        {
+            Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
+            Key       = Keys.P
+        };
     }
 }
