@@ -19,6 +19,10 @@ namespace ScreenGrab
 {
     internal class HotkeyScreenshot : NativeWindow
     {
+        // variables for hotkey configuration and registration
+        private readonly HotkeyConfig? _config;       // instance variable for hotkey configuration
+        private readonly IntPtr        _windowHandle; // instance variable for window handle
+
         // == WinAPI Imports == //
         [DllImport("user32.dll")]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk); // allows for hotkey press to be sent to app 
@@ -265,8 +269,8 @@ namespace ScreenGrab
                         _selectedArea.Y - this.Bounds.Y,
                         _selectedArea.Width,
                         _selectedArea.Height);
-                    using (var PenSelection = new Pen(Color.Red, 4))           // pen for selection rectangle
-                    {
+                    using (var PenSelection = new Pen(Color.Black, 4))             // pen for selection rectangle
+                    { 
                         e.Graphics.DrawRectangle(PenSelection, clientRectangle);   // draw selection rectangle
                     }
                     using (var BrushSelection = new SolidBrush(Color.FromArgb(25, Color.White))) {
