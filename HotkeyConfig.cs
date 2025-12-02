@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ScreenGrab
 {
@@ -25,8 +26,7 @@ namespace ScreenGrab
 
         // override ToString to return hotkey as string
         public override string ToString()
-        {
-            //
+        { 
             string text = "";
             if (Modifiers.HasFlag(HotkeyModifiers.Control)) text += "Ctrl + ";
             if (Modifiers.HasFlag(HotkeyModifiers.Alt))     text += "Alt + ";
