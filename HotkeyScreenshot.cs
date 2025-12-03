@@ -21,8 +21,8 @@ namespace ScreenGrab
     internal class HotkeyScreenshot : NativeWindow
     {
         // variables for hotkey configuration and registration
-        private readonly HotkeyConfig _config;       // instance variable for hotkey configuration
-        private readonly IntPtr        _handle; // instance variable for window handle
+        private readonly HotkeyConfig _config;  // instance variable for hotkey configuration
+        private IntPtr        _handle;          // instance variable for window handle
 
         // == WinAPI Imports == //
         [DllImport("user32.dll")]
@@ -53,17 +53,28 @@ namespace ScreenGrab
         public event Action<string>? OnScreenshotTaken;                      // event to notify when a screenshot is taken
 
         // == Register hotkeys == //
+        // attach hotkey configruation to handle
+        public void AttachToHandle(IntPtr newHandle)
+        {
+            if (Handle != IntPtr.Zero)
+            {
+                ReleaseHandle(); // release existing handle if already assigned
+            }
+            _handle = newHandle;     // assign new handle
+            AssignHandle(newHandle); // assign new handle to NativeWindow
+            RegisterAllHotkeys();    // register all hotkeys with new handle
+        }
         public HotkeyScreenshot(Form owner, HotkeyConfig config)
         {
-            _config       = config;                     // assign hotkey configuration from class to local variable
-            _handle       = owner.Handle;               // assign window handle from owner form
-            AssignHandle(owner.Handle);                 // assign window handle from owner form
+            _config       = config;            // assign hotkey configuration from class to local variable
+            _handle       = owner.Handle;      // assign window handle from owner form
+            AssignHandle(owner.Handle);        // assign window handle from owner form
             _ActiveWindowHotkeyId         = 1;
             _RegionSelectHotkeyId         = 2;
             _ActiveWindowDelayHotkeyId    = 3;
             _RegionSelectDelayHotkeyId    = 4;
             _OpenClipboardInPaintHotkeyId = 5;
-            RegisterAllHotkeys();                       // register all hotkeys
+            AttachToHandle(owner.Handle);      // register all hotkeys
             //IntPtr hwnd = this.Handle;
         }
         // == register hotkeys helper method == //

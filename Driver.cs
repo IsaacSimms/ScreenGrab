@@ -12,10 +12,20 @@ namespace ScreenGrab
     {
 
         private HotkeyScreenshot? _hotkeyScreenshot;             // wire up HotkeyScreenshot class
-        private HotkeyConfig _hotkeyConfig = new HotkeyConfig(); // hotkey configuration instance
+        private static HotkeyConfig _hotkeyConfig = new HotkeyConfig(); // hotkey configuration instance
         public Driver()
         {
             InitializeComponent();
+        }
+        // ovveride OnHandleCreated to account for hotkey registration after handle is created
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            // error handling
+            if (_hotkeyScreenshot != null)
+            {
+                _hotkeyScreenshot.AttachToHandle(this.Handle);
+            }
         }
         // override OnLoad to hide the form on startup - initialize
         protected override void OnLoad(EventArgs e)
@@ -23,7 +33,7 @@ namespace ScreenGrab
             base.OnLoad(e);
             this.Hide();                                                               // hide the form on startup
             this.ShowInTaskbar = false;                               // remove from taskbar
-            _hotkeyScreenshot = new HotkeyScreenshot(this, new HotkeyConfig());              // initialize HotkeyScreenshot class
+            _hotkeyScreenshot = new HotkeyScreenshot(this, _hotkeyConfig);              // initialize HotkeyScreenshot class
             _hotkeyScreenshot.OnScreenshotTaken += HotkeyScreenshot_OnScreenshotTaken; // wire up event handler
 
             // set up system tray icon
