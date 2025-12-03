@@ -13,18 +13,22 @@ using System.Runtime.InteropServices.Marshalling;
 using System.Runtime.Serialization;
 using System.Windows.Forms;
 using System.Threading.Tasks;
-using System.Diagnostics.Eventing.Reader; // for async delay (used in delayed screenshot)
+using System.Diagnostics.Eventing.Reader;
+using System.Drawing.Text; // for async delay (used in delayed screenshot)
 
 namespace ScreenGrab
 {
     internal class HotkeyScreenshot : NativeWindow
     {
+        // variables for hotkey configuration and registration
+        private readonly HotkeyConfig _config;  // instance variable for hotkey configuration
+        private IntPtr        _handle;          // instance variable for window handle
+
         // == WinAPI Imports == //
         [DllImport("user32.dll")]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk); // allows for hotkey press to be sent to app 
         [DllImport("user32.dll")]
-        private static extern bool UnregisterHotKey(IntPtr hWnd, int id);                          // unregisters hotkey so windows does not try to send it when app is closed
-
+        private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
         // == Active Window Screenshot Imports == //
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();                                       // gets handle of active window
@@ -39,67 +43,87 @@ namespace ScreenGrab
         }
 
         // == Hotkey varibale registration == //
-        // Modifier key codes //
-        private const uint MOD_CONTROL = 0x0002;  // modifier key for control
-        private const uint MOD_SHIFT   = 0x0004;  // modifier key for shift
-        private const uint MOD_ALT     = 0x0001;  // modifier key for alt
-        private const uint VK_Z        = 0x5A;    // virtual key code for Z key
-        private const uint VK_X        = 0x58;    // virtual key code for X key
-        private const uint VK_P        = 0x50;    // virtual key code for P key
-        private const uint VK_escape   = 0x1B;    // virtual key code for Escape key
         // Hotkey IDs //
-        private const int            WM_HOTKEY = 0x0312;                    // Windows message ID for hotkey
-        private const int            HOTKEY_ID_ACTIVE_WINDOW = 1;           // ID for active window screenshot hotkey
-        private const int            HOTKEY_ID_REGION_SELECT = 2;           // ID for region select screenshot hotkey
-        private const int            HOTKEY_ID_ACTIVE_WINDOW_DELAY = 3;     // ID for active window delayed screenshot hotkey
-        private const int            HOTKEY_ID_REGION_SELECT_DELAY = 4;     // ID for region select delayed screenshot hotkey
-        private const int            HOTKEY_ID_OPEN_CLIPBOARD_IN_PAINT = 5; // ID for open clipboard image in paint hotkey
-        private readonly int         _ActiveWindowHotkeyId;                 // instance variable for active window hotkey ID
-        private readonly int         _RegionSelectHotkeyId;                 // instance variable for region select hotkey ID
-        private readonly int         _ActiveWindowDelayHotkeyId;            // ID for active window delayed screenshot hotkey
-        private readonly int         _RegionSelectDelayHotkeyId;            // ID for region select delayed screenshot hotkey
-        private readonly int         _OpenClipboardInPaintHotkeyId;         // ID for open clipboard image in paint hotkey
-        private bool                 _registeredActive;                     // instance variable for window handle
-        private bool                 _registeredRegion;                     // instance variable to track if region select hotkey is registered
-        private bool                 _registeredActiveDelay;                // instance variable to track if active window delay hotkey is registered
-        private bool                 _registeredRegionDelay;                // instance variable to track if region select delay hotkey is registered
-        private bool                 _registeredOpenClipboardInPaint;       // instance variable to track if open clipboard in paint hotkey is registered
-        public event Action<string>? OnScreenshotTaken;                     // event to notify when a screenshot is taken
+        private const int            WM_HOTKEY = 0x0312;                     // Windows message ID for hotkey
+        private readonly int _ActiveWindowHotkeyId;                          // instance variable for active window hotkey ID
+        private readonly int _RegionSelectHotkeyId;                          // instance variable for region select hotkey ID
+        private readonly int _ActiveWindowDelayHotkeyId;                     // ID for active window delayed screenshot hotkey
+        private readonly int _RegionSelectDelayHotkeyId;                     // ID for region select delayed screenshot hotkey
+        private readonly int _OpenClipboardInPaintHotkeyId;                  // ID for open clipboard image in paint hotkey
+        public event Action<string>? OnScreenshotTaken;                      // event to notify when a screenshot is taken
 
         // == Register hotkeys == //
-        public HotkeyScreenshot()
+        // attach hotkey configruation to handle
+        public void AttachToHandle(IntPtr newHandle)
         {
-            // attach to form handle
-            CreateHandle(new CreateParams());
-
-            // generate unique hotkey IDs
-            _ActiveWindowHotkeyId         = GetHashCode();
-            _RegionSelectHotkeyId         = GetHashCode() ^ 0x5A5A5A5A;
-            _ActiveWindowDelayHotkeyId    = GetHashCode() ^ 0x3C3C3C3C;
-            _RegionSelectDelayHotkeyId    = GetHashCode() ^ 0x2B2B2B2B;
-            _OpenClipboardInPaintHotkeyId = GetHashCode() ^ 0x1A1A1A1A;
-            IntPtr hwnd = this.Handle;
-            // Control + Shift + Z for active window screenshot
-            _registeredActive      = RegisterHotKey(hwnd, _ActiveWindowHotkeyId,      MOD_CONTROL | MOD_SHIFT, VK_Z);
-            // Control + Shift + X for region select screenshot
-            _registeredRegion      = RegisterHotKey(hwnd, _RegionSelectHotkeyId,      MOD_CONTROL | MOD_SHIFT, VK_X);
-            // Control + alt + Z for active window delayed screenshot
-            _registeredActiveDelay = RegisterHotKey(hwnd, _ActiveWindowDelayHotkeyId, MOD_CONTROL | MOD_ALT, VK_Z);
-            // Control + alt + X for region select delayed screenshot
-            _registeredRegionDelay = RegisterHotKey(hwnd, _RegionSelectDelayHotkeyId, MOD_CONTROL | MOD_ALT, VK_X);
-            // Control + Shift + P for open clipboard image in paint
-            _registeredOpenClipboardInPaint = RegisterHotKey(hwnd, _OpenClipboardInPaintHotkeyId, MOD_CONTROL | MOD_SHIFT, VK_P);
-
-            // error handling for hotkey registration
-            if (!_registeredActive || !_registeredRegion)
+            if (Handle != IntPtr.Zero)
+            {
+                ReleaseHandle(); // release existing handle if already assigned
+            }
+            _handle = newHandle;     // assign new handle
+            AssignHandle(newHandle); // assign new handle to NativeWindow
+            RegisterAllHotkeys();    // register all hotkeys with new handle
+        }
+        public HotkeyScreenshot(Form owner, HotkeyConfig config)
+        {
+            _config       = config;            // assign hotkey configuration from class to local variable
+            _handle       = owner.Handle;      // assign window handle from owner form
+            AssignHandle(owner.Handle);        // assign window handle from owner form
+            _ActiveWindowHotkeyId         = 1;
+            _RegionSelectHotkeyId         = 2;
+            _ActiveWindowDelayHotkeyId    = 3;
+            _RegionSelectDelayHotkeyId    = 4;
+            _OpenClipboardInPaintHotkeyId = 5;
+            AttachToHandle(owner.Handle);      // register all hotkeys
+            //IntPtr hwnd = this.Handle;
+        }
+        // == register hotkeys helper method == //
+        private void RegisterAllHotkeys()
+        {
+            UnregisterHotkeys(); // unregister existing hotkeys before registering new ones
+            // register hotkeys from configuration using helper method
+            RegisterFromConfig(_ActiveWindowHotkeyId, _config.ActiveWindowCapture);
+            RegisterFromConfig(_RegionSelectHotkeyId, _config.RegionCapture);
+            RegisterFromConfig(_ActiveWindowDelayHotkeyId, _config.ActiveWindowDelayedCapture);
+            RegisterFromConfig(_RegionSelectDelayHotkeyId, _config.RegionDelayedCapture);
+            RegisterFromConfig(_OpenClipboardInPaintHotkeyId, _config.OpenPaint);
+        }
+        // == Unregister hotkeys  == //
+        public void UnregisterHotkeys()
+        {
+            // unregister all hotkeys using WinAPI
+            UnregisterHotKey(_handle, _ActiveWindowHotkeyId);
+            UnregisterHotKey(_handle, _RegionSelectHotkeyId);
+            UnregisterHotKey(_handle, _ActiveWindowDelayHotkeyId);
+            UnregisterHotKey(_handle, _RegionSelectDelayHotkeyId);
+            UnregisterHotKey(_handle, _OpenClipboardInPaintHotkeyId);
+        }
+        private void RegisterFromConfig(int id, HotkeyDefinition def)
+        {
+            uint mods = (uint)def.Modifiers;                 // get modifier flags
+            uint key  = (uint)def.Key;                       // get key for keyboard hotkey
+           //bool ok RegisterHotKey(_handle, id, mods, key); // register hotkey using WinAPI
+            if (!RegisterHotKey(_handle, id, mods, key))     // error handling for hotkey registration
             {
                 ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: Invalid Region selection.", 
-                    $"ScreenGrab", 
+                    $"ScreenGrab: error registering hotkeys. please relaunch app",
+                    $"ScreenGrab",
                     4000);
                 throw new InvalidOperationException("Failed to register one or more hotkeys.");
             }
         }
+        // == UpdateHotkey configuration == //
+        public void UpdateHotkeyConfig (HotkeyConfig newConfig)
+        {
+            // update configuration
+            _config.ActiveWindowCapture        = newConfig.ActiveWindowCapture;
+            _config.RegionCapture              = newConfig.RegionCapture;
+            _config.ActiveWindowDelayedCapture = newConfig.ActiveWindowDelayedCapture;
+            _config.RegionDelayedCapture       = newConfig.RegionDelayedCapture;
+            _config.OpenPaint                  = newConfig.OpenPaint;
+            RegisterAllHotkeys(); // re-register hotkeys with new configuration
+        }
+
 
         // == Handle window messages to detect hotkey presses == //
         protected override void WndProc(ref Message m)
@@ -111,15 +135,15 @@ namespace ScreenGrab
                 {
                     CaptureActiveWindow();
                 }
-                if (id == _RegionSelectHotkeyId)               // check if region select hotkey was pressed
+                else if (id == _RegionSelectHotkeyId)               // check if region select hotkey was pressed
                 {
                     CaptureRegion();
                 }
-                if (id == _ActiveWindowDelayHotkeyId)          // check if active window delay hotkey was pressed
+                else if (id == _ActiveWindowDelayHotkeyId)          // check if active window delay hotkey was pressed
                 {
                     CaptureActiveWindowDelayed();
                 }
-                if (id == _RegionSelectDelayHotkeyId)          // check if region select delay hotkey was pressed
+                else if (id == _RegionSelectDelayHotkeyId)          // check if region select delay hotkey was pressed
                 {
                     CaptureRegionDelayed();
                 }
@@ -265,8 +289,8 @@ namespace ScreenGrab
                         _selectedArea.Y - this.Bounds.Y,
                         _selectedArea.Width,
                         _selectedArea.Height);
-                    using (var PenSelection = new Pen(Color.Red, 4))           // pen for selection rectangle
-                    {
+                    using (var PenSelection = new Pen(Color.Black, 4))             // pen for selection rectangle
+                    { 
                         e.Graphics.DrawRectangle(PenSelection, clientRectangle);   // draw selection rectangle
                     }
                     using (var BrushSelection = new SolidBrush(Color.FromArgb(25, Color.White))) {
@@ -346,39 +370,9 @@ namespace ScreenGrab
         // == Cleanup: Unregister hotkeys when done == //
         public void Dispose()
         {
-            IntPtr hWnd = this.Handle.ToInt32();
-            // cleanup active window hotkey
-            if (_registeredActive)
-            {
-                UnregisterHotKey(hWnd, _ActiveWindowHotkeyId);
-                _registeredActive       = false;
-            }
-            // cleanup region select hotkey
-            if (_registeredRegion)
-            {
-                UnregisterHotKey(hWnd, _RegionSelectHotkeyId);
-                _registeredRegion      = false;
-            }
-            // cleanup active window delay hotkey
-            if (_registeredActiveDelay)
-            {
-                UnregisterHotKey(hWnd, _ActiveWindowDelayHotkeyId);
-                _registeredActiveDelay = false;
-            }
-            // cleanup region select delay hotkey
-            if (_registeredRegionDelay)
-            {
-                UnregisterHotKey(hWnd, _RegionSelectDelayHotkeyId);
-                _registeredRegionDelay = false;
-            }
-            // cleanup open clipboard in paint hotkey
-            if (_registeredOpenClipboardInPaint)
-            {
-                UnregisterHotKey(hWnd, _OpenClipboardInPaintHotkeyId);
-                _registeredOpenClipboardInPaint = false;
-            }
-            // release native window handle
-            ReleaseHandle();
+
+            UnregisterHotkeys(); // unregister all hotkeys
+            ReleaseHandle();     // release window handle
         }
     }
 }

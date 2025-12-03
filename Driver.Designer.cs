@@ -34,6 +34,7 @@
             SystemTrayMenu = new ContextMenuStrip(components);
             menuOpen = new ToolStripMenuItem();
             menuExit = new ToolStripMenuItem();
+            SendToSettings = new Button();
             SystemTrayMenu.SuspendLayout();
             SuspendLayout();
             // 
@@ -65,6 +66,16 @@
             menuExit.Size = new Size(137, 22);
             menuExit.Text = "Close App";
             // 
+            // SendToSettings
+            // 
+            SendToSettings.Location = new Point(78, 53);
+            SendToSettings.Name = "SendToSettings";
+            SendToSettings.Size = new Size(100, 54);
+            SendToSettings.TabIndex = 1;
+            SendToSettings.Text = "Settings";
+            SendToSettings.UseVisualStyleBackColor = true;
+            SendToSettings.Click += button1_Click;
+            // 
             // Driver
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -72,6 +83,7 @@
             BackColor = SystemColors.InfoText;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1315, 847);
+            Controls.Add(SendToSettings);
             DoubleBuffered = true;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Driver";
@@ -86,5 +98,6 @@
         private ContextMenuStrip SystemTrayMenu;
         private ToolStripMenuItem menuOpen;
         private ToolStripMenuItem menuExit;
+        private Button SendToSettings;
     }
 }
