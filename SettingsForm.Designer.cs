@@ -58,7 +58,6 @@
             txtActive.Size = new Size(100, 23);
             txtActive.TabIndex = 0;
             txtActive.TextAlign = HorizontalAlignment.Center;
-            txtActive.TextChanged += txtActive_TextChanged;
             // 
             // txtRegion
             // 
@@ -115,7 +114,6 @@
             txtHotkeySettingsGUIHeader.TabIndex = 5;
             txtHotkeySettingsGUIHeader.Text = "Hotkeys";
             txtHotkeySettingsGUIHeader.TextAlign = HorizontalAlignment.Center;
-            txtHotkeySettingsGUIHeader.TextChanged += textBox1_TextChanged;
             // 
             // txtCaptureActiveWindowConfigHeader
             // 
@@ -128,7 +126,6 @@
             txtCaptureActiveWindowConfigHeader.TabIndex = 6;
             txtCaptureActiveWindowConfigHeader.Text = "Capture Active Window:";
             txtCaptureActiveWindowConfigHeader.TextAlign = HorizontalAlignment.Center;
-            txtCaptureActiveWindowConfigHeader.TextChanged += textBox1_TextChanged_1;
             // 
             // txtCaptureRegionConfigHeader
             // 
@@ -141,7 +138,6 @@
             txtCaptureRegionConfigHeader.TabIndex = 7;
             txtCaptureRegionConfigHeader.Text = "Capture Region:";
             txtCaptureRegionConfigHeader.TextAlign = HorizontalAlignment.Center;
-            txtCaptureRegionConfigHeader.TextChanged += textBox2_TextChanged;
             // 
             // txtDelayedActiveWindowConfigHeader
             // 
@@ -189,7 +185,7 @@
             btnChangeActiveWindowHotkeyConfig.TabIndex = 11;
             btnChangeActiveWindowHotkeyConfig.Text = "Change";
             btnChangeActiveWindowHotkeyConfig.UseVisualStyleBackColor = false;
-            btnChangeActiveWindowHotkeyConfig.Click += button1_Click;
+            btnChangeActiveWindowHotkeyConfig.Click += btnChangeActiveWindowHotkeyConfig_Click;
             // 
             // ChangeRegionCaptureHotkeyConfig
             // 
@@ -201,6 +197,7 @@
             ChangeRegionCaptureHotkeyConfig.TabIndex = 12;
             ChangeRegionCaptureHotkeyConfig.Text = "Change";
             ChangeRegionCaptureHotkeyConfig.UseVisualStyleBackColor = false;
+            ChangeRegionCaptureHotkeyConfig.Click += btnChangeRegionCaptureHotkeyConfig_Click;
             // 
             // btnChangeDelayedActiveWindowHotkeyConfig
             // 
@@ -212,6 +209,7 @@
             btnChangeDelayedActiveWindowHotkeyConfig.TabIndex = 13;
             btnChangeDelayedActiveWindowHotkeyConfig.Text = "Change";
             btnChangeDelayedActiveWindowHotkeyConfig.UseVisualStyleBackColor = false;
+            btnChangeDelayedActiveWindowHotkeyConfig.Click += btnChangeActiveWindowDelayedHotkeyConfig_Click;
             // 
             // btnChangeDelayedRegionCaptureConfig
             // 
@@ -223,6 +221,7 @@
             btnChangeDelayedRegionCaptureConfig.TabIndex = 14;
             btnChangeDelayedRegionCaptureConfig.Text = "Change";
             btnChangeDelayedRegionCaptureConfig.UseVisualStyleBackColor = false;
+            btnChangeDelayedRegionCaptureConfig.Click += btnChangeRegionDelayedHotkeyConfig_Click;
             // 
             // btnOpenPNGInPaintHotkeyConfig
             // 
@@ -234,17 +233,17 @@
             btnOpenPNGInPaintHotkeyConfig.TabIndex = 15;
             btnOpenPNGInPaintHotkeyConfig.Text = "Change";
             btnOpenPNGInPaintHotkeyConfig.UseVisualStyleBackColor = false;
+            btnOpenPNGInPaintHotkeyConfig.Click += btnChangeOpenPaintHotkeyConfig_Click;
             // 
             // lblStatus
             // 
             lblStatus.AutoSize = true;
             lblStatus.BorderStyle = BorderStyle.FixedSingle;
             lblStatus.ForeColor = SystemColors.Window;
-            lblStatus.Location = new Point(17, 355);
+            lblStatus.Location = new Point(17, 272);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(2, 17);
             lblStatus.TabIndex = 16;
-            lblStatus.Click += label1_Click;
             // 
             // SettingsForm
             // 

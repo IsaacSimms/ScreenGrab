@@ -4,6 +4,7 @@
 
 using System;
 using System.Formats.Asn1;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 
 namespace ScreenGrab
@@ -17,7 +18,8 @@ namespace ScreenGrab
         {
             None, Active, Region, ActiveDelayed, RegionDelayed, Paint
         }
-        private HotkeyBeingConfigured _currentHotkeyEditTarget = HotkeyBeingConfigured.None;
+        private HotkeyBeingConfigured _currentHotkeyEditTarget = HotkeyBeingConfigured.None; // initialize to none
+        public event Action<HotkeyConfig>? HotkeysChanged;                                   // event to notify main app of hotkey changes
         public SettingsForm(HotkeyConfig config)
         {
             InitializeComponent();   // initialize form components
@@ -44,7 +46,7 @@ namespace ScreenGrab
             txtOpenPNGInPaintConfigHeader.ReadOnly       = true;
             // receive keydown events for text boxes
             this.KeyPreview = true;
-            txtActive.KeyDown += SettingsForm_KeyDown;
+            this.KeyUp    += new KeyEventHandler(SettingsForm_KeyDown);               //
         }
 
         // button click handlers to change hotkey being configured // print to label the staus
@@ -85,14 +87,14 @@ namespace ScreenGrab
             //build modifiers
             var mods = HotkeyModifiers.None;
             if (e.Control) mods |= HotkeyModifiers.Control;
-            if (e.Alt)     mods |= HotkeyModifiers.Alt;
-            if (e.Shift)   mods |= HotkeyModifiers.Shift;
+            if (e.Alt) mods |= HotkeyModifiers.Alt;
+            if (e.Shift) mods |= HotkeyModifiers.Shift;
 
             // create new hotkey definition
             var def = new HotkeyDefinition
             {
                 Modifiers = mods,
-                Key       = e.KeyCode
+                Key = e.KeyCode
             };
             // switch/case to assign new hotkey based on which is being configured
             switch (_currentHotkeyEditTarget)
@@ -121,36 +123,13 @@ namespace ScreenGrab
             // reset current hotkey being configured and status label
             _currentHotkeyEditTarget = HotkeyBeingConfigured.None;
             lblStatus.Text = "Hotkey updated successfully.";
-            e.SuppressKeyPress = true; // prevent keystroke from being processed further
+            e.SuppressKeyPress = true;                     // prevent keystroke from being processed further
+            HotkeysChanged?.Invoke(_config); // raise event //important to notify main app of hotkey change
         }
-        private void txtActive_TextChanged(object sender, EventArgs e)
+        // get configuration method
+        public HotkeyConfig GetResultConfig()
         {
-
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox1_TextChanged_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
+            return _config;
         }
     }
 }

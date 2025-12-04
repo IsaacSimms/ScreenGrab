@@ -67,7 +67,7 @@ namespace ScreenGrab
         private void ShowMainWindow()
         {
             this.Show();                                   // show the form
-            this.WindowState = FormWindowState.Normal;   // set window state to normal
+            this.WindowState = FormWindowState.Normal;     // set window state to normal
             this.ShowInTaskbar = true;                     // show in taskbar
             this.Activate();                               // bring to foreground
         }
@@ -96,11 +96,27 @@ namespace ScreenGrab
             _hotkeyScreenshot = null;                      // set to null
             base.OnFormClosing(e);                         // call base method
         }
-        // when button is clicked open up settings form (SendToSettings button)
-        private void button1_Click(object sender, EventArgs e)
+        // when button is clicked open up settings form  //additional logic for registering hotkeys after change
+        private void SendToSettings_Click(object sender, EventArgs e)
         {
-            SettingsForm settingsForm = new SettingsForm(_hotkeyConfig);
+            var settingsForm = new SettingsForm(_hotkeyConfig);
+            settingsForm.HotkeysChanged += config =>
+            {
+                _hotkeyConfig = config;
+                _hotkeyScreenshot?.UpdateHotkeyConfig(_hotkeyConfig);
+            };
             settingsForm.Show();
+        }
+        // when button is clicked minimize to tray
+        private void MinimizeToTray_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            this.ShowInTaskbar = false;
+        }
+
+        private void SettingsForm_HotkeysChanged(HotkeyConfig obj)
+        {
+            throw new NotImplementedException();
         }
     }
 }
