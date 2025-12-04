@@ -33,8 +33,11 @@
             SystemTrayIcon = new NotifyIcon(components);
             SystemTrayMenu = new ContextMenuStrip(components);
             menuOpen = new ToolStripMenuItem();
+            settingsToolStripMenuItem = new ToolStripMenuItem();
             menuExit = new ToolStripMenuItem();
             SendToSettings = new Button();
+            button1 = new Button();
+            button2 = new Button();
             SystemTrayMenu.SuspendLayout();
             SuspendLayout();
             // 
@@ -46,35 +49,70 @@
             // SystemTrayMenu
             // 
             SystemTrayMenu.BackColor = SystemColors.Desktop;
-            SystemTrayMenu.Items.AddRange(new ToolStripItem[] { menuOpen, menuExit });
+            SystemTrayMenu.Items.AddRange(new ToolStripItem[] { menuOpen, settingsToolStripMenuItem, menuExit });
             SystemTrayMenu.Name = "SystemTrayMenu";
-            SystemTrayMenu.Size = new Size(138, 48);
+            SystemTrayMenu.Size = new Size(129, 70);
             // 
             // menuOpen
             // 
             menuOpen.ForeColor = Color.Snow;
             menuOpen.Image = Properties.Resources.S1;
             menuOpen.Name = "menuOpen";
-            menuOpen.Size = new Size(137, 22);
-            menuOpen.Text = "Open Menu";
+            menuOpen.Size = new Size(128, 22);
+            menuOpen.Text = "Actions";
+            // 
+            // settingsToolStripMenuItem
+            // 
+            settingsToolStripMenuItem.ForeColor = SystemColors.Window;
+            settingsToolStripMenuItem.Image = Properties.Resources.S1;
+            settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            settingsToolStripMenuItem.Size = new Size(128, 22);
+            settingsToolStripMenuItem.Text = "Settings";
+            settingsToolStripMenuItem.Click += SendToSettings_Click;
             // 
             // menuExit
             // 
             menuExit.ForeColor = Color.Snow;
             menuExit.Image = Properties.Resources.S1;
             menuExit.Name = "menuExit";
-            menuExit.Size = new Size(137, 22);
-            menuExit.Text = "Close App";
+            menuExit.Size = new Size(128, 22);
+            menuExit.Text = "Shutdown";
             // 
             // SendToSettings
             // 
-            SendToSettings.Location = new Point(78, 53);
+            SendToSettings.BackColor = SystemColors.Desktop;
+            SendToSettings.ForeColor = SystemColors.Window;
+            SendToSettings.Location = new Point(642, 58);
             SendToSettings.Name = "SendToSettings";
-            SendToSettings.Size = new Size(100, 54);
+            SendToSettings.Size = new Size(77, 40);
             SendToSettings.TabIndex = 1;
             SendToSettings.Text = "Settings";
-            SendToSettings.UseVisualStyleBackColor = true;
-            SendToSettings.Click += button1_Click;
+            SendToSettings.UseVisualStyleBackColor = false;
+            SendToSettings.Click += SendToSettings_Click;
+            // 
+            // button1
+            // 
+            button1.BackColor = SystemColors.Desktop;
+            button1.ForeColor = SystemColors.Window;
+            button1.Location = new Point(642, 12);
+            button1.Name = "button1";
+            button1.Size = new Size(77, 40);
+            button1.TabIndex = 2;
+            button1.Text = "Shutdown ScreenGrab";
+            button1.UseVisualStyleBackColor = false;
+            button1.Click += MenuExit_Click;
+            // 
+            // button2
+            // 
+            button2.BackColor = SystemColors.Desktop;
+            button2.ForeColor = SystemColors.Window;
+            button2.Location = new Point(559, 12);
+            button2.Name = "button2";
+            button2.Size = new Size(77, 40);
+            button2.TabIndex = 3;
+            button2.Text = "Minimize";
+            button2.UseVisualStyleBackColor = false;
+            button2.Click += MinimizeToTray_Click;
             // 
             // Driver
             // 
@@ -82,9 +120,12 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.InfoText;
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(1315, 847);
+            ClientSize = new Size(730, 210);
+            Controls.Add(button2);
+            Controls.Add(button1);
             Controls.Add(SendToSettings);
             DoubleBuffered = true;
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Driver";
             Text = "ScreenGrab";
@@ -99,5 +140,8 @@
         private ToolStripMenuItem menuOpen;
         private ToolStripMenuItem menuExit;
         private Button SendToSettings;
+        private ToolStripMenuItem settingsToolStripMenuItem;
+        private Button button1;
+        private Button button2;
     }
 }
