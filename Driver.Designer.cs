@@ -37,8 +37,10 @@
             menuExit = new ToolStripMenuItem();
             SendToSettings = new Button();
             button1 = new Button();
-            button2 = new Button();
+            activeWindowScreenshotButton = new Button();
+            pictureBox1 = new PictureBox();
             SystemTrayMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // SystemTrayIcon
@@ -81,8 +83,9 @@
             // SendToSettings
             // 
             SendToSettings.BackColor = SystemColors.Desktop;
+            SendToSettings.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             SendToSettings.ForeColor = SystemColors.Window;
-            SendToSettings.Location = new Point(642, 58);
+            SendToSettings.Location = new Point(579, 12);
             SendToSettings.Name = "SendToSettings";
             SendToSettings.Size = new Size(77, 40);
             SendToSettings.TabIndex = 1;
@@ -94,7 +97,7 @@
             // 
             button1.BackColor = SystemColors.Desktop;
             button1.ForeColor = SystemColors.Window;
-            button1.Location = new Point(642, 12);
+            button1.Location = new Point(662, 12);
             button1.Name = "button1";
             button1.Size = new Size(77, 40);
             button1.TabIndex = 2;
@@ -102,17 +105,26 @@
             button1.UseVisualStyleBackColor = false;
             button1.Click += MenuExit_Click;
             // 
-            // button2
+            // activeWindowScreenshotButton
             // 
-            button2.BackColor = SystemColors.Desktop;
-            button2.ForeColor = SystemColors.Window;
-            button2.Location = new Point(559, 12);
-            button2.Name = "button2";
-            button2.Size = new Size(77, 40);
-            button2.TabIndex = 3;
-            button2.Text = "Minimize";
-            button2.UseVisualStyleBackColor = false;
-            button2.Click += MinimizeToTray_Click;
+            activeWindowScreenshotButton.BackColor = SystemColors.Desktop;
+            activeWindowScreenshotButton.ForeColor = SystemColors.Window;
+            activeWindowScreenshotButton.Location = new Point(12, 99);
+            activeWindowScreenshotButton.Name = "activeWindowScreenshotButton";
+            activeWindowScreenshotButton.Size = new Size(77, 40);
+            activeWindowScreenshotButton.TabIndex = 4;
+            activeWindowScreenshotButton.Text = "Active Window";
+            activeWindowScreenshotButton.UseVisualStyleBackColor = false;
+            activeWindowScreenshotButton.Click += activeWindowScreenshotButton_Click;
+            // 
+            // pictureBox1
+            // 
+            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
+            pictureBox1.Location = new Point(12, 8);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(221, 60);
+            pictureBox1.TabIndex = 5;
+            pictureBox1.TabStop = false;
             // 
             // Driver
             // 
@@ -120,16 +132,18 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.InfoText;
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(730, 210);
-            Controls.Add(button2);
+            ClientSize = new Size(751, 353);
+            Controls.Add(pictureBox1);
+            Controls.Add(activeWindowScreenshotButton);
             Controls.Add(button1);
             Controls.Add(SendToSettings);
             DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Driver";
-            Text = "ScreenGrab";
+            Text = " ";
             SystemTrayMenu.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
         }
 
@@ -142,6 +156,7 @@
         private Button SendToSettings;
         private ToolStripMenuItem settingsToolStripMenuItem;
         private Button button1;
-        private Button button2;
+        private Button activeWindowScreenshotButton;
+        private PictureBox pictureBox1;
     }
 }

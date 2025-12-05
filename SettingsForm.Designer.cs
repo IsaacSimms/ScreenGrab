@@ -270,7 +270,7 @@
             Controls.Add(txtActive);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "SettingsForm";
-            Text = "Settings";
+            Text = "Screengrab";
             ResumeLayout(false);
             PerformLayout();
         }
