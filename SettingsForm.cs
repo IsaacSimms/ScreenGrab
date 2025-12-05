@@ -73,7 +73,7 @@ namespace ScreenGrab
         private void btnChangeOpenPaintHotkeyConfig_Click(object sender, EventArgs e)
         {
             _currentHotkeyEditTarget = HotkeyBeingConfigured.Paint;
-            lblStatus.Text = "Press new hotkey for open PNG in paint...";
+            lblStatus.Text = "Press new hotkey for open MS Paint...";
         }
 
         // keydown event handler to capture new hotkey

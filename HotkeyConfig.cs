@@ -44,25 +44,25 @@ namespace ScreenGrab
         public HotkeyDefinition ActiveWindowCapture { get; set; } = new HotkeyDefinition
         {
             Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
-            Key       = Keys.Z
+            Key       = Keys.A
         };
         // Region capture
         public HotkeyDefinition RegionCapture { get; set; } = new HotkeyDefinition
         {
             Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
-            Key       = Keys.X
+            Key       = Keys.R
         };
         // active window delayed capture
         public HotkeyDefinition ActiveWindowDelayedCapture { get; set; } = new HotkeyDefinition
         {
             Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Alt,
-            Key       = Keys.Z
+            Key       = Keys.A
         };
         // region delayed capture
         public HotkeyDefinition RegionDelayedCapture { get; set; } = new HotkeyDefinition
         {
             Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Alt,
-            Key       = Keys.X
+            Key       = Keys.R
         };
         // open clipboard png in MS Paint
         public HotkeyDefinition OpenPaint { get; set; } = new HotkeyDefinition
