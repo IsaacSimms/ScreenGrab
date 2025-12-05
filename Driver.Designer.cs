@@ -39,6 +39,10 @@
             button1 = new Button();
             activeWindowScreenshotButton = new Button();
             pictureBox1 = new PictureBox();
+            regionScreenshotButton = new Button();
+            delayedActiveWindowScreenshotButton = new Button();
+            delayedRegionScreenshotButton = new Button();
+            button2 = new Button();
             SystemTrayMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -85,7 +89,7 @@
             SendToSettings.BackColor = SystemColors.Desktop;
             SendToSettings.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             SendToSettings.ForeColor = SystemColors.Window;
-            SendToSettings.Location = new Point(579, 12);
+            SendToSettings.Location = new Point(365, 12);
             SendToSettings.Name = "SendToSettings";
             SendToSettings.Size = new Size(77, 40);
             SendToSettings.TabIndex = 1;
@@ -97,7 +101,7 @@
             // 
             button1.BackColor = SystemColors.Desktop;
             button1.ForeColor = SystemColors.Window;
-            button1.Location = new Point(662, 12);
+            button1.Location = new Point(448, 12);
             button1.Name = "button1";
             button1.Size = new Size(77, 40);
             button1.TabIndex = 2;
@@ -126,13 +130,65 @@
             pictureBox1.TabIndex = 5;
             pictureBox1.TabStop = false;
             // 
+            // regionScreenshotButton
+            // 
+            regionScreenshotButton.BackColor = SystemColors.Desktop;
+            regionScreenshotButton.ForeColor = SystemColors.Window;
+            regionScreenshotButton.Location = new Point(95, 99);
+            regionScreenshotButton.Name = "regionScreenshotButton";
+            regionScreenshotButton.Size = new Size(77, 40);
+            regionScreenshotButton.TabIndex = 6;
+            regionScreenshotButton.Text = "Region Capture";
+            regionScreenshotButton.UseVisualStyleBackColor = false;
+            regionScreenshotButton.Click += regionScreenshotButton_Click;
+            // 
+            // delayedActiveWindowScreenshotButton
+            // 
+            delayedActiveWindowScreenshotButton.BackColor = SystemColors.Desktop;
+            delayedActiveWindowScreenshotButton.ForeColor = SystemColors.Window;
+            delayedActiveWindowScreenshotButton.Location = new Point(12, 145);
+            delayedActiveWindowScreenshotButton.Name = "delayedActiveWindowScreenshotButton";
+            delayedActiveWindowScreenshotButton.Size = new Size(77, 60);
+            delayedActiveWindowScreenshotButton.TabIndex = 7;
+            delayedActiveWindowScreenshotButton.Text = "Delayed Active Window";
+            delayedActiveWindowScreenshotButton.UseVisualStyleBackColor = false;
+            delayedActiveWindowScreenshotButton.Click += delayedActiveWindowScreenshotButton_Click;
+            // 
+            // delayedRegionScreenshotButton
+            // 
+            delayedRegionScreenshotButton.BackColor = SystemColors.Desktop;
+            delayedRegionScreenshotButton.ForeColor = SystemColors.Window;
+            delayedRegionScreenshotButton.Location = new Point(95, 145);
+            delayedRegionScreenshotButton.Name = "delayedRegionScreenshotButton";
+            delayedRegionScreenshotButton.Size = new Size(77, 60);
+            delayedRegionScreenshotButton.TabIndex = 8;
+            delayedRegionScreenshotButton.Text = "Delayed Region Capture";
+            delayedRegionScreenshotButton.UseVisualStyleBackColor = false;
+            delayedRegionScreenshotButton.Click += delayedRegionScreenshotButton_Click;
+            // 
+            // button2
+            // 
+            button2.BackColor = SystemColors.Desktop;
+            button2.ForeColor = SystemColors.Window;
+            button2.Location = new Point(12, 211);
+            button2.Name = "button2";
+            button2.Size = new Size(77, 40);
+            button2.TabIndex = 9;
+            button2.Text = "Open MS Paint";
+            button2.UseVisualStyleBackColor = false;
+            button2.Click += openClipboardImageInPaintButton_Click;
+            // 
             // Driver
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.InfoText;
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(751, 353);
+            ClientSize = new Size(537, 269);
+            Controls.Add(button2);
+            Controls.Add(delayedRegionScreenshotButton);
+            Controls.Add(delayedActiveWindowScreenshotButton);
+            Controls.Add(regionScreenshotButton);
             Controls.Add(pictureBox1);
             Controls.Add(activeWindowScreenshotButton);
             Controls.Add(button1);
@@ -158,5 +214,9 @@
         private Button button1;
         private Button activeWindowScreenshotButton;
         private PictureBox pictureBox1;
+        private Button regionScreenshotButton;
+        private Button delayedActiveWindowScreenshotButton;
+        private Button delayedRegionScreenshotButton;
+        private Button button2;
     }
 }
