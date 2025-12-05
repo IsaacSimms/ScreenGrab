@@ -157,7 +157,7 @@ namespace ScreenGrab
         }
 
         // == Capture active window and and save to clipboard and onedrive == //
-        private void CaptureActiveWindow()
+        public void CaptureActiveWindow()
         {
             IntPtr hWnd = GetForegroundWindow();                // get handle of active window
             if (hWnd == IntPtr.Zero)                            // validate handle
@@ -191,7 +191,7 @@ namespace ScreenGrab
             
         }
         // == Capture selected region and save to clipboard and onedrive == //
-        private void CaptureRegion()
+        public void CaptureRegion()
         {
             using (var selector = new RegionSelectForm())
             {
@@ -289,7 +289,7 @@ namespace ScreenGrab
                         _selectedArea.Y - this.Bounds.Y,
                         _selectedArea.Width,
                         _selectedArea.Height);
-                    using (var PenSelection = new Pen(Color.Black, 4))             // pen for selection rectangle
+                    using (var PenSelection = new Pen(Color.Firebrick, 3))             // pen for selection rectangle
                     { 
                         e.Graphics.DrawRectangle(PenSelection, clientRectangle);   // draw selection rectangle
                     }
@@ -308,7 +308,7 @@ namespace ScreenGrab
                 this.StartPosition = FormStartPosition.Manual;                 // manual position
                 this.Bounds = vs;                                              // cover entire virtual screen
                 this.BackColor = Color.Gray;                                   // white background
-                this.Opacity = 0.1;                                            // semi-transparent
+                this.Opacity = .15;                                            // semi-transparent
                 this.TopMost = true;                                           // always on top
                 this.DoubleBuffered = true;                                    // reduce flicker
                 Cursor = Cursors.Cross;
@@ -355,13 +355,13 @@ namespace ScreenGrab
             }
         }
         // == Capture active window after delay == //
-        private async void CaptureActiveWindowDelayed()
+        public async void CaptureActiveWindowDelayed()
         {
             await Task.Delay(5000); // 5 second delay
             CaptureActiveWindow();
         }
         // == Capture selected region after delay == //
-        private async void CaptureRegionDelayed()
+        public async void CaptureRegionDelayed()
         {
             await Task.Delay(3000); // 5 second delay
             CaptureRegion();

@@ -13,6 +13,8 @@ namespace ScreenGrab
 
         private HotkeyScreenshot? _hotkeyScreenshot;             // wire up HotkeyScreenshot class
         private static HotkeyConfig _hotkeyConfig = new HotkeyConfig(); // hotkey configuration instance
+
+        // constructor
         public Driver()
         {
             InitializeComponent();
@@ -107,11 +109,35 @@ namespace ScreenGrab
             };
             settingsForm.Show();
         }
-        // when button is clicked minimize to tray
-        private void MinimizeToTray_Click(object sender, EventArgs e)
+
+        // when button is clicked, take a screenshot of active window
+        private void activeWindowScreenshotButton_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            this.ShowInTaskbar = false;
+            _hotkeyScreenshot?.CaptureActiveWindow();
+        }
+
+        // when button is clicked, take a screenshot of region
+        private void regionScreenshotButton_Click(object sender, EventArgs e)
+        {
+            _hotkeyScreenshot?.CaptureRegion();
+        }
+
+        // when button is clicked, take a delayed screenshot of active window
+        private void delayedActiveWindowScreenshotButton_Click(object sender, EventArgs e)
+        {
+            _hotkeyScreenshot?.CaptureActiveWindowDelayed();
+        }
+
+        // when button is clicked, take a delayed screenshot of region
+        private void delayedRegionScreenshotButton_Click(object sender, EventArgs e)
+        {
+            _hotkeyScreenshot?.CaptureRegionDelayed();
+        }
+
+        // when button is clicked, open clipboard image in MS Paint
+        private void openClipboardImageInPaintButton_Click(object sender, EventArgs e)
+        {
+            OpenClipboardImageInPaint.OpenImageInPaint();
         }
 
         private void SettingsForm_HotkeysChanged(HotkeyConfig obj)
