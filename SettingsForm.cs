@@ -77,7 +77,7 @@ namespace ScreenGrab
         }
 
         // keydown event handler to capture new hotkey
-        private void SettingsForm_KeyDown(object sender, KeyEventArgs e)
+        private void SettingsForm_KeyDown(object? sender, KeyEventArgs e)
         {
             // handle if HotkeyBeingConfigured is none
             if (_currentHotkeyEditTarget == HotkeyBeingConfigured.None)

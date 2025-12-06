@@ -13,21 +13,9 @@ namespace ScreenGrab
 
         private HotkeyScreenshot? _hotkeyScreenshot;             // wire up HotkeyScreenshot class
         private static HotkeyConfig _hotkeyConfig = new HotkeyConfig(); // hotkey configuration instance
-
-        // constructor
         public Driver()
         {
             InitializeComponent();
-        }
-        // ovveride OnHandleCreated to account for hotkey registration after handle is created
-        protected override void OnHandleCreated(EventArgs e)
-        {
-            base.OnHandleCreated(e);
-            // error handling
-            if (_hotkeyScreenshot != null)
-            {
-                _hotkeyScreenshot.AttachToHandle(this.Handle);
-            }
         }
         // override OnLoad to hide the form on startup - initialize
         protected override void OnLoad(EventArgs e)
@@ -69,7 +57,7 @@ namespace ScreenGrab
         private void ShowMainWindow()
         {
             this.Show();                                   // show the form
-            this.WindowState = FormWindowState.Normal;     // set window state to normal
+            this.WindowState = FormWindowState.Normal;   // set window state to normal
             this.ShowInTaskbar = true;                     // show in taskbar
             this.Activate();                               // bring to foreground
         }
@@ -98,51 +86,11 @@ namespace ScreenGrab
             _hotkeyScreenshot = null;                      // set to null
             base.OnFormClosing(e);                         // call base method
         }
-        // when button is clicked open up settings form  //additional logic for registering hotkeys after change
-        private void SendToSettings_Click(object sender, EventArgs e)
+        // when button is clicked open up settings form (SendToSettings button)
+        private void button1_Click(object sender, EventArgs e)
         {
-            var settingsForm = new SettingsForm(_hotkeyConfig);
-            settingsForm.HotkeysChanged += config =>
-            {
-                _hotkeyConfig = config;
-                _hotkeyScreenshot?.UpdateHotkeyConfig(_hotkeyConfig);
-            };
+            SettingsForm settingsForm = new SettingsForm(_hotkeyConfig);
             settingsForm.Show();
-        }
-
-        // when button is clicked, take a screenshot of active window
-        private void activeWindowScreenshotButton_Click(object sender, EventArgs e)
-        {
-            _hotkeyScreenshot?.CaptureActiveWindow();
-        }
-
-        // when button is clicked, take a screenshot of region
-        private void regionScreenshotButton_Click(object sender, EventArgs e)
-        {
-            _hotkeyScreenshot?.CaptureRegion();
-        }
-
-        // when button is clicked, take a delayed screenshot of active window
-        private void delayedActiveWindowScreenshotButton_Click(object sender, EventArgs e)
-        {
-            _hotkeyScreenshot?.CaptureActiveWindowDelayed();
-        }
-
-        // when button is clicked, take a delayed screenshot of region
-        private void delayedRegionScreenshotButton_Click(object sender, EventArgs e)
-        {
-            _hotkeyScreenshot?.CaptureRegionDelayed();
-        }
-
-        // when button is clicked, open clipboard image in MS Paint
-        private void openClipboardImageInPaintButton_Click(object sender, EventArgs e)
-        {
-            OpenClipboardImageInPaint.OpenImageInPaint();
-        }
-
-        private void SettingsForm_HotkeysChanged(HotkeyConfig obj)
-        {
-            throw new NotImplementedException();
         }
     }
 }
