@@ -46,6 +46,8 @@
             btnChangeDelayedRegionCaptureConfig = new Button();
             btnOpenPNGInPaintHotkeyConfig = new Button();
             lblStatus = new Label();
+            pictureBox1 = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // txtActive
@@ -245,12 +247,22 @@
             lblStatus.Size = new Size(2, 17);
             lblStatus.TabIndex = 16;
             // 
+            // pictureBox1
+            // 
+            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
+            pictureBox1.Location = new Point(12, 12);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(227, 76);
+            pictureBox1.TabIndex = 17;
+            pictureBox1.TabStop = false;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
-            ClientSize = new Size(1226, 893);
+            ClientSize = new Size(852, 368);
+            Controls.Add(pictureBox1);
             Controls.Add(lblStatus);
             Controls.Add(btnOpenPNGInPaintHotkeyConfig);
             Controls.Add(btnChangeDelayedRegionCaptureConfig);
@@ -268,9 +280,11 @@
             Controls.Add(txtActiveDelayed);
             Controls.Add(txtRegion);
             Controls.Add(txtActive);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "SettingsForm";
             Text = "Screengrab";
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -294,5 +308,6 @@
         private Button btnChangeDelayedRegionCaptureConfig;
         private Button btnOpenPNGInPaintHotkeyConfig;
         private Label lblStatus;
+        private PictureBox pictureBox1;
     }
 }
