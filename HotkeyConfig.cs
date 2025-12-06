@@ -5,10 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ScreenGrab
 {
-    // hotkey modifier flags
+    // == hotkey modifier flags == //
     [Flags]
     public enum HotkeyModifiers
     {
@@ -18,13 +21,13 @@ namespace ScreenGrab
         Shift   = 0x0004,
         Win     = 0x0008
     }
-    // define hotkey structure and return hotkeys as string
+    // == define hotkey structure and return hotkeys as string == //
     public class HotkeyDefinition
     {
         public HotkeyModifiers Modifiers { get; set; }
         public Keys            Key       { get; set; }
 
-        // override ToString to return hotkey as string
+        // == override ToString to return hotkey as string == //
         public override string ToString()
         { 
             string text = "";
@@ -36,7 +39,7 @@ namespace ScreenGrab
             return text;
         }
     }
-    // hotkey configuration class
+    // == hotkey configuration class == //
     public class HotkeyConfig
     {
         /// add modifiers and one key to hotkey definition ///
@@ -70,5 +73,15 @@ namespace ScreenGrab
             Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
             Key       = Keys.P
         };
+
+        // == HELPER FUNCTIONS TO ALLOW FOR SAVING CONFIGS TO JSON FILE == //
+        public static HotkeyConfig Load(string path)
+        {
+            //if there is not file outlined in the configuration, return to hard corded default
+            if (!File.Exists(path))
+            {
+                return new HotkeyConfig();
+            }
+        }
     }
 }

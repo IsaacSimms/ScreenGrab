@@ -26,27 +26,27 @@ namespace ScreenGrab
             _config = config;        // assign passed config to variable within class
 
             // set text boxes to current hotkey settings
-            txtActive.Text        = _config.ActiveWindowCapture.ToString();
-            txtRegion.Text        = _config.RegionCapture.ToString();
+            txtActive.Text = _config.ActiveWindowCapture.ToString();
+            txtRegion.Text = _config.RegionCapture.ToString();
             txtActiveDelayed.Text = _config.ActiveWindowDelayedCapture.ToString();
             txtRegionDelayed.Text = _config.RegionDelayedCapture.ToString();
-            txtPaint.Text         = _config.OpenPaint.ToString();
+            txtPaint.Text = _config.OpenPaint.ToString();
 
             //make text boxes read-only to prevent manual editing
-            txtActive.ReadOnly                           = true;
-            txtRegion.ReadOnly                           = true;
-            txtActiveDelayed.ReadOnly                    = true;
-            txtRegionDelayed.ReadOnly                    = true;
-            txtPaint.ReadOnly                            = true;
-            txtHotkeySettingsGUIHeader.ReadOnly          = true;
-            txtCaptureActiveWindowConfigHeader.ReadOnly  = true;
-            txtCaptureRegionConfigHeader.ReadOnly        = true;
-            txtDelayedActiveWindowConfigHeader.ReadOnly  = true;
+            txtActive.ReadOnly = true;
+            txtRegion.ReadOnly = true;
+            txtActiveDelayed.ReadOnly = true;
+            txtRegionDelayed.ReadOnly = true;
+            txtPaint.ReadOnly = true;
+            txtHotkeySettingsGUIHeader.ReadOnly = true;
+            txtCaptureActiveWindowConfigHeader.ReadOnly = true;
+            txtCaptureRegionConfigHeader.ReadOnly = true;
+            txtDelayedActiveWindowConfigHeader.ReadOnly = true;
             txtDelayedCaptureRegionConfigHeader.ReadOnly = true;
-            txtOpenPNGInPaintConfigHeader.ReadOnly       = true;
+            txtOpenPNGInPaintConfigHeader.ReadOnly = true;
             // receive keydown events for text boxes
             this.KeyPreview = true;
-            this.KeyUp    += new KeyEventHandler(SettingsForm_KeyDown);               //
+            this.KeyUp += new KeyEventHandler(SettingsForm_KeyDown);               //
         }
 
         // button click handlers to change hotkey being configured // print to label the staus
