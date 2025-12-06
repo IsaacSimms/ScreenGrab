@@ -133,5 +133,3 @@ namespace ScreenGrab
         }
     }
 }
-
-//test
