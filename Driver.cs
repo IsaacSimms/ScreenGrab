@@ -11,7 +11,7 @@ namespace ScreenGrab
     public partial class Driver : Form
     {
 
-        private HotkeyScreenshot? _hotkeyScreenshot;             // wire up HotkeyScreenshot class
+        private HotkeyScreenshot? _hotkeyScreenshot;                    // wire up HotkeyScreenshot class
         private static HotkeyConfig _hotkeyConfig = new HotkeyConfig(); // hotkey configuration instance
 
         // constructor
@@ -33,22 +33,22 @@ namespace ScreenGrab
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            this.Hide();                                                               // hide the form on startup
-            this.ShowInTaskbar = false;                               // remove from taskbar
+            this.Hide();                                                                // hide the form on startup
+            this.ShowInTaskbar = false;                                                 // remove from taskbar
             _hotkeyScreenshot = new HotkeyScreenshot(this, _hotkeyConfig);              // initialize HotkeyScreenshot class
-            _hotkeyScreenshot.OnScreenshotTaken += HotkeyScreenshot_OnScreenshotTaken; // wire up event handler
+            _hotkeyScreenshot.OnScreenshotTaken += HotkeyScreenshot_OnScreenshotTaken;  // wire up event handler
 
             // set up system tray icon
-            SystemTrayIcon.Visible = true;                                     // make icon visible
-            SystemTrayIcon.BalloonTipTitle = "ScreenGrab";                             // set balloon tip title
+            SystemTrayIcon.Visible = true;                                         // make icon visible
+            SystemTrayIcon.BalloonTipTitle = "ScreenGrab";                         // set balloon tip title
             SystemTrayIcon.DoubleClick += SystemTrayIcon_DoubleClick;              // wire up double click event
-            BuildTrayMenu();                                                           // build tray menu
+            BuildTrayMenu();                                                       // build tray menu
         }
         private void BuildTrayMenu()
         {
             menuOpen.Click += MenuOpen_Click;
             menuExit.Click += MenuExit_Click;
-            SystemTrayIcon.ContextMenuStrip = SystemTrayMenu;                          // assign context menu to tray icon
+            SystemTrayIcon.ContextMenuStrip = SystemTrayMenu;                      // assign context menu to tray icon
         }
         private void SystemTrayIcon_DoubleClick(object? sender, EventArgs e)
         {
@@ -62,7 +62,7 @@ namespace ScreenGrab
         {
             //clean up and exit application
             _hotkeyScreenshot?.Dispose();                   // clean up HotkeyScreenshot class
-            _hotkeyScreenshot = null;                  // set to null
+            _hotkeyScreenshot = null;                       // set to null
             SystemTrayIcon.Visible = false;                 // hide tray icon
             Application.Exit();
         }
@@ -138,11 +138,6 @@ namespace ScreenGrab
         private void openClipboardImageInPaintButton_Click(object sender, EventArgs e)
         {
             OpenClipboardImageInPaint.OpenImageInPaint();
-        }
-
-        private void SettingsForm_HotkeysChanged(HotkeyConfig obj)
-        {
-            throw new NotImplementedException();
         }
     }
 }

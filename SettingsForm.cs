@@ -33,17 +33,17 @@ namespace ScreenGrab
             txtPaint.Text = _config.OpenPaint.ToString();
 
             //make text boxes read-only to prevent manual editing
-            txtActive.ReadOnly = true;
-            txtRegion.ReadOnly = true;
-            txtActiveDelayed.ReadOnly = true;
-            txtRegionDelayed.ReadOnly = true;
-            txtPaint.ReadOnly = true;
-            txtHotkeySettingsGUIHeader.ReadOnly = true;
-            txtCaptureActiveWindowConfigHeader.ReadOnly = true;
-            txtCaptureRegionConfigHeader.ReadOnly = true;
-            txtDelayedActiveWindowConfigHeader.ReadOnly = true;
+            txtActive.ReadOnly                           = true;
+            txtRegion.ReadOnly                           = true;
+            txtActiveDelayed.ReadOnly                    = true;
+            txtRegionDelayed.ReadOnly                    = true;
+            txtPaint.ReadOnly                            = true;
+            txtHotkeySettingsGUIHeader.ReadOnly          = true;
+            txtCaptureActiveWindowConfigHeader.ReadOnly  = true;
+            txtCaptureRegionConfigHeader.ReadOnly        = true;
+            txtDelayedActiveWindowConfigHeader.ReadOnly  = true;
             txtDelayedCaptureRegionConfigHeader.ReadOnly = true;
-            txtOpenPNGInPaintConfigHeader.ReadOnly = true;
+            txtOpenPNGInPaintConfigHeader.ReadOnly       = true;
             // receive keydown events for text boxes
             this.KeyPreview = true;
             this.KeyUp += new KeyEventHandler(SettingsForm_KeyDown);               //
@@ -124,7 +124,7 @@ namespace ScreenGrab
             _currentHotkeyEditTarget = HotkeyBeingConfigured.None;
             lblStatus.Text = "Hotkey updated successfully.";
             e.SuppressKeyPress = true;                     // prevent keystroke from being processed further
-            HotkeysChanged?.Invoke(_config); // raise event //important to notify main app of hotkey change
+            HotkeysChanged?.Invoke(_config);               // raise event //important to notify main app of hotkey change
         }
         // get configuration method
         public HotkeyConfig GetResultConfig()
