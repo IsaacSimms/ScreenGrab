@@ -20,6 +20,7 @@ namespace ScreenGrab
         }
         private HotkeyBeingConfigured _currentHotkeyEditTarget = HotkeyBeingConfigured.None; // initialize to none
         public event Action<HotkeyConfig>? HotkeysChanged;                                   // event to notify main app of hotkey changes
+        public event Action<HotkeyConfig>? SaveFileLocationChanged;                          // event to notify main app of save file location changes
         public SettingsForm(HotkeyConfig config)
         {
             InitializeComponent();   // initialize form components
@@ -31,6 +32,7 @@ namespace ScreenGrab
             txtActiveDelayed.Text = _config.ActiveWindowDelayedCapture.ToString();
             txtRegionDelayed.Text = _config.RegionDelayedCapture.ToString();
             txtPaint.Text = _config.OpenPaint.ToString();
+            txtChangeScreenCaptureFileLocation.Text = _config.ScreenshotSaveLocation;
 
             //make text boxes read-only to prevent manual editing
             txtActive.ReadOnly                           = true;
@@ -44,36 +46,57 @@ namespace ScreenGrab
             txtDelayedActiveWindowConfigHeader.ReadOnly  = true;
             txtDelayedCaptureRegionConfigHeader.ReadOnly = true;
             txtOpenPNGInPaintConfigHeader.ReadOnly       = true;
+            txtSaveFileLocationHeader.ReadOnly           = true;
             // receive keydown events for text boxes
             this.KeyPreview = true;
             this.KeyUp += new KeyEventHandler(SettingsForm_KeyDown);               //
         }
 
         // button click handlers to change hotkey being configured // print to label the staus
-        private void btnChangeActiveWindowHotkeyConfig_Click(object sender, EventArgs e)
+        private void btnChangeActiveWindowHotkeyConfig_Click(object sender, EventArgs e)        // active window capture
         {
             _currentHotkeyEditTarget = HotkeyBeingConfigured.Active;
             lblStatus.Text = "Press new hotkey for active window capture...";
         }
-        private void btnChangeRegionCaptureHotkeyConfig_Click(object sender, EventArgs e)
+        private void btnChangeRegionCaptureHotkeyConfig_Click(object sender, EventArgs e)       // region capture
         {
             _currentHotkeyEditTarget = HotkeyBeingConfigured.Region;
             lblStatus.Text = "Press new hotkey fore region capture...";
         }
-        private void btnChangeActiveWindowDelayedHotkeyConfig_Click(object sender, EventArgs e)
+        private void btnChangeActiveWindowDelayedHotkeyConfig_Click(object sender, EventArgs e) // delayed active window capture
         {
             _currentHotkeyEditTarget = HotkeyBeingConfigured.ActiveDelayed;
             lblStatus.Text = "Press new hotkey for delayed active window capture...";
         }
-        private void btnChangeRegionDelayedHotkeyConfig_Click(object sender, EventArgs e)
+        private void btnChangeRegionDelayedHotkeyConfig_Click(object sender, EventArgs e)       // delayed region capture
         {
             _currentHotkeyEditTarget = HotkeyBeingConfigured.RegionDelayed;
             lblStatus.Text = "Press new hotkey for delayed region capture...";
         }
-        private void btnChangeOpenPaintHotkeyConfig_Click(object sender, EventArgs e)
+        private void btnChangeOpenPaintHotkeyConfig_Click(object sender, EventArgs e)          // open in paint hotkey
         {
             _currentHotkeyEditTarget = HotkeyBeingConfigured.Paint;
             lblStatus.Text = "Press new hotkey for open MS Paint...";
+        }
+       private void btnChangeScreenCaptureFileLocation_Click(object sender, EventArgs e)    // change save file location button
+        {
+            using (var folderDialog = new FolderBrowserDialog())
+            {
+                folderDialog.Description = "Select folder to save screenshots:";
+                folderDialog.SelectedPath = _config.ScreenshotSaveLocation; // set initial path to current config
+                folderDialog.ShowNewFolderButton = true;
+                if (folderDialog.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(folderDialog.SelectedPath))
+                {
+                    _config.ScreenshotSaveLocation = folderDialog.SelectedPath; // update config with new path
+                    txtChangeScreenCaptureFileLocation.Text = folderDialog.SelectedPath; // update text box
+                    lblStatus.Text = "Screenshot save location updated successfully.";
+                    SaveFileLocationChanged?.Invoke(_config); // raise event to notify main app of save location change
+                }
+                else 
+                {
+                    lblStatus.Text = "Screenshot save location change canceled.";
+                }
+            }
         }
 
         // keydown event handler to capture new hotkey

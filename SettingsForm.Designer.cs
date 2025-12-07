@@ -47,6 +47,9 @@
             btnOpenPNGInPaintHotkeyConfig = new Button();
             lblStatus = new Label();
             pictureBox1 = new PictureBox();
+            txtSaveFileLocationHeader = new TextBox();
+            txtChangeScreenCaptureFileLocation = new TextBox();
+            btnChangeScreenCaptureFileLocation = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -57,7 +60,7 @@
             txtActive.ForeColor = SystemColors.Window;
             txtActive.Location = new Point(176, 130);
             txtActive.Name = "txtActive";
-            txtActive.Size = new Size(100, 23);
+            txtActive.Size = new Size(122, 23);
             txtActive.TabIndex = 0;
             txtActive.TextAlign = HorizontalAlignment.Center;
             // 
@@ -68,7 +71,7 @@
             txtRegion.ForeColor = SystemColors.Window;
             txtRegion.Location = new Point(176, 159);
             txtRegion.Name = "txtRegion";
-            txtRegion.Size = new Size(100, 23);
+            txtRegion.Size = new Size(122, 23);
             txtRegion.TabIndex = 1;
             txtRegion.TextAlign = HorizontalAlignment.Center;
             // 
@@ -79,7 +82,7 @@
             txtActiveDelayed.ForeColor = SystemColors.Window;
             txtActiveDelayed.Location = new Point(176, 188);
             txtActiveDelayed.Name = "txtActiveDelayed";
-            txtActiveDelayed.Size = new Size(100, 23);
+            txtActiveDelayed.Size = new Size(122, 23);
             txtActiveDelayed.TabIndex = 2;
             txtActiveDelayed.TextAlign = HorizontalAlignment.Center;
             // 
@@ -90,7 +93,7 @@
             txtRegionDelayed.ForeColor = SystemColors.Window;
             txtRegionDelayed.Location = new Point(176, 217);
             txtRegionDelayed.Name = "txtRegionDelayed";
-            txtRegionDelayed.Size = new Size(100, 23);
+            txtRegionDelayed.Size = new Size(122, 23);
             txtRegionDelayed.TabIndex = 3;
             txtRegionDelayed.TextAlign = HorizontalAlignment.Center;
             // 
@@ -101,7 +104,7 @@
             txtPaint.ForeColor = SystemColors.Window;
             txtPaint.Location = new Point(176, 246);
             txtPaint.Name = "txtPaint";
-            txtPaint.Size = new Size(100, 23);
+            txtPaint.Size = new Size(122, 23);
             txtPaint.TabIndex = 4;
             txtPaint.TextAlign = HorizontalAlignment.Center;
             // 
@@ -181,7 +184,7 @@
             // 
             btnChangeActiveWindowHotkeyConfig.BackColor = SystemColors.Desktop;
             btnChangeActiveWindowHotkeyConfig.ForeColor = SystemColors.Window;
-            btnChangeActiveWindowHotkeyConfig.Location = new Point(282, 130);
+            btnChangeActiveWindowHotkeyConfig.Location = new Point(304, 130);
             btnChangeActiveWindowHotkeyConfig.Name = "btnChangeActiveWindowHotkeyConfig";
             btnChangeActiveWindowHotkeyConfig.Size = new Size(75, 23);
             btnChangeActiveWindowHotkeyConfig.TabIndex = 11;
@@ -193,7 +196,7 @@
             // 
             ChangeRegionCaptureHotkeyConfig.BackColor = SystemColors.Desktop;
             ChangeRegionCaptureHotkeyConfig.ForeColor = SystemColors.Window;
-            ChangeRegionCaptureHotkeyConfig.Location = new Point(282, 159);
+            ChangeRegionCaptureHotkeyConfig.Location = new Point(304, 159);
             ChangeRegionCaptureHotkeyConfig.Name = "ChangeRegionCaptureHotkeyConfig";
             ChangeRegionCaptureHotkeyConfig.Size = new Size(75, 23);
             ChangeRegionCaptureHotkeyConfig.TabIndex = 12;
@@ -205,7 +208,7 @@
             // 
             btnChangeDelayedActiveWindowHotkeyConfig.BackColor = SystemColors.Desktop;
             btnChangeDelayedActiveWindowHotkeyConfig.ForeColor = SystemColors.Window;
-            btnChangeDelayedActiveWindowHotkeyConfig.Location = new Point(282, 188);
+            btnChangeDelayedActiveWindowHotkeyConfig.Location = new Point(304, 188);
             btnChangeDelayedActiveWindowHotkeyConfig.Name = "btnChangeDelayedActiveWindowHotkeyConfig";
             btnChangeDelayedActiveWindowHotkeyConfig.Size = new Size(75, 23);
             btnChangeDelayedActiveWindowHotkeyConfig.TabIndex = 13;
@@ -217,7 +220,7 @@
             // 
             btnChangeDelayedRegionCaptureConfig.BackColor = SystemColors.Desktop;
             btnChangeDelayedRegionCaptureConfig.ForeColor = SystemColors.Window;
-            btnChangeDelayedRegionCaptureConfig.Location = new Point(282, 217);
+            btnChangeDelayedRegionCaptureConfig.Location = new Point(304, 217);
             btnChangeDelayedRegionCaptureConfig.Name = "btnChangeDelayedRegionCaptureConfig";
             btnChangeDelayedRegionCaptureConfig.Size = new Size(75, 23);
             btnChangeDelayedRegionCaptureConfig.TabIndex = 14;
@@ -229,7 +232,7 @@
             // 
             btnOpenPNGInPaintHotkeyConfig.BackColor = SystemColors.Desktop;
             btnOpenPNGInPaintHotkeyConfig.ForeColor = SystemColors.Window;
-            btnOpenPNGInPaintHotkeyConfig.Location = new Point(282, 246);
+            btnOpenPNGInPaintHotkeyConfig.Location = new Point(304, 246);
             btnOpenPNGInPaintHotkeyConfig.Name = "btnOpenPNGInPaintHotkeyConfig";
             btnOpenPNGInPaintHotkeyConfig.Size = new Size(75, 23);
             btnOpenPNGInPaintHotkeyConfig.TabIndex = 15;
@@ -242,7 +245,7 @@
             lblStatus.AutoSize = true;
             lblStatus.BorderStyle = BorderStyle.FixedSingle;
             lblStatus.ForeColor = SystemColors.Window;
-            lblStatus.Location = new Point(17, 272);
+            lblStatus.Location = new Point(17, 322);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(2, 17);
             lblStatus.TabIndex = 16;
@@ -256,12 +259,49 @@
             pictureBox1.TabIndex = 17;
             pictureBox1.TabStop = false;
             // 
+            // txtSaveFileLocationHeader
+            // 
+            txtSaveFileLocationHeader.BackColor = SystemColors.Desktop;
+            txtSaveFileLocationHeader.BorderStyle = BorderStyle.FixedSingle;
+            txtSaveFileLocationHeader.ForeColor = SystemColors.Window;
+            txtSaveFileLocationHeader.Location = new Point(385, 130);
+            txtSaveFileLocationHeader.Name = "txtSaveFileLocationHeader";
+            txtSaveFileLocationHeader.Size = new Size(153, 23);
+            txtSaveFileLocationHeader.TabIndex = 18;
+            txtSaveFileLocationHeader.Text = "Screenshot Save Location:";
+            txtSaveFileLocationHeader.TextAlign = HorizontalAlignment.Center;
+            // 
+            // txtChangeScreenCaptureFileLocation
+            // 
+            txtChangeScreenCaptureFileLocation.BackColor = SystemColors.Desktop;
+            txtChangeScreenCaptureFileLocation.BorderStyle = BorderStyle.FixedSingle;
+            txtChangeScreenCaptureFileLocation.ForeColor = SystemColors.Window;
+            txtChangeScreenCaptureFileLocation.Location = new Point(544, 130);
+            txtChangeScreenCaptureFileLocation.Name = "txtChangeScreenCaptureFileLocation";
+            txtChangeScreenCaptureFileLocation.Size = new Size(122, 23);
+            txtChangeScreenCaptureFileLocation.TabIndex = 19;
+            // 
+            // btnChangeScreenCaptureFileLocation
+            // 
+            btnChangeScreenCaptureFileLocation.BackColor = SystemColors.Desktop;
+            btnChangeScreenCaptureFileLocation.ForeColor = SystemColors.Window;
+            btnChangeScreenCaptureFileLocation.Location = new Point(672, 130);
+            btnChangeScreenCaptureFileLocation.Name = "btnChangeScreenCaptureFileLocation";
+            btnChangeScreenCaptureFileLocation.Size = new Size(75, 23);
+            btnChangeScreenCaptureFileLocation.TabIndex = 20;
+            btnChangeScreenCaptureFileLocation.Text = "Change";
+            btnChangeScreenCaptureFileLocation.UseVisualStyleBackColor = false;
+            btnChangeScreenCaptureFileLocation.Click += btnChangeScreenCaptureFileLocation_Click;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(852, 368);
+            Controls.Add(btnChangeScreenCaptureFileLocation);
+            Controls.Add(txtChangeScreenCaptureFileLocation);
+            Controls.Add(txtSaveFileLocationHeader);
             Controls.Add(pictureBox1);
             Controls.Add(lblStatus);
             Controls.Add(btnOpenPNGInPaintHotkeyConfig);
@@ -309,5 +349,8 @@
         private Button btnOpenPNGInPaintHotkeyConfig;
         private Label lblStatus;
         private PictureBox pictureBox1;
+        private TextBox txtSaveFileLocationHeader;
+        private TextBox txtChangeScreenCaptureFileLocation;
+        private Button btnChangeScreenCaptureFileLocation;
     }
 }

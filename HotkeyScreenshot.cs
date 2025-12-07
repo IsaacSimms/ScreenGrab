@@ -332,7 +332,7 @@ namespace ScreenGrab
             Clipboard.SetImage(bitmap);
 
             // save to OneDrive folder
-            string basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "OneDrive", "Screenshots");
+            string basePath = _config.ScreenshotSaveLocation;
             if (!Directory.Exists(basePath))
             {
                 Directory.CreateDirectory(basePath);                            // create directory if it does not exist

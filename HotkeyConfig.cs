@@ -73,6 +73,11 @@ namespace ScreenGrab
             Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
             Key       = Keys.P
         };
-        
+        //  screenshot save location // defaults to oneDrive Pictures folder //
+        public string ScreenshotSaveLocation { get; set; } = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), 
+                "ScreenGrab"
+        );
+
     }
 }
