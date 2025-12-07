@@ -73,15 +73,6 @@ namespace ScreenGrab
             Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
             Key       = Keys.P
         };
-
-        // == HELPER FUNCTIONS TO ALLOW FOR SAVING CONFIGS TO JSON FILE == //
-        public static HotkeyConfig Load(string path)
-        {
-            //if there is not file outlined in the configuration, return to hard corded default
-            if (!File.Exists(path))
-            {
-                return new HotkeyConfig();
-            }
-        }
+        
     }
 }
