@@ -13,6 +13,7 @@ namespace ScreenGrab
 {
     // == hotkey modifier flags == //
     [Flags]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum HotkeyModifiers
     {
         None    = 0x0000,
@@ -24,7 +25,9 @@ namespace ScreenGrab
     // == define hotkey structure and return hotkeys as string == //
     public class HotkeyDefinition
     {
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public HotkeyModifiers Modifiers { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Keys            Key       { get; set; }
 
         // == override ToString to return hotkey as string == //
@@ -78,6 +81,5 @@ namespace ScreenGrab
                 Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), 
                 "ScreenGrab"
         );
-
     }
 }

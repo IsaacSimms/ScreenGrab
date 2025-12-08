@@ -11,13 +11,14 @@ namespace ScreenGrab
     public partial class Driver : Form
     {
 
-        private HotkeyScreenshot? _hotkeyScreenshot;                    // wire up HotkeyScreenshot class
-        private static HotkeyConfig _hotkeyConfig = new HotkeyConfig(); // hotkey configuration instance
+        private HotkeyScreenshot? _hotkeyScreenshot; // wire up HotkeyScreenshot class variable
+        private HotkeyConfig _hotkeyConfig;          // wir up hotkey configuration class variable
 
         // constructor
         public Driver()
         {
             InitializeComponent();
+            _hotkeyConfig = ConfigurationManager.LoadConfiguration(); // load hotkey configuration from json file
         }
         // ovveride OnHandleCreated to account for hotkey registration after handle is created
         protected override void OnHandleCreated(EventArgs e)
@@ -102,12 +103,17 @@ namespace ScreenGrab
         private void SendToSettings_Click(object sender, EventArgs e)
         {
             var settingsForm = new SettingsForm(_hotkeyConfig);
+            settingsForm.Tag = this;  // set owner so SettingsForm can return to this instance instead of creating a new Driver // This is used in SetingsForm.cs for graceful transitions
             settingsForm.HotkeysChanged += config =>
             {
                 _hotkeyConfig = config;
                 _hotkeyScreenshot?.UpdateHotkeyConfig(_hotkeyConfig);
+                ConfigurationManager.SaveConfiguration(_hotkeyConfig);
             };
+            settingsForm.ShowInTaskbar = true;
             settingsForm.Show();
+            this.Hide();                // hide the main form // keep persistent state
+            this.ShowInTaskbar = false;
         }
 
         // when button is clicked, take a screenshot of active window

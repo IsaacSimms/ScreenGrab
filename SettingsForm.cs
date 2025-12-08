@@ -23,7 +23,7 @@ namespace ScreenGrab
         public event Action<HotkeyConfig>? SaveFileLocationChanged;                          // event to notify main app of save file location changes
         public SettingsForm(HotkeyConfig config)
         {
-            InitializeComponent();   // initialize form components
+            InitializeComponent();   // initialize form components 
             _config = config;        // assign passed config to variable within class
 
             // set text boxes to current hotkey settings
@@ -153,6 +153,19 @@ namespace ScreenGrab
         public HotkeyConfig GetResultConfig()
         {
             return _config;
+        }
+        // button to open form named "Driver"
+        private void btnGoHome_Click(object sender, EventArgs e)
+        {
+            Form? parentForm = this.Owner ?? this.Tag as Form;
+            if (parentForm != null)
+            {
+                parentForm.Show();                               // show main app form
+                parentForm.WindowState = FormWindowState.Normal; // set window state to normal
+                parentForm.ShowInTaskbar = true;                 // show in taskbar
+                parentForm.Activate();
+            }
+            this.Close();                                        // close settings form to return to main app
         }
     }
 }

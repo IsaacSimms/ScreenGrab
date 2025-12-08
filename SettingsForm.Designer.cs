@@ -50,6 +50,7 @@
             txtSaveFileLocationHeader = new TextBox();
             txtChangeScreenCaptureFileLocation = new TextBox();
             btnChangeScreenCaptureFileLocation = new Button();
+            btnGoHome = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -293,12 +294,25 @@
             btnChangeScreenCaptureFileLocation.UseVisualStyleBackColor = false;
             btnChangeScreenCaptureFileLocation.Click += btnChangeScreenCaptureFileLocation_Click;
             // 
+            // btnGoHome
+            // 
+            btnGoHome.BackColor = SystemColors.Desktop;
+            btnGoHome.ForeColor = SystemColors.Window;
+            btnGoHome.Location = new Point(765, 12);
+            btnGoHome.Name = "btnGoHome";
+            btnGoHome.Size = new Size(77, 40);
+            btnGoHome.TabIndex = 21;
+            btnGoHome.Text = "Home";
+            btnGoHome.UseVisualStyleBackColor = false;
+            btnGoHome.Click += btnGoHome_Click;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(852, 368);
+            Controls.Add(btnGoHome);
             Controls.Add(btnChangeScreenCaptureFileLocation);
             Controls.Add(txtChangeScreenCaptureFileLocation);
             Controls.Add(txtSaveFileLocationHeader);
@@ -352,5 +366,6 @@
         private TextBox txtSaveFileLocationHeader;
         private TextBox txtChangeScreenCaptureFileLocation;
         private Button btnChangeScreenCaptureFileLocation;
+        private Button btnGoHome;
     }
 }

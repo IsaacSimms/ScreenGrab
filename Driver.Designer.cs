@@ -35,8 +35,8 @@
             menuOpen = new ToolStripMenuItem();
             settingsToolStripMenuItem = new ToolStripMenuItem();
             menuExit = new ToolStripMenuItem();
-            SendToSettings = new Button();
-            button1 = new Button();
+            btnSendToSettings = new Button();
+            btnShutdownScreengrab = new Button();
             activeWindowScreenshotButton = new Button();
             pictureBox1 = new PictureBox();
             regionScreenshotButton = new Button();
@@ -65,7 +65,7 @@
             menuOpen.Image = Properties.Resources.S1;
             menuOpen.Name = "menuOpen";
             menuOpen.Size = new Size(128, 22);
-            menuOpen.Text = "Actions";
+            menuOpen.Text = "Home";
             // 
             // settingsToolStripMenuItem
             // 
@@ -84,30 +84,30 @@
             menuExit.Size = new Size(128, 22);
             menuExit.Text = "Shutdown";
             // 
-            // SendToSettings
+            // btnSendToSettings
             // 
-            SendToSettings.BackColor = SystemColors.Desktop;
-            SendToSettings.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            SendToSettings.ForeColor = SystemColors.Window;
-            SendToSettings.Location = new Point(365, 12);
-            SendToSettings.Name = "SendToSettings";
-            SendToSettings.Size = new Size(77, 40);
-            SendToSettings.TabIndex = 1;
-            SendToSettings.Text = "Settings";
-            SendToSettings.UseVisualStyleBackColor = false;
-            SendToSettings.Click += SendToSettings_Click;
+            btnSendToSettings.BackColor = SystemColors.Desktop;
+            btnSendToSettings.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnSendToSettings.ForeColor = SystemColors.Window;
+            btnSendToSettings.Location = new Point(365, 12);
+            btnSendToSettings.Name = "btnSendToSettings";
+            btnSendToSettings.Size = new Size(77, 40);
+            btnSendToSettings.TabIndex = 1;
+            btnSendToSettings.Text = "Settings";
+            btnSendToSettings.UseVisualStyleBackColor = false;
+            btnSendToSettings.Click += SendToSettings_Click;
             // 
-            // button1
+            // btnShutdownScreengrab
             // 
-            button1.BackColor = SystemColors.Desktop;
-            button1.ForeColor = SystemColors.Window;
-            button1.Location = new Point(448, 12);
-            button1.Name = "button1";
-            button1.Size = new Size(77, 40);
-            button1.TabIndex = 2;
-            button1.Text = "Shutdown ScreenGrab";
-            button1.UseVisualStyleBackColor = false;
-            button1.Click += MenuExit_Click;
+            btnShutdownScreengrab.BackColor = SystemColors.Desktop;
+            btnShutdownScreengrab.ForeColor = SystemColors.Window;
+            btnShutdownScreengrab.Location = new Point(448, 12);
+            btnShutdownScreengrab.Name = "btnShutdownScreengrab";
+            btnShutdownScreengrab.Size = new Size(77, 40);
+            btnShutdownScreengrab.TabIndex = 2;
+            btnShutdownScreengrab.Text = "Shutdown ScreenGrab";
+            btnShutdownScreengrab.UseVisualStyleBackColor = false;
+            btnShutdownScreengrab.Click += MenuExit_Click;
             // 
             // activeWindowScreenshotButton
             // 
@@ -191,13 +191,13 @@
             Controls.Add(regionScreenshotButton);
             Controls.Add(pictureBox1);
             Controls.Add(activeWindowScreenshotButton);
-            Controls.Add(button1);
-            Controls.Add(SendToSettings);
+            Controls.Add(btnShutdownScreengrab);
+            Controls.Add(btnSendToSettings);
             DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Driver";
-            Text = " ";
+            Text = " ScreenGrab";
             SystemTrayMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
@@ -209,9 +209,9 @@
         private ContextMenuStrip SystemTrayMenu;
         private ToolStripMenuItem menuOpen;
         private ToolStripMenuItem menuExit;
-        private Button SendToSettings;
+        private Button btnSendToSettings;
         private ToolStripMenuItem settingsToolStripMenuItem;
-        private Button button1;
+        private Button btnShutdownScreengrab;
         private Button activeWindowScreenshotButton;
         private PictureBox pictureBox1;
         private Button regionScreenshotButton;

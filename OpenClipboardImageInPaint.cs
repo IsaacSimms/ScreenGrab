@@ -55,6 +55,7 @@ namespace ScreenGrab
                         $"ScreenGrab: Failure to open MS Paint. Error: {ex.Message}",       // message
                         $"ScreenGrab",                                                      // title //not displaying in current config
                         4000);                                                              // duration in ms
+                    System.Diagnostics.Debug.WriteLine($"Opening MsPaint failed {ex.Message}");
                 }
             }
 
@@ -77,6 +78,7 @@ namespace ScreenGrab
                         $"ScreenGrab: Failure to open MS Paint. Error: {ex.Message}",       // message
                         $"ScreenGrab",                                                      // title //not displaying in current config
                         4000);                                                              // duration in ms
+                    System.Diagnostics.Debug.WriteLine($"Opening MSPaint failed {ex.Message}");
                 }
             }
         }

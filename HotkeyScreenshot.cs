@@ -109,6 +109,7 @@ namespace ScreenGrab
                     $"ScreenGrab: error registering hotkeys. please relaunch app",
                     $"ScreenGrab",
                     4000);
+                System.Diagnostics.Debug.WriteLine($"Failed to register hotkeys");
                 throw new InvalidOperationException("Failed to register one or more hotkeys.");
             }
         }
@@ -171,7 +172,7 @@ namespace ScreenGrab
             if (!GetWindowRect(hWnd, out RECT rect))           // validate getting window dimensions
             {
                 ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: Invalid Region selection.", 
+                    $"ScreenGrab: Invalid Region dimnesion aquisition.", 
                     $"ScreenGrab",
                     4000);
                 return;
@@ -289,12 +290,23 @@ namespace ScreenGrab
                         _selectedArea.Y - this.Bounds.Y,
                         _selectedArea.Width,
                         _selectedArea.Height);
-                    using (var PenSelection = new Pen(Color.Firebrick, 3))             // pen for selection rectangle
+                    using (var PenSelection = new Pen(Color.Red, 4))               // pen for selection rectangle
                     { 
                         e.Graphics.DrawRectangle(PenSelection, clientRectangle);   // draw selection rectangle
                     }
+                    Rectangle innerRectangle = new Rectangle(
+                        clientRectangle.X + 4,
+                        clientRectangle.Y + 4,
+                        clientRectangle.Width - 8,
+                        clientRectangle.Height - 8);
+                    // Draw dashed border for selection rectangle
+                    using (var PenDashed = new Pen(Color.Black, 2)) {
+                        PenDashed.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+                        e.Graphics.DrawRectangle(PenDashed, clientRectangle);
+                    }
+                    // draw semi-transparent fill for selection rectangle
                     using (var BrushSelection = new SolidBrush(Color.FromArgb(25, Color.White))) {
-                        e.Graphics.FillRectangle(BrushSelection, clientRectangle); // fill selection rectangle with semi-transparent color
+                        e.Graphics.FillRectangle(BrushSelection, clientRectangle);
                     }
                 }
             }
@@ -307,8 +319,8 @@ namespace ScreenGrab
                 this.FormBorderStyle = FormBorderStyle.None;                   // no border
                 this.StartPosition = FormStartPosition.Manual;                 // manual position
                 this.Bounds = vs;                                              // cover entire virtual screen
-                this.BackColor = Color.Gray;                                   // white background
-                this.Opacity = .15;                                            // semi-transparent
+                this.BackColor = Color.White;                                  // white background
+                this.Opacity = .15;                                             // semi-transparent
                 this.TopMost = true;                                           // always on top
                 this.DoubleBuffered = true;                                    // reduce flicker
                 Cursor = Cursors.Cross;
@@ -352,6 +364,7 @@ namespace ScreenGrab
                 $"ScreenGrab: Failed to save screenshot: {ex.Message}.",                           // message
                 $"ScreenGrab",                                                                     // title //not displaying in current config
                 4000);                                                                             // duration in ms
+                System.Diagnostics.Debug.WriteLine($"Failed to take a screenshot: {ex.Message}");
             }
         }
         // == Capture active window after delay == //
