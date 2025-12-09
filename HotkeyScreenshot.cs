@@ -15,6 +15,8 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Text; // for async delay (used in delayed screenshot)
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ScreenGrab
 {
@@ -44,9 +46,10 @@ namespace ScreenGrab
 
         // == Hotkey varibale registration == //
         // Hotkey IDs //
-        private const int            WM_HOTKEY = 0x0312;                     // Windows message ID for hotkey
+        private const int    WM_HOTKEY = 0x0312;                             // Windows message ID for hotkey
         private readonly int _ActiveWindowHotkeyId;                          // instance variable for active window hotkey ID
         private readonly int _RegionSelectHotkeyId;                          // instance variable for region select hotkey ID
+        private readonly int _FreeformSelectHotkeyId;                        // ID for freeform region select hotkey
         private readonly int _ActiveWindowDelayHotkeyId;                     // ID for active window delayed screenshot hotkey
         private readonly int _RegionSelectDelayHotkeyId;                     // ID for region select delayed screenshot hotkey
         private readonly int _OpenClipboardInPaintHotkeyId;                  // ID for open clipboard image in paint hotkey
@@ -71,9 +74,10 @@ namespace ScreenGrab
             AssignHandle(owner.Handle);        // assign window handle from owner form
             _ActiveWindowHotkeyId         = 1;
             _RegionSelectHotkeyId         = 2;
-            _ActiveWindowDelayHotkeyId    = 3;
-            _RegionSelectDelayHotkeyId    = 4;
-            _OpenClipboardInPaintHotkeyId = 5;
+            _FreeformSelectHotkeyId       = 3;
+            _ActiveWindowDelayHotkeyId    = 4;
+            _RegionSelectDelayHotkeyId    = 5;
+            _OpenClipboardInPaintHotkeyId = 6;
             AttachToHandle(owner.Handle);      // register all hotkeys
             //IntPtr hwnd = this.Handle;
         }
@@ -82,10 +86,11 @@ namespace ScreenGrab
         {
             UnregisterHotkeys(); // unregister existing hotkeys before registering new ones
             // register hotkeys from configuration using helper method
-            RegisterFromConfig(_ActiveWindowHotkeyId, _config.ActiveWindowCapture);
-            RegisterFromConfig(_RegionSelectHotkeyId, _config.RegionCapture);
-            RegisterFromConfig(_ActiveWindowDelayHotkeyId, _config.ActiveWindowDelayedCapture);
-            RegisterFromConfig(_RegionSelectDelayHotkeyId, _config.RegionDelayedCapture);
+            RegisterFromConfig(_ActiveWindowHotkeyId,         _config.ActiveWindowCapture);
+            RegisterFromConfig(_RegionSelectHotkeyId,         _config.RegionCapture);
+            RegisterFromConfig(_FreeformSelectHotkeyId,       _config.FreeformRegionCapture);
+            RegisterFromConfig(_ActiveWindowDelayHotkeyId,    _config.ActiveWindowDelayedCapture);
+            RegisterFromConfig(_RegionSelectDelayHotkeyId,    _config.RegionDelayedCapture);
             RegisterFromConfig(_OpenClipboardInPaintHotkeyId, _config.OpenPaint);
         }
         // == Unregister hotkeys  == //
@@ -94,6 +99,7 @@ namespace ScreenGrab
             // unregister all hotkeys using WinAPI
             UnregisterHotKey(_handle, _ActiveWindowHotkeyId);
             UnregisterHotKey(_handle, _RegionSelectHotkeyId);
+            UnregisterHotKey(_handle, _FreeformSelectHotkeyId);
             UnregisterHotKey(_handle, _ActiveWindowDelayHotkeyId);
             UnregisterHotKey(_handle, _RegionSelectDelayHotkeyId);
             UnregisterHotKey(_handle, _OpenClipboardInPaintHotkeyId);
@@ -119,6 +125,7 @@ namespace ScreenGrab
             // update configuration
             _config.ActiveWindowCapture        = newConfig.ActiveWindowCapture;
             _config.RegionCapture              = newConfig.RegionCapture;
+            _config.FreeformRegionCapture      = newConfig.FreeformRegionCapture;
             _config.ActiveWindowDelayedCapture = newConfig.ActiveWindowDelayedCapture;
             _config.RegionDelayedCapture       = newConfig.RegionDelayedCapture;
             _config.OpenPaint                  = newConfig.OpenPaint;
@@ -140,6 +147,10 @@ namespace ScreenGrab
                 {
                     CaptureRegion();
                 }
+                else if (id == _FreeformSelectHotkeyId)             // check if freeform select hotkey was pressed
+                {
+                    CaptureFreeform();
+                }
                 else if (id == _ActiveWindowDelayHotkeyId)          // check if active window delay hotkey was pressed
                 {
                     CaptureActiveWindowDelayed();
@@ -148,7 +159,7 @@ namespace ScreenGrab
                 {
                     CaptureRegionDelayed();
                 }
-                else if (id == _OpenClipboardInPaintHotkeyId) // check if open clipboard in paint hotkey was pressed
+                else if (id == _OpenClipboardInPaintHotkeyId)       // check if open clipboard in paint hotkey was pressed
                 {
                     OpenClipboardImageInPaint.OpenImageInPaint();
                 }
@@ -203,13 +214,35 @@ namespace ScreenGrab
                 Rectangle selectedArea = selector.SelectedRegion;        // get selected region
                 if (selectedArea.Width <= 0 || selectedArea.Height <= 0) // validate selected area
                 {
-                    ScreenshotMessageBox.ShowMessage(                                                      // show message box on screenshot taken
-                        $"ScreenGrab: Invalid Region selection.", // message
-                        $"ScreenGrab",                                                                     // title //not displaying in current config
-                        4000);                                                                             // duration in ms
+                    ScreenshotMessageBox.ShowMessage(                    // show message box on screenshot taken
+                        $"ScreenGrab: Invalid Region selection.",        // message
+                        $"ScreenGrab",                                   // title //not displaying in current config
+                        4000);                                           // duration in ms
                     return;
                 }
                 CaptureAndSave(selectedArea, "Region Select");           // capture and save screenshot
+            }
+        }
+
+        // == Capture freeform region and save to clipboard and onedrive == //
+        private void CaptureFreeform()
+        {
+            using (var selector = new FreeformSelectForm())
+            {
+                if (selector.ShowDialog() != DialogResult.OK)             // user cancelled
+                {
+                    return;
+                }
+                List<Point> freeformPath = selector.FreeformPath;        // get selected region points
+                if (selectedArea.Width <= 0 || selectedArea.Height <= 0) // validate selected area
+                {
+                    ScreenshotMessageBox.ShowMessage(                    // show message box on screenshot taken
+                        $"ScreenGrab: Invalid Region selection.",        // message
+                        $"ScreenGrab",                                   // title //not displaying in current config
+                        4000);                                           // duration in ms
+                    return;
+                }
+                CaptureAndSaveFreeform(freeformPath, "Freeform Select");         // capture and save screenshot
             }
         }
 
@@ -278,7 +311,7 @@ namespace ScreenGrab
                 }
             }
 
-            // draw selection rectangle
+            // override OnPaint to draw selection rectangle
             protected override void OnPaint(PaintEventArgs e)
             {
                 base.OnPaint(e);
@@ -332,6 +365,12 @@ namespace ScreenGrab
             }
         }
 
+        // == freeform selection form == //
+        private class FreeformSelectForm : Form 
+        {
+        
+        }
+
         // == Capture specified area and save to clipboard and onedrive == //
         private void CaptureAndSave(Rectangle area, string prefix)
         {
@@ -365,6 +404,7 @@ namespace ScreenGrab
                 $"ScreenGrab",                                                                     // title //not displaying in current config
                 4000);                                                                             // duration in ms
                 System.Diagnostics.Debug.WriteLine($"Failed to take a screenshot: {ex.Message}");
+                throw new InvalidOperationException($"Failed to take a screenshot: {ex.Message}.");
             }
         }
         // == Capture active window after delay == //

@@ -20,7 +20,7 @@ namespace ScreenGrab
             // let user know there is no image on clipboard
             if (!Clipboard.ContainsImage())
             {
-                ScreenshotMessageBox.ShowMessage(                             // show message box on screenshot taken
+                ScreenshotMessageBox .ShowMessage(                             // show message box on screenshot taken
                        $"ScreenGrab: there is not a .png saved to clipboard", // message
                        $"ScreenGrab",                                         // title //not displaying in current config
                        4000);                                                 // duration in ms
