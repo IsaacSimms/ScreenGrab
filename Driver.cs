@@ -128,6 +128,12 @@ namespace ScreenGrab
             _hotkeyScreenshot?.CaptureRegion();
         }
 
+        // when button is clicked, take a freeform screenshot
+        private void freeformScreenshotButton_Click(object sender, EventArgs e)
+        {
+            _hotkeyScreenshot?.CaptureFreeform();
+        }
+
         // when button is clicked, take a delayed screenshot of active window
         private void delayedActiveWindowScreenshotButton_Click(object sender, EventArgs e)
         {

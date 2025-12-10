@@ -43,6 +43,7 @@
             delayedActiveWindowScreenshotButton = new Button();
             delayedRegionScreenshotButton = new Button();
             button2 = new Button();
+            button1 = new Button();
             SystemTrayMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -178,6 +179,18 @@
             button2.UseVisualStyleBackColor = false;
             button2.Click += openClipboardImageInPaintButton_Click;
             // 
+            // button1
+            // 
+            button1.BackColor = SystemColors.Desktop;
+            button1.ForeColor = SystemColors.Window;
+            button1.Location = new Point(95, 211);
+            button1.Name = "button1";
+            button1.Size = new Size(77, 40);
+            button1.TabIndex = 10;
+            button1.Text = "Freeform Capture";
+            button1.UseVisualStyleBackColor = false;
+            button1.Click += freeformScreenshotButton_Click;
+            // 
             // Driver
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -185,6 +198,7 @@
             BackColor = SystemColors.InfoText;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(537, 269);
+            Controls.Add(button1);
             Controls.Add(button2);
             Controls.Add(delayedRegionScreenshotButton);
             Controls.Add(delayedActiveWindowScreenshotButton);
@@ -218,5 +232,6 @@
         private Button delayedActiveWindowScreenshotButton;
         private Button delayedRegionScreenshotButton;
         private Button button2;
+        private Button button1;
     }
 }

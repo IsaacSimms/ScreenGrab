@@ -15,6 +15,9 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Text; // for async delay (used in delayed screenshot)
+using System.Collections.Generic;
+using System.Linq;
+using System.Drawing.Drawing2D;
 
 namespace ScreenGrab
 {
@@ -213,6 +216,28 @@ namespace ScreenGrab
             }
         }
 
+        // == Capture freeform region and save to clipboard and onedrive == //
+        public void CaptureFreeform()
+        {
+            using (var selector = new FreeformSelectForm())
+            {
+                if (selector.ShowDialog() != DialogResult.OK)             // user cancelled
+                {
+                    return;
+                }
+                List<Point> freeformPath = selector.FreeformPath;        // get selected region points
+                if (freeformPath == null || freeformPath.Count < 2) // validate selected area
+                {
+                    ScreenshotMessageBox.ShowMessage(                    // show message box on screenshot taken
+                        $"ScreenGrab: Invalid Region selection.",        // message
+                        $"ScreenGrab",                                   // title //not displaying in current config
+                        4000);                                           // duration in ms
+                    return;
+                }
+                CaptureAndSaveFreeform(freeformPath, "Freeform Select");         // capture and save screenshot
+            }
+        }
+
         // == Form for region selection == //
         private class RegionSelectForm : Form
         {
@@ -332,6 +357,125 @@ namespace ScreenGrab
             }
         }
 
+        // == Capture active window after delay == //
+        public async void CaptureActiveWindowDelayed()
+        {
+            await Task.Delay(5000); // 5 second delay
+            CaptureActiveWindow();
+        }
+        // == Capture selected region after delay == //
+        public async void CaptureRegionDelayed()
+        {
+            await Task.Delay(3000); // 5 second delay
+            CaptureRegion();
+        }
+
+        // == freeform selection form == //
+        private class FreeformSelectForm : Form 
+        {
+            private bool  _isDrawing;                         // flag to track if drawing is in progress
+            private List<Point> _freeformPath = new List<Point>();                // list to hold freeform path points
+            public List<Point> FreeformPath => _freeformPath; // public property to access freeform path
+
+            // start freeform drawing on left mouse click
+            private void OnMouseDown(object? sender, MouseEventArgs e)
+            {
+                if (e.Button != MouseButtons.Left) return;    // only start drawing on left mouse button
+                _isDrawing = true;
+                _freeformPath.Clear();                        // clear existing path //prevents unwanted behavior
+                _freeformPath.Add(PointToScreen(e.Location)); // add starting point
+                Invalidate();
+            }
+
+            // update freeform path on mouse move
+            private void OnMouseMove(object? sender, MouseEventArgs e)
+            {
+                if (!_isDrawing) return;
+                Point currentPoint = PointToScreen(e.Location);                       // get current mouse position in screen coordinates
+                if (_freeformPath.Count == 0 || _freeformPath.Last() != currentPoint) // check if point is different from last point
+                {
+                    _freeformPath.Add(currentPoint);           // add point to path
+                    Invalidate();                              // request redraw
+                }
+            }
+
+            // finalize freeform drawing on mouse up
+            private void OnMouseUp(object? sender, MouseEventArgs e)
+            {
+                if (!_isDrawing) return;
+                _isDrawing = false;                             // end drawing
+                if (_freeformPath.Count > 0)
+                {
+                    _freeformPath.Add(_freeformPath[0]);        // close the path by adding starting point at the end
+                }   
+                if (_freeformPath.Count > 2)                    // validate path has enough points
+                {
+                    DialogResult = DialogResult.OK;             // set dialog result to OK if valid path
+                }
+                else
+                {
+                    DialogResult = DialogResult.Cancel;         // cancel if not enough points
+                }
+                Close();                                        // close the form
+            }
+
+            // if escape key is pressed, cancel drawing
+            private void EscKeyDown(object? sender, KeyEventArgs e)
+            {
+                if (e.KeyCode == Keys.Escape)
+                {
+                    _isDrawing = false;                  // end drawing
+                    _freeformPath.Clear();               // clear path
+                    DialogResult = DialogResult.Cancel;  // set dialog result to Cancel
+                    Close();                             // close the form
+                }
+            }
+
+            // override OnPaint to draw freeform path
+            protected override void OnPaint(PaintEventArgs e)
+            {
+                base.OnPaint(e);
+                if (_freeformPath.Count > 1)
+                {
+                    // convert freeform path points to client coordinates for drawing
+                    Point[] clientPoints = _freeformPath
+                        .Select(p => new Point(p.X - this.Bounds.X, p.Y - this.Bounds.Y))
+                        .ToArray();
+                    // anti-aliasing for smoother lines
+                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    using (var PenFreeform = new Pen(Color.Red, 4))               // pen for freeform path
+                    {
+                        e.Graphics.DrawLines(PenFreeform, clientPoints);          // draw freeform path
+                    }
+                    //dashed overlay
+                    using (var PenDashedFreeform = new Pen(Color.Black, 2))
+                    {
+                        PenDashedFreeform.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+                        e.Graphics.DrawLines(PenDashedFreeform, clientPoints);
+                    }
+                }
+            }
+
+            // == Capture freeform region constructor & properties setup // should mirror look of region select == //
+            public FreeformSelectForm()
+            {
+                var vs = System.Windows.Forms.SystemInformation.VirtualScreen; // get virtual screen dimensions
+                this.FormBorderStyle = FormBorderStyle.None;                   // no border
+                this.StartPosition = FormStartPosition.Manual;                 // manual position
+                this.Bounds = vs;                                              // cover entire virtual screen
+                this.BackColor = Color.White;                                  // white background
+                this.Opacity = .15;                                             // semi-transparent
+                this.TopMost = true;                                           // always on top
+                this.DoubleBuffered = true;                                    // reduce flicker
+
+                // event handlers
+                this.MouseDown += new MouseEventHandler(OnMouseDown);
+                this.MouseMove += new MouseEventHandler(OnMouseMove);
+                this.MouseUp += new MouseEventHandler(OnMouseUp);
+                this.KeyDown += new KeyEventHandler(EscKeyDown);
+            }
+        }
+
         // == Capture specified area and save to clipboard and onedrive == //
         private void CaptureAndSave(Rectangle area, string prefix)
         {
@@ -367,17 +511,81 @@ namespace ScreenGrab
                 System.Diagnostics.Debug.WriteLine($"Failed to take a screenshot: {ex.Message}");
             }
         }
-        // == Capture active window after delay == //
-        public async void CaptureActiveWindowDelayed()
+
+        // == Capture freeform region and save to clipboard and onedrive == //
+        private void CaptureAndSaveFreeform(List<Point> freeformPath, string prefix)
         {
-            await Task.Delay(5000); // 5 second delay
-            CaptureActiveWindow();
-        }
-        // == Capture selected region after delay == //
-        public async void CaptureRegionDelayed()
-        {
-            await Task.Delay(3000); // 5 second delay
-            CaptureRegion();
+            // calculate bounding rectangle of freeform path
+            int minX = freeformPath.Min(p => p.X);
+            int minY = freeformPath.Min(p => p.Y);
+            int maxX = freeformPath.Max(p => p.X);
+            int maxY = freeformPath.Max(p => p.Y);
+
+            //calculate width and height
+            int width  = maxX - minX;
+            int height = maxY - minY;
+
+            // error handling for invalid dimensions
+            if (width <= 0 || height <= 0)
+            {
+                ScreenshotMessageBox.ShowMessage(                                                  // show message box on screenshot taken
+                    $"ScreenGrab: Invalid Region selection.",                                      // message
+                    $"ScreenGrab",                                                                 // title //not displaying in current config
+                    4000);                                                                         // duration in ms
+                return;
+            }
+
+            // create bitmap to hold screenshot
+            using Bitmap fullCapture = new Bitmap(width, height);
+            using Graphics g = Graphics.FromImage(fullCapture);
+            {
+                g.CopyFromScreen(new Point(minX, minY), Point.Empty, new Size(width, height));     // capture bounding rectangle area
+            }
+
+            // create mask for freeform shape //uses graphics path to create a mask
+            using Bitmap maskedCapture = new Bitmap(width, height);
+            using (Graphics gMask = Graphics.FromImage(maskedCapture))
+            {
+                using GraphicsPath gp = new GraphicsPath();
+                                {
+                    // create path relative to bounding rectangle
+                    Point[] relativePoints = freeformPath
+                        .Select(p => new Point(p.X - minX, p.Y - minY))
+                        .ToArray();
+                   gp.AddPolygon(relativePoints);
+                   gMask.Clear(Color.Transparent);             // clear background to transparent
+                   gMask.SetClip(gp);                          // set clipping region to freeform path
+                    gMask.DrawImage(fullCapture, Point.Empty); // draw captured image onto masked bitmap
+                }
+            }
+
+            // save to clipboard
+            Clipboard.SetImage(maskedCapture);
+
+            // save to OneDrive folder
+            string basePath = _config.ScreenshotSaveLocation;
+            if (!Directory.Exists(basePath))
+            {
+                Directory.CreateDirectory(basePath);                            // create directory if it does not exist
+            }
+            string fileName = $"{prefix}_{DateTime.Now:yyyyMMdd_HHmmss}.png";   // generate filename with prefix and timestamp
+            string filePath = Path.Combine(basePath, fileName);                 // full file path
+
+            // save masked bitmap as PNG
+            try
+            {
+                maskedCapture.Save(filePath, ImageFormat.Png);
+                OnScreenshotTaken?.Invoke(filePath); // trigger event to notify screenshot taken
+            }
+            catch (Exception ex)
+            {
+                ScreenshotMessageBox.ShowMessage(
+                    $"ScreenGrab: Failed to save screenshot: {ex.Message}.",                           // message
+                    $"ScreenGrab",                                                                     // title //not displaying in current config
+                    4000);                                                                             // duration in ms
+                System.Diagnostics.Debug.WriteLine($"Failed to take a screenshot: {ex.Message}");
+                throw new InvalidOperationException($"Failed to take a screenshot: {ex.Message}.");
+            }
         }
 
         // == Cleanup: Unregister hotkeys when done == //
