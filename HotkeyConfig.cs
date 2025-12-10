@@ -58,6 +58,12 @@ namespace ScreenGrab
             Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
             Key       = Keys.R
         };
+        // lasso tool for region selection
+        public HotkeyDefinition FreeformRegionCapture { get; set; } = new HotkeyDefinition
+        {
+            Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
+            Key       = Keys.F
+        };
         // active window delayed capture
         public HotkeyDefinition ActiveWindowDelayedCapture { get; set; } = new HotkeyDefinition
         {
