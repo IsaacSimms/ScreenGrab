@@ -25,7 +25,7 @@ namespace ScreenGrab
     {
         // variables for hotkey configuration and registration
         private readonly HotkeyConfig _config;  // instance variable for hotkey configuration
-        private IntPtr        _handle;          // instance variable for window handle
+        private IntPtr _handle;          // instance variable for window handle
 
         // == WinAPI Imports == //
         [DllImport("user32.dll")]
@@ -47,10 +47,10 @@ namespace ScreenGrab
 
         // == Hotkey varibale registration == //
         // Hotkey IDs //
-        private const int    WM_HOTKEY = 0x0312;                             // Windows message ID for hotkey
+        private const int WM_HOTKEY = 0x0312;                     // Windows message ID for hotkey
         private readonly int _ActiveWindowHotkeyId;                          // instance variable for active window hotkey ID
         private readonly int _RegionSelectHotkeyId;                          // instance variable for region select hotkey ID
-        private readonly int _FreeformSelectHotkeyId;                        // ID for freeform region select hotkey
+        private readonly int _FreeformSelectHotkeyId;                        // instance variable for freeform select hotkey ID
         private readonly int _ActiveWindowDelayHotkeyId;                     // ID for active window delayed screenshot hotkey
         private readonly int _RegionSelectDelayHotkeyId;                     // ID for region select delayed screenshot hotkey
         private readonly int _OpenClipboardInPaintHotkeyId;                  // ID for open clipboard image in paint hotkey
@@ -70,9 +70,9 @@ namespace ScreenGrab
         }
         public HotkeyScreenshot(Form owner, HotkeyConfig config)
         {
-            _config       = config;            // assign hotkey configuration from class to local variable
-            _handle       = owner.Handle;      // assign window handle from owner form
-            AssignHandle(owner.Handle);        // assign window handle from owner form
+            _config = config;            // assign hotkey configuration from class to local variable
+            _handle = owner.Handle;      // assign window handle from owner form
+            AssignHandle(owner.Handle);  // assign window handle from owner form
             _ActiveWindowHotkeyId         = 1;
             _RegionSelectHotkeyId         = 2;
             _FreeformSelectHotkeyId       = 3;
@@ -89,7 +89,7 @@ namespace ScreenGrab
             // register hotkeys from configuration using helper method
             RegisterFromConfig(_ActiveWindowHotkeyId,         _config.ActiveWindowCapture);
             RegisterFromConfig(_RegionSelectHotkeyId,         _config.RegionCapture);
-            RegisterFromConfig(_FreeformSelectHotkeyId,       _config.FreeformRegionCapture);
+            RegisterFromConfig(_FreeformSelectHotkeyId,       _config.FreeformRegionCapture); 
             RegisterFromConfig(_ActiveWindowDelayHotkeyId,    _config.ActiveWindowDelayedCapture);
             RegisterFromConfig(_RegionSelectDelayHotkeyId,    _config.RegionDelayedCapture);
             RegisterFromConfig(_OpenClipboardInPaintHotkeyId, _config.OpenPaint);
@@ -107,10 +107,10 @@ namespace ScreenGrab
         }
         private void RegisterFromConfig(int id, HotkeyDefinition def)
         {
-            uint mods = (uint)def.Modifiers;                 // get modifier flags
-            uint key  = (uint)def.Key;                       // get key for keyboard hotkey
-           //bool ok RegisterHotKey(_handle, id, mods, key); // register hotkey using WinAPI
-            if (!RegisterHotKey(_handle, id, mods, key))     // error handling for hotkey registration
+            uint mods = (uint)def.Modifiers;              // get modifier flags
+            uint key = (uint)def.Key;                     // get key for keyboard hotkey
+                                                          //bool ok RegisterHotKey(_handle, id, mods, key); // register hotkey using WinAPI
+            if (!RegisterHotKey(_handle, id, mods, key))  // error handling for hotkey registration
             {
                 ScreenshotMessageBox.ShowMessage(
                     $"ScreenGrab: error registering hotkeys. please relaunch app",
@@ -121,7 +121,7 @@ namespace ScreenGrab
             }
         }
         // == UpdateHotkey configuration == //
-        public void UpdateHotkeyConfig (HotkeyConfig newConfig)
+        public void UpdateHotkeyConfig(HotkeyConfig newConfig)
         {
             // update configuration
             _config.ActiveWindowCapture        = newConfig.ActiveWindowCapture;
@@ -160,7 +160,7 @@ namespace ScreenGrab
                 {
                     CaptureRegionDelayed();
                 }
-                else if (id == _OpenClipboardInPaintHotkeyId)       // check if open clipboard in paint hotkey was pressed
+                else if (id == _OpenClipboardInPaintHotkeyId) // check if open clipboard in paint hotkey was pressed
                 {
                     OpenClipboardImageInPaint.OpenImageInPaint();
                 }
@@ -176,15 +176,15 @@ namespace ScreenGrab
             if (hWnd == IntPtr.Zero)                            // validate handle
             {
                 ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: Invalid Region selection.", 
-                    $"ScreenGrab", 
+                    $"ScreenGrab: Invalid Region selection.",
+                    $"ScreenGrab",
                     4000);
                 return;
             }
             if (!GetWindowRect(hWnd, out RECT rect))           // validate getting window dimensions
             {
                 ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: Invalid Region dimnesion aquisition.", 
+                    $"ScreenGrab: Invalid Region dimnesion aquisition.",
                     $"ScreenGrab",
                     4000);
                 return;
@@ -193,15 +193,15 @@ namespace ScreenGrab
             int height = rect.Bottom - rect.Top;              // calculate height
             if (width <= 0 || height <= 0)                    // validate dimensions
             {
-                ScreenshotMessageBox.ShowMessage(                                                      // show message box on screenshot taken
+                ScreenshotMessageBox.ShowMessage(             // show message box on screenshot taken
                     $"ScreenGrab: Invalid Region selection.", // message
-                    $"ScreenGrab",                                                                     // title //not displaying in current config
-                    4000);                                                                             // duration in ms
+                    $"ScreenGrab",                            // title //not displaying in current config
+                    4000);                                    // duration in ms
                 return;
             }
             Rectangle area = new Rectangle(rect.Left, rect.Top, width, height); // define capture area
             CaptureAndSave(area, "Active Window");                              // capture and save screenshot
-            
+
         }
         // == Capture selected region and save to clipboard and onedrive == //
         public void CaptureRegion()
@@ -215,10 +215,10 @@ namespace ScreenGrab
                 Rectangle selectedArea = selector.SelectedRegion;        // get selected region
                 if (selectedArea.Width <= 0 || selectedArea.Height <= 0) // validate selected area
                 {
-                    ScreenshotMessageBox.ShowMessage(                    // show message box on screenshot taken
-                        $"ScreenGrab: Invalid Region selection.",        // message
-                        $"ScreenGrab",                                   // title //not displaying in current config
-                        4000);                                           // duration in ms
+                    ScreenshotMessageBox.ShowMessage(                                                      // show message box on screenshot taken
+                        $"ScreenGrab: Invalid Region selection.", // message
+                        $"ScreenGrab",                                                                     // title //not displaying in current config
+                        4000);                                                                             // duration in ms
                     return;
                 }
                 CaptureAndSave(selectedArea, "Region Select");           // capture and save screenshot
@@ -235,7 +235,7 @@ namespace ScreenGrab
                     return;
                 }
                 List<Point> freeformPath = selector.FreeformPath;        // get selected region points
-                if (freeformPath == null || freeformPath.Count < 2) // validate selected area
+                if (freeformPath == null || freeformPath.Count < 2)      // validate selected area
                 {
                     ScreenshotMessageBox.ShowMessage(                    // show message box on screenshot taken
                         $"ScreenGrab: Invalid Region selection.",        // message
@@ -270,7 +270,7 @@ namespace ScreenGrab
             }
 
             // update selection rectangle on mouse move
-            private void OnMouseMove (object? sender, MouseEventArgs e)
+            private void OnMouseMove(object? sender, MouseEventArgs e)
             {
                 if (!_isSelecting) return;                               // do not call function if mouse is not moving
                 Point currentScreen = PointToScreen(e.Location);        // get current mouse position in screen coordinates
@@ -312,7 +312,7 @@ namespace ScreenGrab
                 }
             }
 
-            // override OnPaint to draw selection rectangle
+            // draw selection rectangle
             protected override void OnPaint(PaintEventArgs e)
             {
                 base.OnPaint(e);
@@ -325,7 +325,7 @@ namespace ScreenGrab
                         _selectedArea.Width,
                         _selectedArea.Height);
                     using (var PenSelection = new Pen(Color.Red, 4))               // pen for selection rectangle
-                    { 
+                    {
                         e.Graphics.DrawRectangle(PenSelection, clientRectangle);   // draw selection rectangle
                     }
                     Rectangle innerRectangle = new Rectangle(
@@ -334,12 +334,14 @@ namespace ScreenGrab
                         clientRectangle.Width - 8,
                         clientRectangle.Height - 8);
                     // Draw dashed border for selection rectangle
-                    using (var PenDashed = new Pen(Color.Black, 2)) {
+                    using (var PenDashed = new Pen(Color.Black, 2))
+                    {
                         PenDashed.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
                         e.Graphics.DrawRectangle(PenDashed, clientRectangle);
                     }
                     // draw semi-transparent fill for selection rectangle
-                    using (var BrushSelection = new SolidBrush(Color.FromArgb(25, Color.White))) {
+                    using (var BrushSelection = new SolidBrush(Color.FromArgb(25, Color.White)))
+                    {
                         e.Graphics.FillRectangle(BrushSelection, clientRectangle);
                     }
                 }
@@ -366,12 +368,6 @@ namespace ScreenGrab
             }
         }
 
-        // == freeform selection form == //
-        private class FreeformSelectForm : Form 
-        {
-        
-        }
-
         // == Capture active window after delay == //
         public async void CaptureActiveWindowDelayed()
         {
@@ -386,11 +382,11 @@ namespace ScreenGrab
         }
 
         // == freeform selection form == //
-        private class FreeformSelectForm : Form 
+        private class FreeformSelectForm : Form
         {
-            private bool  _isDrawing;                         // flag to track if drawing is in progress
-            private List<Point> _freeformPath = new List<Point>();                // list to hold freeform path points
-            public List<Point> FreeformPath => _freeformPath; // public property to access freeform path
+            private bool _isDrawing;                               // flag to track if drawing is in progress
+            private List<Point> _freeformPath = new List<Point>(); // list to hold freeform path points
+            public List<Point> FreeformPath => _freeformPath;      // public property to access freeform path
 
             // start freeform drawing on left mouse click
             private void OnMouseDown(object? sender, MouseEventArgs e)
@@ -422,7 +418,7 @@ namespace ScreenGrab
                 if (_freeformPath.Count > 0)
                 {
                     _freeformPath.Add(_freeformPath[0]);        // close the path by adding starting point at the end
-                }   
+                }
                 if (_freeformPath.Count > 2)                    // validate path has enough points
                 {
                     DialogResult = DialogResult.OK;             // set dialog result to OK if valid path
@@ -496,7 +492,7 @@ namespace ScreenGrab
         {
             using Bitmap bitmap = new Bitmap(area.Width, area.Height);     // create bitmap to hold screenshot
             using Graphics g = Graphics.FromImage(bitmap);                 // create graphics object from bitmap
-            {             
+            {
                 g.CopyFromScreen(area.Location, Point.Empty, area.Size);   // capture screenshot from specified area
             }
             // save to clipboard
@@ -538,7 +534,7 @@ namespace ScreenGrab
             int maxY = freeformPath.Max(p => p.Y);
 
             //calculate width and height
-            int width  = maxX - minX;
+            int width = maxX - minX;
             int height = maxY - minY;
 
             // error handling for invalid dimensions
@@ -563,14 +559,14 @@ namespace ScreenGrab
             using (Graphics gMask = Graphics.FromImage(maskedCapture))
             {
                 using GraphicsPath gp = new GraphicsPath();
-                                {
+                {
                     // create path relative to bounding rectangle
                     Point[] relativePoints = freeformPath
                         .Select(p => new Point(p.X - minX, p.Y - minY))
                         .ToArray();
-                   gp.AddPolygon(relativePoints);
-                   gMask.Clear(Color.Transparent);             // clear background to transparent
-                   gMask.SetClip(gp);                          // set clipping region to freeform path
+                    gp.AddPolygon(relativePoints);
+                    gMask.Clear(Color.Transparent);             // clear background to transparent
+                    gMask.SetClip(gp);                          // set clipping region to freeform path
                     gMask.DrawImage(fullCapture, Point.Empty); // draw captured image onto masked bitmap
                 }
             }
