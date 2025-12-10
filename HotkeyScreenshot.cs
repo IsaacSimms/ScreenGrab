@@ -112,12 +112,26 @@ namespace ScreenGrab
                                                           //bool ok RegisterHotKey(_handle, id, mods, key); // register hotkey using WinAPI
             if (!RegisterHotKey(_handle, id, mods, key))  // error handling for hotkey registration
             {
-                ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: error registering hotkeys. please relaunch app",
-                    $"ScreenGrab",
-                    4000);
+                int errorCode = Marshal.GetLastWin32Error();
+                string hotkeyString = def.ToString();
+                if (errorCode != 1409)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to register hotkey {hotkeyString}. Error code: {errorCode}");
+                    ScreenshotMessageBox.ShowMessage(
+                        $"ScreenGrab: error registering hotkeys. please relaunch app",
+                        $"ScreenGrab",
+                        4000);
+                    throw new InvalidOperationException("Failed to register one or more hotkeys.");
+                }
+                if (errorCode == 1409) // hotkey already registered
+                {
+                    ScreenshotMessageBox.ShowMessage(
+                        $"ScreenGrab: Hotkey {hotkeyString} is already in use by another application. Please choose a different hotkey for ScreenGrab OR close the conflicting application.",
+                        $"ScreenGrab - Hotkey conflict",
+                        10000);
+                }
                 System.Diagnostics.Debug.WriteLine($"Failed to register hotkeys");
-                throw new InvalidOperationException("Failed to register one or more hotkeys.");
+
             }
         }
         // == UpdateHotkey configuration == //
