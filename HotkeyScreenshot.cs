@@ -27,9 +27,9 @@ namespace ScreenGrab
         private IntPtr _handle;                 // instance variable for window handle
 
         // == WinAPI Imports == //
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk); // allows for hotkey press to be sent to app 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
         // == Active Window Screenshot Imports == //
         [DllImport("user32.dll")]
@@ -120,7 +120,7 @@ namespace ScreenGrab
                         $"ScreenGrab: error registering hotkeys. please relaunch app",
                         $"ScreenGrab",
                         4000);
-                    throw new InvalidOperationException("Failed to register one or more hotkeys.");
+                    //throw new InvalidOperationException("Failed to register one or more hotkeys.");
                 }
                 if (errorCode == 1409) // hotkey already registered
                 {
