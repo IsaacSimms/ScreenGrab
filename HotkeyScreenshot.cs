@@ -1,6 +1,5 @@
 ﻿///// This class handles active window screen grabbing functionality /////
-///// When control + shift + Z is pressed, capture a screenshot of the currently active window. Saves PNG to clipboard and onedrive folder  /////
-///// When control + shift + X is pressed, enable a region select screenshot mode. User can click and drag to select a region of the screen to capture. Saves PNG to clipboard and onedrive folder  /////
+///// using hotkeys defined in HotkeyConfig.cs /////
 
 // namespaces
 using Microsoft.VisualBasic.Devices;
@@ -25,7 +24,7 @@ namespace ScreenGrab
     {
         // variables for hotkey configuration and registration
         private readonly HotkeyConfig _config;  // instance variable for hotkey configuration
-        private IntPtr _handle;          // instance variable for window handle
+        private IntPtr _handle;                 // instance variable for window handle
 
         // == WinAPI Imports == //
         [DllImport("user32.dll")]
@@ -47,14 +46,14 @@ namespace ScreenGrab
 
         // == Hotkey varibale registration == //
         // Hotkey IDs //
-        private const int WM_HOTKEY = 0x0312;                     // Windows message ID for hotkey
-        private readonly int _ActiveWindowHotkeyId;                          // instance variable for active window hotkey ID
-        private readonly int _RegionSelectHotkeyId;                          // instance variable for region select hotkey ID
-        private readonly int _FreeformSelectHotkeyId;                        // instance variable for freeform select hotkey ID
-        private readonly int _ActiveWindowDelayHotkeyId;                     // ID for active window delayed screenshot hotkey
-        private readonly int _RegionSelectDelayHotkeyId;                     // ID for region select delayed screenshot hotkey
-        private readonly int _OpenClipboardInPaintHotkeyId;                  // ID for open clipboard image in paint hotkey
-        public event Action<string>? OnScreenshotTaken;                      // event to notify when a screenshot is taken
+        private const int    WM_HOTKEY = 0x0312;            // Windows message ID for hotkey
+        private readonly int _ActiveWindowHotkeyId;         // instance variable for active window hotkey ID
+        private readonly int _RegionSelectHotkeyId;         // instance variable for region select hotkey ID
+        private readonly int _FreeformSelectHotkeyId;       // instance variable for freeform select hotkey ID
+        private readonly int _ActiveWindowDelayHotkeyId;    // ID for active window delayed screenshot hotkey
+        private readonly int _RegionSelectDelayHotkeyId;    // ID for region select delayed screenshot hotkey
+        private readonly int _OpenClipboardInPaintHotkeyId; // ID for open clipboard image in paint hotkey
+        public event Action<string>? OnScreenshotTaken;     // event to notify when a screenshot is taken
 
         // == Register hotkeys == //
         // attach hotkey configruation to handle
@@ -158,19 +157,19 @@ namespace ScreenGrab
                 {
                     CaptureActiveWindow();
                 }
-                else if (id == _RegionSelectHotkeyId)               // check if region select hotkey was pressed
+                else if (id == _RegionSelectHotkeyId)          // check if region select hotkey was pressed
                 {
                     CaptureRegion();
                 }
-                else if (id == _FreeformSelectHotkeyId)             // check if freeform select hotkey was pressed
+                else if (id == _FreeformSelectHotkeyId)        // check if freeform select hotkey was pressed
                 {
                     CaptureFreeform();
                 }
-                else if (id == _ActiveWindowDelayHotkeyId)          // check if active window delay hotkey was pressed
+                else if (id == _ActiveWindowDelayHotkeyId)     // check if active window delay hotkey was pressed
                 {
                     CaptureActiveWindowDelayed();
                 }
-                else if (id == _RegionSelectDelayHotkeyId)          // check if region select delay hotkey was pressed
+                else if (id == _RegionSelectDelayHotkeyId)     // check if region select delay hotkey was pressed
                 {
                     CaptureRegionDelayed();
                 }
@@ -257,7 +256,7 @@ namespace ScreenGrab
                         4000);                                           // duration in ms
                     return;
                 }
-                CaptureAndSaveFreeform(freeformPath, "Freeform Select");         // capture and save screenshot
+                CaptureAndSaveFreeform(freeformPath, "Freeform Select"); // capture and save screenshot
             }
         }
 
@@ -319,10 +318,10 @@ namespace ScreenGrab
             {
                 if (e.KeyCode == Keys.Escape)
                 {
-                    _isSelecting = false;               // end selection
-                    _selectedArea = Rectangle.Empty;    // reset selected area
-                    DialogResult = DialogResult.Cancel; // set dialog result to Cancel
-                    Close();                            // close the form
+                    _isSelecting  = false;               // end selection
+                    _selectedArea = Rectangle.Empty;     // reset selected area
+                    DialogResult  = DialogResult.Cancel; // set dialog result to Cancel
+                    Close();                             // close the form
                 }
             }
 
@@ -330,33 +329,37 @@ namespace ScreenGrab
             protected override void OnPaint(PaintEventArgs e)
             {
                 base.OnPaint(e);
-                if (_isSelecting && _selectedArea != Rectangle.Empty)
+                using (var overlayBrush = new SolidBrush(Color.FromArgb(38, Color.Black))) // semi-transparent overlay brush
                 {
-                    // convert selected area to client coordinates for drawing
-                    Rectangle clientRectangle = new Rectangle(
-                        _selectedArea.X - this.Bounds.X,
-                        _selectedArea.Y - this.Bounds.Y,
-                        _selectedArea.Width,
-                        _selectedArea.Height);
-                    using (var PenSelection = new Pen(Color.Red, 4))               // pen for selection rectangle
+                    
+                    if (_isSelecting && _selectedArea != Rectangle.Empty)
                     {
-                        e.Graphics.DrawRectangle(PenSelection, clientRectangle);   // draw selection rectangle
+                        // convert selected area to client coordinates for drawing
+                        Rectangle clientRectangle = new Rectangle(
+                            _selectedArea.X - this.Bounds.X,
+                            _selectedArea.Y - this.Bounds.Y,
+                            _selectedArea.Width,
+                            _selectedArea.Height);
+                        using (Region formRegion = new Region(this.ClientRectangle))
+                        {
+                            formRegion.Exclude(clientRectangle);                     // exclude selected area from form region
+                            e.Graphics.FillRegion(overlayBrush, formRegion);         // fill remaining area with overlay
+                        }
+                        // pen for selection rectangle
+                        using (var selectionPen = new Pen(Color.Red, 4))
+                        {
+                            e.Graphics.DrawRectangle(selectionPen, clientRectangle); // draw selection rectangle
+                        }
+                        // dashed overlay
+                        using (var dashedPen = new Pen(Color.Black, 2))
+                        {
+                            dashedPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+                            e.Graphics.DrawRectangle(dashedPen, clientRectangle);
+                        }
                     }
-                    Rectangle innerRectangle = new Rectangle(
-                        clientRectangle.X + 4,
-                        clientRectangle.Y + 4,
-                        clientRectangle.Width - 8,
-                        clientRectangle.Height - 8);
-                    // Draw dashed border for selection rectangle
-                    using (var PenDashed = new Pen(Color.Black, 2))
+                    else
                     {
-                        PenDashed.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
-                        e.Graphics.DrawRectangle(PenDashed, clientRectangle);
-                    }
-                    // draw semi-transparent fill for selection rectangle
-                    using (var BrushSelection = new SolidBrush(Color.FromArgb(25, Color.White)))
-                    {
-                        e.Graphics.FillRectangle(BrushSelection, clientRectangle);
+                        e.Graphics.FillRectangle(overlayBrush, this.ClientRectangle); // fill entire form with overlay
                     }
                 }
             }
@@ -367,12 +370,13 @@ namespace ScreenGrab
                 // setup form properties
                 var vs = System.Windows.Forms.SystemInformation.VirtualScreen; // get virtual screen dimensions
                 this.FormBorderStyle = FormBorderStyle.None;                   // no border
-                this.StartPosition = FormStartPosition.Manual;                 // manual position
-                this.Bounds = vs;                                              // cover entire virtual screen
-                this.BackColor = Color.White;                                  // white background
-                this.Opacity = .15;                                             // semi-transparent
-                this.TopMost = true;                                           // always on top
-                this.DoubleBuffered = true;                                    // reduce flicker
+                this.StartPosition   = FormStartPosition.Manual;               // manual position
+                this.Bounds          = vs;                                     // cover entire virtual screen
+                this.BackColor       = Color.White;                            // white background
+                this.TransparencyKey = Color.White;                            // make white color transparent
+                this.Opacity         = .15;                                    // semi-transparent
+                this.TopMost         = true;                                   // always on top
+                this.DoubleBuffered  = true;                                   // reduce flicker
                 Cursor = Cursors.Cross;
                 // attach event handlers
                 this.MouseDown += new MouseEventHandler(onMouseDown);
@@ -460,23 +464,39 @@ namespace ScreenGrab
             protected override void OnPaint(PaintEventArgs e)
             {
                 base.OnPaint(e);
-                if (_freeformPath.Count > 1)
+                using (var overlayBrush = new SolidBrush(Color.FromArgb(38, Color.Black))) // semi-transparent overlay brush
                 {
-                    // convert freeform path points to client coordinates for drawing
-                    Point[] clientPoints = _freeformPath
-                        .Select(p => new Point(p.X - this.Bounds.X, p.Y - this.Bounds.Y))
-                        .ToArray();
-                    // anti-aliasing for smoother lines
-                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                    using (var PenFreeform = new Pen(Color.Red, 4))               // pen for freeform path
+                    if (_freeformPath.Count > 1)
                     {
-                        e.Graphics.DrawLines(PenFreeform, clientPoints);          // draw freeform path
+                        // convert freeform path points to client coordinates for drawing
+                        Point[] clientPoints = _freeformPath
+                            .Select(p => new Point(p.X - this.Bounds.X, p.Y - this.Bounds.Y))
+                            .ToArray();
+                        using (var graphicsPath = new GraphicsPath())
+                        {
+                            graphicsPath.AddPolygon(clientPoints);               // create polygon from freeform path
+                            using (Region formRegion = new Region(this.ClientRectangle))
+                            {
+                                formRegion.Exclude(graphicsPath);                // exclude freeform area from form region
+                                e.Graphics.FillRegion(overlayBrush, formRegion); // fill remaining area with overlay
+                            }
+                            // anti-aliasing for smoother lines
+                            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                            using (var PenFreeform = new Pen(Color.Red, 4))               // pen for freeform path
+                            {
+                                e.Graphics.DrawLines(PenFreeform, clientPoints);          // draw freeform path
+                            }
+                            //dashed overlay
+                            using (var PenDashedFreeform = new Pen(Color.Black, 2))
+                            {
+                                PenDashedFreeform.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+                                e.Graphics.DrawLines(PenDashedFreeform, clientPoints);
+                            }
+                        }
                     }
-                    //dashed overlay
-                    using (var PenDashedFreeform = new Pen(Color.Black, 2))
+                    else
                     {
-                        PenDashedFreeform.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
-                        e.Graphics.DrawLines(PenDashedFreeform, clientPoints);
+                        e.Graphics.FillRectangle(overlayBrush, this.ClientRectangle); // fill entire form with overlay
                     }
                 }
             }
@@ -486,18 +506,19 @@ namespace ScreenGrab
             {
                 var vs = System.Windows.Forms.SystemInformation.VirtualScreen; // get virtual screen dimensions
                 this.FormBorderStyle = FormBorderStyle.None;                   // no border
-                this.StartPosition = FormStartPosition.Manual;                 // manual position
-                this.Bounds = vs;                                              // cover entire virtual screen
-                this.BackColor = Color.White;                                  // white background
-                this.Opacity = .15;                                             // semi-transparent
-                this.TopMost = true;                                           // always on top
-                this.DoubleBuffered = true;                                    // reduce flicker
+                this.StartPosition   = FormStartPosition.Manual;               // manual position
+                this.Bounds          = vs;                                     // cover entire virtual screen
+                this.BackColor       = Color.White;                            // white background
+                this.TransparencyKey = Color.White;                            // make white color transparent
+                this.Opacity         = .15;                                    // semi-transparent
+                this.TopMost         = true;                                   // always on top
+                this.DoubleBuffered  = true;                                   // reduce flicker
 
                 // event handlers
                 this.MouseDown += new MouseEventHandler(OnMouseDown);
                 this.MouseMove += new MouseEventHandler(OnMouseMove);
-                this.MouseUp += new MouseEventHandler(OnMouseUp);
-                this.KeyDown += new KeyEventHandler(EscKeyDown);
+                this.MouseUp   += new MouseEventHandler(OnMouseUp);
+                this.KeyDown   += new KeyEventHandler(EscKeyDown);
             }
         }
 
