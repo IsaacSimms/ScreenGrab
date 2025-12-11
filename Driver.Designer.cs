@@ -33,6 +33,12 @@
             SystemTrayIcon = new NotifyIcon(components);
             SystemTrayMenu = new ContextMenuStrip(components);
             menuOpen = new ToolStripMenuItem();
+            regionCaptureToolStripMenuItem = new ToolStripMenuItem();
+            activeWindowToolStripMenuItem = new ToolStripMenuItem();
+            delayedActiveWindowToolStripMenuItem = new ToolStripMenuItem();
+            delayedRegionToolStripMenuItem = new ToolStripMenuItem();
+            freeformToolStripMenuItem = new ToolStripMenuItem();
+            openMSPaintToolStripMenuItem = new ToolStripMenuItem();
             settingsToolStripMenuItem = new ToolStripMenuItem();
             menuExit = new ToolStripMenuItem();
             btnSendToSettings = new Button();
@@ -56,24 +62,78 @@
             // SystemTrayMenu
             // 
             SystemTrayMenu.BackColor = SystemColors.Desktop;
-            SystemTrayMenu.Items.AddRange(new ToolStripItem[] { menuOpen, settingsToolStripMenuItem, menuExit });
+            SystemTrayMenu.Items.AddRange(new ToolStripItem[] { menuOpen, regionCaptureToolStripMenuItem, activeWindowToolStripMenuItem, delayedRegionToolStripMenuItem, delayedActiveWindowToolStripMenuItem, freeformToolStripMenuItem, openMSPaintToolStripMenuItem, settingsToolStripMenuItem, menuExit });
             SystemTrayMenu.Name = "SystemTrayMenu";
-            SystemTrayMenu.Size = new Size(129, 70);
+            SystemTrayMenu.Size = new Size(200, 202);
             // 
             // menuOpen
             // 
             menuOpen.ForeColor = Color.Snow;
             menuOpen.Image = Properties.Resources.S1;
             menuOpen.Name = "menuOpen";
-            menuOpen.Size = new Size(128, 22);
+            menuOpen.Size = new Size(199, 22);
             menuOpen.Text = "Home";
+            // 
+            // regionCaptureToolStripMenuItem
+            // 
+            regionCaptureToolStripMenuItem.ForeColor = SystemColors.Window;
+            regionCaptureToolStripMenuItem.Image = (Image)resources.GetObject("regionCaptureToolStripMenuItem.Image");
+            regionCaptureToolStripMenuItem.Name = "regionCaptureToolStripMenuItem";
+            regionCaptureToolStripMenuItem.Size = new Size(199, 22);
+            regionCaptureToolStripMenuItem.Text = "Region Capture";
+            regionCaptureToolStripMenuItem.Click += regionScreenshotButton_Click;
+            // 
+            // activeWindowToolStripMenuItem
+            // 
+            activeWindowToolStripMenuItem.ForeColor = SystemColors.Window;
+            activeWindowToolStripMenuItem.Image = (Image)resources.GetObject("activeWindowToolStripMenuItem.Image");
+            activeWindowToolStripMenuItem.Name = "activeWindowToolStripMenuItem";
+            activeWindowToolStripMenuItem.Size = new Size(199, 22);
+            activeWindowToolStripMenuItem.Text = "Active Window";
+            activeWindowToolStripMenuItem.Click += activeWindowScreenshotButton_Click;
+            // 
+            // delayedActiveWindowToolStripMenuItem
+            // 
+            delayedActiveWindowToolStripMenuItem.ForeColor = SystemColors.Window;
+            delayedActiveWindowToolStripMenuItem.Image = Properties.Resources.ScreenCaptureIcon;
+            delayedActiveWindowToolStripMenuItem.Name = "delayedActiveWindowToolStripMenuItem";
+            delayedActiveWindowToolStripMenuItem.Size = new Size(199, 22);
+            delayedActiveWindowToolStripMenuItem.Text = "Delayed Active Window";
+            delayedActiveWindowToolStripMenuItem.Click += delayedActiveWindowScreenshotButton_Click;
+            // 
+            // delayedRegionToolStripMenuItem
+            // 
+            delayedRegionToolStripMenuItem.ForeColor = SystemColors.Window;
+            delayedRegionToolStripMenuItem.Image = Properties.Resources.ScreenCaptureIcon;
+            delayedRegionToolStripMenuItem.Name = "delayedRegionToolStripMenuItem";
+            delayedRegionToolStripMenuItem.Size = new Size(199, 22);
+            delayedRegionToolStripMenuItem.Text = "Delayed Region";
+            delayedRegionToolStripMenuItem.Click += delayedRegionScreenshotButton_Click;
+            // 
+            // freeformToolStripMenuItem
+            // 
+            freeformToolStripMenuItem.ForeColor = SystemColors.Window;
+            freeformToolStripMenuItem.Image = Properties.Resources.ScreenCaptureIcon;
+            freeformToolStripMenuItem.Name = "freeformToolStripMenuItem";
+            freeformToolStripMenuItem.Size = new Size(199, 22);
+            freeformToolStripMenuItem.Text = "Freeform";
+            freeformToolStripMenuItem.Click += freeformScreenshotButton_Click;
+            // 
+            // openMSPaintToolStripMenuItem
+            // 
+            openMSPaintToolStripMenuItem.ForeColor = SystemColors.Window;
+            openMSPaintToolStripMenuItem.Image = (Image)resources.GetObject("openMSPaintToolStripMenuItem.Image");
+            openMSPaintToolStripMenuItem.Name = "openMSPaintToolStripMenuItem";
+            openMSPaintToolStripMenuItem.Size = new Size(199, 22);
+            openMSPaintToolStripMenuItem.Text = "Open MSPaint";
+            openMSPaintToolStripMenuItem.Click += openClipboardImageInPaintButton_Click;
             // 
             // settingsToolStripMenuItem
             // 
             settingsToolStripMenuItem.ForeColor = SystemColors.Window;
-            settingsToolStripMenuItem.Image = Properties.Resources.S1;
+            settingsToolStripMenuItem.Image = (Image)resources.GetObject("settingsToolStripMenuItem.Image");
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(128, 22);
+            settingsToolStripMenuItem.Size = new Size(199, 22);
             settingsToolStripMenuItem.Text = "Settings";
             settingsToolStripMenuItem.Click += SendToSettings_Click;
             // 
@@ -82,7 +142,7 @@
             menuExit.ForeColor = Color.Snow;
             menuExit.Image = Properties.Resources.S1;
             menuExit.Name = "menuExit";
-            menuExit.Size = new Size(128, 22);
+            menuExit.Size = new Size(199, 22);
             menuExit.Text = "Shutdown";
             // 
             // btnSendToSettings
@@ -233,5 +293,11 @@
         private Button delayedRegionScreenshotButton;
         private Button button2;
         private Button button1;
+        private ToolStripMenuItem regionCaptureToolStripMenuItem;
+        private ToolStripMenuItem activeWindowToolStripMenuItem;
+        private ToolStripMenuItem delayedActiveWindowToolStripMenuItem;
+        private ToolStripMenuItem delayedRegionToolStripMenuItem;
+        private ToolStripMenuItem freeformToolStripMenuItem;
+        private ToolStripMenuItem openMSPaintToolStripMenuItem;
     }
 }

@@ -466,31 +466,53 @@ namespace ScreenGrab
                 base.OnPaint(e);
                 using (var overlayBrush = new SolidBrush(Color.FromArgb(38, Color.Black))) // semi-transparent overlay brush
                 {
+                    // draw freeform path if it has points
                     if (_freeformPath.Count > 1)
                     {
                         // convert freeform path points to client coordinates for drawing
                         Point[] clientPoints = _freeformPath
                             .Select(p => new Point(p.X - this.Bounds.X, p.Y - this.Bounds.Y))
                             .ToArray();
-                        using (var graphicsPath = new GraphicsPath())
+                        // draw filled overlay excluding freeform area 
+                        if (clientPoints.Length >= 3)
                         {
-                            graphicsPath.AddPolygon(clientPoints);               // create polygon from freeform path
-                            using (Region formRegion = new Region(this.ClientRectangle))
+                            using (var graphicsPath = new GraphicsPath())
                             {
-                                formRegion.Exclude(graphicsPath);                // exclude freeform area from form region
-                                e.Graphics.FillRegion(overlayBrush, formRegion); // fill remaining area with overlay
+                                graphicsPath.AddPolygon(clientPoints);               // create polygon from freeform path
+                                using (Region formRegion = new Region(this.ClientRectangle))
+                                {
+                                    formRegion.Exclude(graphicsPath);                // exclude freeform area from form region
+                                    e.Graphics.FillRegion(overlayBrush, formRegion); // fill remaining area with overlay
+                                }
+                                // anti-aliasing for smoother lines
+                                e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                                using (var PenFreeform = new Pen(Color.Red, 4))               // pen for freeform path
+                                {
+                                    e.Graphics.DrawLines(PenFreeform, clientPoints);          // draw freeform path
+                                }
+                                //dashed overlay
+                                using (var PenDashedFreeform = new Pen(Color.Black, 2))
+                                {
+                                    PenDashedFreeform.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+                                    e.Graphics.DrawLines(PenDashedFreeform, clientPoints);
+                                }
                             }
-                            // anti-aliasing for smoother lines
+                        }
+                        // draw partial paths for 1 or 2 points // handles edge cases and prevents errors
+                        else if (clientPoints.Length > 0)
+                        {
+                            e.Graphics.FillRectangle(overlayBrush, this.ClientRectangle); // fill entire form with overlay
                             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                             using (var PenFreeform = new Pen(Color.Red, 4))               // pen for freeform path
                             {
-                                e.Graphics.DrawLines(PenFreeform, clientPoints);          // draw freeform path
-                            }
-                            //dashed overlay
-                            using (var PenDashedFreeform = new Pen(Color.Black, 2))
-                            {
-                                PenDashedFreeform.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
-                                e.Graphics.DrawLines(PenDashedFreeform, clientPoints);
+                                if (clientPoints.Length == 2)
+                                {
+                                    e.Graphics.DrawLine(PenFreeform, clientPoints[0], clientPoints[1]); // draw line for two points
+                                }
+                                else if (clientPoints.Length == 1)
+                                {
+                                    e.Graphics.DrawEllipse(PenFreeform, clientPoints[0].X - 2, clientPoints[0].Y - 2, 4, 4); // draw single point as small circle
+                                }
                             }
                         }
                     }
