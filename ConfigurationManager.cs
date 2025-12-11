@@ -1,4 +1,5 @@
 ﻿///// Class manages the saving and loading of persistent JSON file which holds the configuration settings /////
+///// includes hotkey assignments for screenshots. however, default hotkey configs are stored in HotkeyConfig.cs /////
 
 // namespaces
 using System;
