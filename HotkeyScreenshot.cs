@@ -106,10 +106,9 @@ namespace ScreenGrab
         }
         private void RegisterFromConfig(int id, HotkeyDefinition def)
         {
-            uint mods = (uint)def.Modifiers;              // get modifier flags
-            uint key = (uint)def.Key;                     // get key for keyboard hotkey
-                                                          //bool ok RegisterHotKey(_handle, id, mods, key); // register hotkey using WinAPI
-            if (!RegisterHotKey(_handle, id, mods, key))  // error handling for hotkey registration
+            uint mods = (uint)def.Modifiers;                // get modifier flags
+            uint key = (uint)def.Key;                       // get key for keyboard hotkey
+            if (!RegisterHotKey(_handle, id, mods, key))    // error handling for hotkey registration
             {
                 int errorCode = Marshal.GetLastWin32Error();
                 string hotkeyString = def.ToString();
@@ -120,7 +119,7 @@ namespace ScreenGrab
                         $"ScreenGrab: error registering hotkeys. please relaunch app",
                         $"ScreenGrab",
                         4000);
-                    //throw new InvalidOperationException("Failed to register one or more hotkeys.");
+                    throw new InvalidOperationException("Failed to register one or more hotkeys.");
                 }
                 if (errorCode == 1409) // hotkey already registered
                 {
