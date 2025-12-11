@@ -1,4 +1,4 @@
-﻿///// This class handles active window screen grabbing functionality /////
+﻿///// This class handles screen capture logic, hotkey registration, png save logic, with error handling and messaging /////
 ///// using hotkeys defined in HotkeyConfig.cs /////
 
 // namespaces
