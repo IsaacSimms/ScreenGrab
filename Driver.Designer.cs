@@ -35,8 +35,8 @@
             menuOpen = new ToolStripMenuItem();
             regionCaptureToolStripMenuItem = new ToolStripMenuItem();
             activeWindowToolStripMenuItem = new ToolStripMenuItem();
-            delayedActiveWindowToolStripMenuItem = new ToolStripMenuItem();
             delayedRegionToolStripMenuItem = new ToolStripMenuItem();
+            delayedActiveWindowToolStripMenuItem = new ToolStripMenuItem();
             freeformToolStripMenuItem = new ToolStripMenuItem();
             openMSPaintToolStripMenuItem = new ToolStripMenuItem();
             settingsToolStripMenuItem = new ToolStripMenuItem();
@@ -50,6 +50,8 @@
             delayedRegionScreenshotButton = new Button();
             button2 = new Button();
             button1 = new Button();
+            button3 = new Button();
+            openEditorToolStripMenuItem = new ToolStripMenuItem();
             SystemTrayMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -62,9 +64,9 @@
             // SystemTrayMenu
             // 
             SystemTrayMenu.BackColor = SystemColors.Desktop;
-            SystemTrayMenu.Items.AddRange(new ToolStripItem[] { menuOpen, regionCaptureToolStripMenuItem, activeWindowToolStripMenuItem, delayedRegionToolStripMenuItem, delayedActiveWindowToolStripMenuItem, freeformToolStripMenuItem, openMSPaintToolStripMenuItem, settingsToolStripMenuItem, menuExit });
+            SystemTrayMenu.Items.AddRange(new ToolStripItem[] { menuOpen, regionCaptureToolStripMenuItem, activeWindowToolStripMenuItem, delayedRegionToolStripMenuItem, delayedActiveWindowToolStripMenuItem, freeformToolStripMenuItem, openEditorToolStripMenuItem, openMSPaintToolStripMenuItem, settingsToolStripMenuItem, menuExit });
             SystemTrayMenu.Name = "SystemTrayMenu";
-            SystemTrayMenu.Size = new Size(200, 202);
+            SystemTrayMenu.Size = new Size(200, 246);
             // 
             // menuOpen
             // 
@@ -92,15 +94,6 @@
             activeWindowToolStripMenuItem.Text = "Active Window";
             activeWindowToolStripMenuItem.Click += activeWindowScreenshotButton_Click;
             // 
-            // delayedActiveWindowToolStripMenuItem
-            // 
-            delayedActiveWindowToolStripMenuItem.ForeColor = SystemColors.Window;
-            delayedActiveWindowToolStripMenuItem.Image = Properties.Resources.ScreenCaptureIcon;
-            delayedActiveWindowToolStripMenuItem.Name = "delayedActiveWindowToolStripMenuItem";
-            delayedActiveWindowToolStripMenuItem.Size = new Size(199, 22);
-            delayedActiveWindowToolStripMenuItem.Text = "Delayed Active Window";
-            delayedActiveWindowToolStripMenuItem.Click += delayedActiveWindowScreenshotButton_Click;
-            // 
             // delayedRegionToolStripMenuItem
             // 
             delayedRegionToolStripMenuItem.ForeColor = SystemColors.Window;
@@ -109,6 +102,15 @@
             delayedRegionToolStripMenuItem.Size = new Size(199, 22);
             delayedRegionToolStripMenuItem.Text = "Delayed Region";
             delayedRegionToolStripMenuItem.Click += delayedRegionScreenshotButton_Click;
+            // 
+            // delayedActiveWindowToolStripMenuItem
+            // 
+            delayedActiveWindowToolStripMenuItem.ForeColor = SystemColors.Window;
+            delayedActiveWindowToolStripMenuItem.Image = Properties.Resources.ScreenCaptureIcon;
+            delayedActiveWindowToolStripMenuItem.Name = "delayedActiveWindowToolStripMenuItem";
+            delayedActiveWindowToolStripMenuItem.Size = new Size(199, 22);
+            delayedActiveWindowToolStripMenuItem.Text = "Delayed Active Window";
+            delayedActiveWindowToolStripMenuItem.Click += delayedActiveWindowScreenshotButton_Click;
             // 
             // freeformToolStripMenuItem
             // 
@@ -231,7 +233,7 @@
             // 
             button2.BackColor = SystemColors.Desktop;
             button2.ForeColor = SystemColors.Window;
-            button2.Location = new Point(12, 211);
+            button2.Location = new Point(365, 99);
             button2.Name = "button2";
             button2.Size = new Size(77, 40);
             button2.TabIndex = 9;
@@ -243,13 +245,34 @@
             // 
             button1.BackColor = SystemColors.Desktop;
             button1.ForeColor = SystemColors.Window;
-            button1.Location = new Point(95, 211);
+            button1.Location = new Point(12, 211);
             button1.Name = "button1";
             button1.Size = new Size(77, 40);
             button1.TabIndex = 10;
             button1.Text = "Freeform Capture";
             button1.UseVisualStyleBackColor = false;
             button1.Click += freeformScreenshotButton_Click;
+            // 
+            // button3
+            // 
+            button3.BackColor = SystemColors.Desktop;
+            button3.ForeColor = SystemColors.Window;
+            button3.Location = new Point(448, 99);
+            button3.Name = "button3";
+            button3.Size = new Size(77, 40);
+            button3.TabIndex = 11;
+            button3.Text = "Open Editor";
+            button3.UseVisualStyleBackColor = false;
+            button3.Click += SendToEditor_Click;
+            // 
+            // openEditorToolStripMenuItem
+            // 
+            openEditorToolStripMenuItem.ForeColor = SystemColors.Window;
+            openEditorToolStripMenuItem.Image = (Image)resources.GetObject("openEditorToolStripMenuItem.Image");
+            openEditorToolStripMenuItem.Name = "openEditorToolStripMenuItem";
+            openEditorToolStripMenuItem.Size = new Size(199, 22);
+            openEditorToolStripMenuItem.Text = "Open Editor";
+            openEditorToolStripMenuItem.Click += SendToEditor_Click;
             // 
             // Driver
             // 
@@ -258,6 +281,7 @@
             BackColor = SystemColors.InfoText;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(537, 269);
+            Controls.Add(button3);
             Controls.Add(button1);
             Controls.Add(button2);
             Controls.Add(delayedRegionScreenshotButton);
@@ -299,5 +323,7 @@
         private ToolStripMenuItem delayedRegionToolStripMenuItem;
         private ToolStripMenuItem freeformToolStripMenuItem;
         private ToolStripMenuItem openMSPaintToolStripMenuItem;
+        private Button button3;
+        private ToolStripMenuItem openEditorToolStripMenuItem;
     }
 }

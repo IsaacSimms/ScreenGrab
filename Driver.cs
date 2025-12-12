@@ -116,6 +116,17 @@ namespace ScreenGrab
             this.ShowInTaskbar = false;
         }
 
+        // when button is clicked, open Image Editor form
+        private void SendToEditor_Click(object sender, EventArgs e)
+        {
+            var imageEditorForm = new ImageEditorForm();
+            imageEditorForm.Tag = this; // set owner so ImageEditorForm can return to this instance instead of creating a new Driver // This is used in ImageEditorForm.cs for graceful transitions
+            imageEditorForm.ShowInTaskbar = true;
+            imageEditorForm.Show();
+            this.Hide();               // hide the main form // keep persistent state
+            this.ShowInTaskbar = false;
+        }
+
         // when button is clicked, take a screenshot of active window
         private void activeWindowScreenshotButton_Click(object sender, EventArgs e)
         {
