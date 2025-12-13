@@ -31,13 +31,15 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageEditorForm));
             pictureBox1 = new PictureBox();
             btnGoHome = new Button();
-            menuStrip1 = new MenuStrip();
-            fileToolStripMenuItem = new ToolStripMenuItem();
-            openToolStripMenuItem = new ToolStripMenuItem();
             pictureBoxImage = new PictureBox();
+            EditorMenu = new MenuStrip();
+            openToolStripMenuItem = new ToolStripMenuItem();
+            EditorToolStrip = new ToolStrip();
+            toolStripSplitButton1 = new ToolStripSplitButton();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
+            EditorMenu.SuspendLayout();
+            EditorToolStrip.SuspendLayout();
             SuspendLayout();
             // 
             // pictureBox1
@@ -61,41 +63,55 @@
             btnGoHome.UseVisualStyleBackColor = false;
             btnGoHome.Click += btnGoHome_Click;
             // 
-            // menuStrip1
+            // pictureBoxImage
             // 
-            menuStrip1.BackColor = SystemColors.Desktop;
-            menuStrip1.Dock = DockStyle.None;
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
-            menuStrip1.Location = new Point(0, 78);
-            menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(54, 24);
-            menuStrip1.TabIndex = 23;
-            menuStrip1.Text = "menuStrip1";
+            pictureBoxImage.Location = new Point(0, 105);
+            pictureBoxImage.Name = "pictureBoxImage";
+            pictureBoxImage.Size = new Size(1123, 550);
+            pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBoxImage.TabIndex = 24;
+            pictureBoxImage.TabStop = false;
             // 
-            // fileToolStripMenuItem
+            // EditorMenu
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem });
-            fileToolStripMenuItem.ForeColor = SystemColors.Window;
-            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            fileToolStripMenuItem.Size = new Size(46, 20);
-            fileToolStripMenuItem.Text = "File...";
+            EditorMenu.Anchor = AnchorStyles.None;
+            EditorMenu.BackColor = SystemColors.Desktop;
+            EditorMenu.Dock = DockStyle.None;
+            EditorMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem });
+            EditorMenu.Location = new Point(170, 51);
+            EditorMenu.Name = "EditorMenu";
+            EditorMenu.Size = new Size(65, 24);
+            EditorMenu.TabIndex = 25;
+            EditorMenu.Text = "menuStrip1";
             // 
             // openToolStripMenuItem
             // 
             openToolStripMenuItem.BackColor = SystemColors.Desktop;
             openToolStripMenuItem.ForeColor = SystemColors.Window;
             openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new Size(103, 22);
-            openToolStripMenuItem.Text = "Open";
+            openToolStripMenuItem.Size = new Size(57, 20);
+            openToolStripMenuItem.Text = "Open...";
             // 
-            // pictureBoxImage
+            // EditorToolStrip
             // 
-            pictureBoxImage.Location = new Point(12, 105);
-            pictureBoxImage.Name = "pictureBoxImage";
-            pictureBoxImage.Size = new Size(1123, 550);
-            pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBoxImage.TabIndex = 24;
-            pictureBoxImage.TabStop = false;
+            EditorToolStrip.Anchor = AnchorStyles.None;
+            EditorToolStrip.BackColor = SystemColors.Desktop;
+            EditorToolStrip.Dock = DockStyle.None;
+            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripSplitButton1 });
+            EditorToolStrip.Location = new Point(12, 78);
+            EditorToolStrip.Name = "EditorToolStrip";
+            EditorToolStrip.Size = new Size(75, 25);
+            EditorToolStrip.TabIndex = 26;
+            EditorToolStrip.Text = "toolStrip1";
+            // 
+            // toolStripSplitButton1
+            // 
+            toolStripSplitButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripSplitButton1.Image = (Image)resources.GetObject("toolStripSplitButton1.Image");
+            toolStripSplitButton1.ImageTransparentColor = Color.Magenta;
+            toolStripSplitButton1.Name = "toolStripSplitButton1";
+            toolStripSplitButton1.Size = new Size(32, 22);
+            toolStripSplitButton1.Text = "toolStripSplitButton1";
             // 
             // ImageEditorForm
             // 
@@ -103,18 +119,20 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Desktop;
             ClientSize = new Size(1147, 667);
+            Controls.Add(EditorToolStrip);
             Controls.Add(pictureBoxImage);
-            Controls.Add(menuStrip1);
             Controls.Add(btnGoHome);
             Controls.Add(pictureBox1);
+            Controls.Add(EditorMenu);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MainMenuStrip = menuStrip1;
             Name = "ImageEditorForm";
             Text = "ScreenGrab";
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            menuStrip1.ResumeLayout(false);
-            menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).EndInit();
+            EditorMenu.ResumeLayout(false);
+            EditorMenu.PerformLayout();
+            EditorToolStrip.ResumeLayout(false);
+            EditorToolStrip.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -123,9 +141,10 @@
 
         private PictureBox pictureBox1;
         private Button btnGoHome;
-        private MenuStrip menuStrip1;
-        private ToolStripMenuItem fileToolStripMenuItem;
-        private ToolStripMenuItem openToolStripMenuItem;
         private PictureBox pictureBoxImage;
+        private MenuStrip EditorMenu;
+        private ToolStripMenuItem openToolStripMenuItem;
+        private ToolStrip EditorToolStrip;
+        private ToolStripSplitButton toolStripSplitButton1;
     }
 }

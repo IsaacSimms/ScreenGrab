@@ -31,12 +31,27 @@ namespace ScreenGrab
             {
                 _currentImage?.Dispose();                  // dispose previous image if any
                 _currentImage = Image.FromFile(imagePath); // load image from file
-                pictureBox.Image = _currentImage;         // assign image to picture box
+                pictureBoxImage.Image = _currentImage;         // assign image to picture box
                 this.Text = $"Image Editor - {System.IO.Path.GetFileName(imagePath)}"; // set form title
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading image: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // method for click button = open file explorer to load image
+        private void btnLoadImage_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Title = "Select an Image";
+                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All Files|*.*";
+                openFileDialog.Multiselect = false;
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    LoadImage(openFileDialog.FileName); // load selected image
+                }
             }
         }
 
@@ -52,6 +67,13 @@ namespace ScreenGrab
                 parentForm.Activate();
             }
             this.Close();                                        // close settings form to return to main app
+        }
+        // clean resources on form closing
+        private void ImageEditorForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _currentImage?.Dispose(); // dispose loaded image
+            _currentImage = null;
+            base.OnFormClosing(e);
         }
     }
 }
