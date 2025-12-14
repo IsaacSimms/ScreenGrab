@@ -36,6 +36,7 @@
             openToolStripMenuItem = new ToolStripMenuItem();
             EditorToolStrip = new ToolStrip();
             toolStripSplitButton1 = new ToolStripSplitButton();
+            btnSelectColor = new ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
             EditorMenu.SuspendLayout();
@@ -97,10 +98,10 @@
             EditorToolStrip.Anchor = AnchorStyles.None;
             EditorToolStrip.BackColor = SystemColors.Desktop;
             EditorToolStrip.Dock = DockStyle.None;
-            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripSplitButton1 });
+            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripSplitButton1, btnSelectColor });
             EditorToolStrip.Location = new Point(12, 78);
             EditorToolStrip.Name = "EditorToolStrip";
-            EditorToolStrip.Size = new Size(75, 25);
+            EditorToolStrip.Size = new Size(67, 25);
             EditorToolStrip.TabIndex = 26;
             EditorToolStrip.Text = "toolStrip1";
             // 
@@ -112,6 +113,15 @@
             toolStripSplitButton1.Name = "toolStripSplitButton1";
             toolStripSplitButton1.Size = new Size(32, 22);
             toolStripSplitButton1.Text = "toolStripSplitButton1";
+            // 
+            // btnSelectColor
+            // 
+            btnSelectColor.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnSelectColor.ImageTransparentColor = Color.Magenta;
+            btnSelectColor.Name = "btnSelectColor";
+            btnSelectColor.Size = new Size(23, 22);
+            btnSelectColor.Text = "toolStripButton1";
+            btnSelectColor.Click += btnSelectColor_Click;
             // 
             // ImageEditorForm
             // 
@@ -146,5 +156,6 @@
         private ToolStripMenuItem openToolStripMenuItem;
         private ToolStrip EditorToolStrip;
         private ToolStripSplitButton toolStripSplitButton1;
+        private ToolStripButton btnSelectColor;
     }
 }
