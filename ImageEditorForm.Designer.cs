@@ -35,7 +35,8 @@
             EditorMenu = new MenuStrip();
             openToolStripMenuItem = new ToolStripMenuItem();
             EditorToolStrip = new ToolStrip();
-            toolStripSplitButton1 = new ToolStripSplitButton();
+            toolStripButton2 = new ToolStripButton();
+            toolStripButton1 = new ToolStripButton();
             btnSelectColor = new ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
@@ -92,27 +93,39 @@
             openToolStripMenuItem.Name = "openToolStripMenuItem";
             openToolStripMenuItem.Size = new Size(57, 20);
             openToolStripMenuItem.Text = "Open...";
+            openToolStripMenuItem.Click += btnLoadImage_Click;
             // 
             // EditorToolStrip
             // 
             EditorToolStrip.Anchor = AnchorStyles.None;
             EditorToolStrip.BackColor = SystemColors.Desktop;
             EditorToolStrip.Dock = DockStyle.None;
-            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripSplitButton1, btnSelectColor });
+            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, btnSelectColor });
             EditorToolStrip.Location = new Point(12, 78);
             EditorToolStrip.Name = "EditorToolStrip";
-            EditorToolStrip.Size = new Size(67, 25);
+            EditorToolStrip.Size = new Size(81, 25);
             EditorToolStrip.TabIndex = 26;
             EditorToolStrip.Text = "toolStrip1";
             // 
-            // toolStripSplitButton1
+            // toolStripButton2
             // 
-            toolStripSplitButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripSplitButton1.Image = (Image)resources.GetObject("toolStripSplitButton1.Image");
-            toolStripSplitButton1.ImageTransparentColor = Color.Magenta;
-            toolStripSplitButton1.Name = "toolStripSplitButton1";
-            toolStripSplitButton1.Size = new Size(32, 22);
-            toolStripSplitButton1.Text = "toolStripSplitButton1";
+            toolStripButton2.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButton2.Image = (Image)resources.GetObject("toolStripButton2.Image");
+            toolStripButton2.ImageTransparentColor = Color.Magenta;
+            toolStripButton2.Name = "toolStripButton2";
+            toolStripButton2.Size = new Size(23, 22);
+            toolStripButton2.Text = "toolStripButton2";
+            toolStripButton2.Click += btnDrawRectangle_Click;
+            // 
+            // toolStripButton1
+            // 
+            toolStripButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButton1.Image = (Image)resources.GetObject("toolStripButton1.Image");
+            toolStripButton1.ImageTransparentColor = Color.Magenta;
+            toolStripButton1.Name = "toolStripButton1";
+            toolStripButton1.Size = new Size(23, 22);
+            toolStripButton1.Text = "toolStripButton1";
+            toolStripButton1.Click += btnDrawArrow_Click;
             // 
             // btnSelectColor
             // 
@@ -157,5 +170,7 @@
         private ToolStrip EditorToolStrip;
         private ToolStripSplitButton toolStripSplitButton1;
         private ToolStripButton btnSelectColor;
+        private ToolStripButton toolStripButton1;
+        private ToolStripButton toolStripButton2;
     }
 }

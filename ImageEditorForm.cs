@@ -30,27 +30,34 @@ namespace ScreenGrab
         private Color      _SelectedColor = Color.Red;             //default color (red) for drawing
         private Pen?       _currentPen;                            //pen for drawing shapes
          
-        // constructor
+        // == constructor == //
         public ImageEditorForm()
         {
             InitializeComponent();
             _currentPen = new Pen(_SelectedColor, 2); // initialize pen with default color and width
             UpdateColorButtonDisplay();               // update button display with default color
+
+            // wire up mouse events for drawing
+            pictureBoxImage.MouseDown += pictureBoxImage_MouseDown;
+            pictureBoxImage.MouseMove += pictureBoxImage_MouseMove;
+            pictureBoxImage.MouseUp   += pictureBoxImage_MouseUp;
+            pictureBoxImage.Paint     += pictureBoxImage_Paint;
         }
 
-        // constructor to load image from path
+        // == constructor to load image from path == //
         public ImageEditorForm(string imagePath) : this()
         {
             LoadImage(imagePath);
         }
-        // load image from file path
+        // == load image from file path == //
         private void LoadImage(string imagePath)
         {
             try
             {
                 _currentImage?.Dispose();                                              // dispose previous image if any
+                _editableImage?.Dispose();                                             // dispose previous editable image if any
                 _currentImage = Image.FromFile(imagePath);                             // load image from file
-                pictureBoxImage.Image = _currentImage;                                 // assign image to picture box
+                pictureBoxImage.Image = _editableImage;                                 // assign image to picture box
                 this.Text = $"Image Editor - {System.IO.Path.GetFileName(imagePath)}"; // set form title
             }
             catch (Exception ex)
@@ -59,7 +66,7 @@ namespace ScreenGrab
             }
         }
 
-        // menustrip: click button == open file explorer to load image
+        // == menustrip: click button == open file explorer to load image == //
         private void btnLoadImage_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
@@ -93,7 +100,7 @@ namespace ScreenGrab
             }
         }
 
-        // update button display w/ currently selected color
+        // == update button display w/ currently selected color == //
         private void UpdateColorButtonDisplay()
         {
             int _buttonSize = 16;                              // size of color display square
@@ -117,6 +124,31 @@ namespace ScreenGrab
         // == END OF COLOR SELECTION FUNCTIONALITY == //
 
         // TOOLSTRIP: TOOL SELECTION FUNCTIONALITY == //
+        // == method to activate selected drawing tool == //
+        private void ActivateDrawingTool(DrawingTool tool)
+        {
+            // toggle off if same tool is selected
+            if (_activeDrawingTool == tool)
+            {
+                _activeDrawingTool = DrawingTool.None;    // deactivate tool
+                pictureBoxImage.Cursor = Cursors.Default; // reset cursor
+            }
+            else
+            {
+                _activeDrawingTool = tool;              // activate selected tool
+                pictureBoxImage.Cursor = Cursors.Cross; // change cursor to crosshair
+            }
+        }
+        // == button to select rectangle drawing tool == //
+        private void btnDrawRectangle_Click(object sender, EventArgs e)
+        {
+            ActivateDrawingTool(DrawingTool.Rectangle);
+        }
+        // == button to select arrow drawing tool == //
+        private void btnDrawArrow_Click(object sender, EventArgs e)
+        {
+            ActivateDrawingTool(DrawingTool.Arrow);
+        }
 
         // == END OF TOOL SELECTION FUNCTIONALITY == //
 
@@ -124,7 +156,7 @@ namespace ScreenGrab
         // start drawing shape on image
         private void pictureBoxImage_MouseDown(object? sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && _currentPen != null)
+            if (_activeDrawingTool != DrawingTool.None && e.Button == MouseButtons.Left && _currentPen != null && _editableImage != null)
             {
                 _isDrawing = true;                // set drawing flag
                 _drawStartPoint = e.Location;     // set starting point
@@ -173,6 +205,110 @@ namespace ScreenGrab
         // == END OF DRAWING EVENTS == //
 
         // == DRAWING METHODS == //
+        // == draw rectangle preview == //
+        private void DrawRectanglePreview(Graphics g)
+        {
+            int x      = Math.Min(_drawStartPoint.X, _drawEndPoint.X);
+            int y      = Math.Min(_drawStartPoint.Y, _drawEndPoint.Y);
+            int width  = Math.Abs(_drawEndPoint.X - _drawStartPoint.X);
+            int height = Math.Abs(_drawEndPoint.Y - _drawStartPoint.Y);
+            g.DrawRectangle(_currentPen!, x, y, width, height);
+        }
+        // == draw arrow preview == //
+        private void DrawArrowPreview(Graphics g)
+        {
+            if (_currentPen != null) 
+            {
+                using (Pen arrowPen = new Pen(_SelectedColor, 2))
+                {
+                    arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(5,5);
+                    g.DrawLine(arrowPen, _drawStartPoint, _drawEndPoint);
+                }
+            }
+        }
+
+        // == draw shape on image == //
+        private void DrawShapeOnImage()
+        {
+            if (_editableImage == null || _currentPen == null) return;
+            if (_currentImage != null || _currentPen != null)
+            {
+                using (Graphics g = Graphics.FromImage(_editableImage))
+                {
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
+                    Point imageStart = ConvertToImageCoordinates(_drawStartPoint); // convert start point
+                    Point imageEnd   = ConvertToImageCoordinates(_drawEndPoint);   // convert end point
+
+                    // draw shape based on selected tool
+                    switch (_activeDrawingTool)
+                    {
+                        case DrawingTool.Rectangle:
+                            DrawRectangleOnImage(g, imageStart, imageEnd);
+                            break;
+                        case DrawingTool.Arrow:
+                            DrawArrowOnImage(g, imageStart, imageEnd);
+                            break;
+                    }
+                }
+                // update picture box with edited image
+                pictureBoxImage.Image = _editableImage;
+            }
+        }
+
+        // == draw rectangle on image // helper for DrawShapeOnImage() == //
+        private void DrawRectangleOnImage(Graphics g, Point start, Point end)
+        {
+            int x      = Math.Min(start.X, end.X);
+            int y      = Math.Min(start.Y, end.Y);
+            int width  = Math.Abs(end.X - start.X);
+            int height = Math.Abs(end.Y - start.Y);
+            g.DrawRectangle(_currentPen!, x, y, width, height);
+        }
+
+        // == draw arrow on image // helper for DrawShapeOnImage() == //
+        private void DrawArrowOnImage(Graphics g, Point start, Point end)
+        {
+            if (_currentPen != null) 
+            {
+                using (Pen arrowPen = new Pen(_SelectedColor, 2))
+                {
+                    arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(5,5);
+                    g.DrawLine(arrowPen, start, end);
+                }
+            }
+        }
+
+        // == convert picture box coordinates to image coordinates // helper for DrawShapeOnImage() == //
+        private Point ConvertToImageCoordinates(Point pictureBoxPoint)
+        {
+            if (pictureBoxImage.Image == null) return pictureBoxPoint;
+            if (pictureBoxImage.SizeMode == PictureBoxSizeMode.Zoom && _editableImage != null) 
+            {
+                // calculate scaling factors
+                float imageAspect = (float)_editableImage.Width / _editableImage.Height;   // aspect ratio of the image
+                float boxAspect   = (float)pictureBoxImage.Width / pictureBoxImage.Height; // aspect ratio of the picture box
+                float scaleFactor;                                                         // scaling factor
+                int offsetX = 0; int offsetY = 0;                                          // offsets for centering image
+                // determine scaling and offsets
+                if (imageAspect > boxAspect) 
+                {
+                    // image is wider than box
+                    scaleFactor = (float)_editableImage.Width / pictureBoxImage.Width;
+                    offsetY = (pictureBoxImage.Height - (int)(_editableImage.Height / scaleFactor)) / 2;
+                }
+                else 
+                {
+                    // image is taller than box
+                    scaleFactor = (float)_editableImage.Height / pictureBoxImage.Height;
+                    offsetX = (pictureBoxImage.Width - (int)(_editableImage.Width / scaleFactor)) / 2;
+                }
+                // convert coordinates
+                int imageX = (int)((pictureBoxPoint.X - offsetX) * scaleFactor);
+                int imageY = (int)((pictureBoxPoint.Y - offsetY) * scaleFactor);
+                return new Point(imageX, imageY);
+            }
+            return pictureBoxPoint;
+        }
 
         // == END DRAWING METHODS == //
 
@@ -193,10 +329,13 @@ namespace ScreenGrab
         // == clean resources on form closing ==//
         private void ImageEditorForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _currentImage?.Dispose();        // dispose loaded image
             btnSelectColor.Image?.Dispose(); // dispose of selected color image
-            _currentImage = null;
-            base.OnFormClosing(e);
+            _currentImage?.Dispose();        // dispose loaded image
+            _currentPen?.Dispose();          // dispose drawing pen
+            _editableImage?.Dispose();       // dispose editable image
+            _currentImage = null;            // clear reference
+            _editableImage = null;           // clear reference
+            base.OnFormClosing(e);           // call base class method
 
         }
     }
