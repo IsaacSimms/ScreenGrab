@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -34,7 +35,7 @@ namespace ScreenGrab
         public ImageEditorForm()
         {
             InitializeComponent();
-            _currentPen = new Pen(_SelectedColor, 2); // initialize pen with default color and width
+            _currentPen = new Pen(_SelectedColor, 5); // initialize pen with default color and width
             UpdateColorButtonDisplay();               // update button display with default color
 
             // wire up mouse events for drawing
@@ -57,6 +58,7 @@ namespace ScreenGrab
                 _currentImage?.Dispose();                                              // dispose previous image if any
                 _editableImage?.Dispose();                                             // dispose previous editable image if any
                 _currentImage = Image.FromFile(imagePath);                             // load image from file
+                _editableImage = new Bitmap(_currentImage);                            // create editable bitmap copy
                 pictureBoxImage.Image = _editableImage;                                 // assign image to picture box
                 this.Text = $"Image Editor - {System.IO.Path.GetFileName(imagePath)}"; // set form title
             }
@@ -66,7 +68,7 @@ namespace ScreenGrab
             }
         }
 
-        // == menustrip: click button == open file explorer to load image == //
+        // == MENUSTRIP: CLICK BUTTON == OPEN FILE EXPLORER TO LOAD IMAGE == //
         private void btnLoadImage_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
@@ -80,6 +82,53 @@ namespace ScreenGrab
                 }
             }
         }
+
+        // == MENUSTRIP: CLICK BUTTON == SAVE EDITED IMAGE TO FILE == //
+        private void btnSaveImage_Click(object sender, EventArgs e)
+        {
+            if (_editableImage == null)
+            {
+                ScreenshotMessageBox.ShowMessage(
+                $"ScreenGrab: There is no image in editor to save",
+                $"ScreenGrab",
+                4000);
+                return;
+            }
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.Title = "Save Edited Image";
+                saveFileDialog.Filter = "PNG Image|*.png|JPEG Image|*.jpg;*.jpeg|Bitmap Image|*.bmp|GIF Image|*.gif";
+                saveFileDialog.DefaultExt = "png";
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        // determine image format based on selected extension
+                        System.Drawing.Imaging.ImageFormat format = System.Drawing.Imaging.ImageFormat.Png;
+                        string extension = System.IO.Path.GetExtension(saveFileDialog.FileName).ToLower();
+                        switch (extension)
+                        {
+                            case ".jpg":
+                            case ".jpeg":
+                                format = System.Drawing.Imaging.ImageFormat.Jpeg;
+                                break;
+                            case ".bmp":
+                                format = System.Drawing.Imaging.ImageFormat.Bmp;
+                                break;
+                            case ".gif":
+                                format = System.Drawing.Imaging.ImageFormat.Gif;
+                                break;
+                        }
+                        _editableImage.Save(saveFileDialog.FileName, format); // save image to file
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error saving image: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
 
         // == TOOLSTRIP: FUNCTIONALITY FOR SELECTING COLOR FOR DRAWING == //
         // button to select color for drawing
@@ -219,7 +268,7 @@ namespace ScreenGrab
         {
             if (_currentPen != null) 
             {
-                using (Pen arrowPen = new Pen(_SelectedColor, 2))
+                using (Pen arrowPen = new Pen(_SelectedColor, 3))
                 {
                     arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(5,5);
                     g.DrawLine(arrowPen, _drawStartPoint, _drawEndPoint);
@@ -231,8 +280,7 @@ namespace ScreenGrab
         private void DrawShapeOnImage()
         {
             if (_editableImage == null || _currentPen == null) return;
-            if (_currentImage != null || _currentPen != null)
-            {
+
                 using (Graphics g = Graphics.FromImage(_editableImage))
                 {
                     g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
@@ -250,9 +298,8 @@ namespace ScreenGrab
                             break;
                     }
                 }
-                // update picture box with edited image
-                pictureBoxImage.Image = _editableImage;
-            }
+            // update picture box with edited image
+            pictureBoxImage.Image = _editableImage;
         }
 
         // == draw rectangle on image // helper for DrawShapeOnImage() == //
@@ -270,7 +317,7 @@ namespace ScreenGrab
         {
             if (_currentPen != null) 
             {
-                using (Pen arrowPen = new Pen(_SelectedColor, 2))
+                using (Pen arrowPen = new Pen(_SelectedColor, 5))
                 {
                     arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(5,5);
                     g.DrawLine(arrowPen, start, end);

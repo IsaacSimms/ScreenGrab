@@ -38,6 +38,7 @@
             delayedRegionToolStripMenuItem = new ToolStripMenuItem();
             delayedActiveWindowToolStripMenuItem = new ToolStripMenuItem();
             freeformToolStripMenuItem = new ToolStripMenuItem();
+            openEditorToolStripMenuItem = new ToolStripMenuItem();
             openMSPaintToolStripMenuItem = new ToolStripMenuItem();
             settingsToolStripMenuItem = new ToolStripMenuItem();
             menuExit = new ToolStripMenuItem();
@@ -51,7 +52,6 @@
             button2 = new Button();
             button1 = new Button();
             button3 = new Button();
-            openEditorToolStripMenuItem = new ToolStripMenuItem();
             SystemTrayMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -66,7 +66,7 @@
             SystemTrayMenu.BackColor = SystemColors.Desktop;
             SystemTrayMenu.Items.AddRange(new ToolStripItem[] { menuOpen, regionCaptureToolStripMenuItem, activeWindowToolStripMenuItem, delayedRegionToolStripMenuItem, delayedActiveWindowToolStripMenuItem, freeformToolStripMenuItem, openEditorToolStripMenuItem, openMSPaintToolStripMenuItem, settingsToolStripMenuItem, menuExit });
             SystemTrayMenu.Name = "SystemTrayMenu";
-            SystemTrayMenu.Size = new Size(200, 246);
+            SystemTrayMenu.Size = new Size(200, 224);
             // 
             // menuOpen
             // 
@@ -120,6 +120,15 @@
             freeformToolStripMenuItem.Size = new Size(199, 22);
             freeformToolStripMenuItem.Text = "Freeform";
             freeformToolStripMenuItem.Click += freeformScreenshotButton_Click;
+            // 
+            // openEditorToolStripMenuItem
+            // 
+            openEditorToolStripMenuItem.ForeColor = SystemColors.Window;
+            openEditorToolStripMenuItem.Image = (Image)resources.GetObject("openEditorToolStripMenuItem.Image");
+            openEditorToolStripMenuItem.Name = "openEditorToolStripMenuItem";
+            openEditorToolStripMenuItem.Size = new Size(199, 22);
+            openEditorToolStripMenuItem.Text = "Open Editor";
+            openEditorToolStripMenuItem.Click += SendToEditor_Click;
             // 
             // openMSPaintToolStripMenuItem
             // 
@@ -233,7 +242,7 @@
             // 
             button2.BackColor = SystemColors.Desktop;
             button2.ForeColor = SystemColors.Window;
-            button2.Location = new Point(365, 99);
+            button2.Location = new Point(448, 99);
             button2.Name = "button2";
             button2.Size = new Size(77, 40);
             button2.TabIndex = 9;
@@ -245,7 +254,7 @@
             // 
             button1.BackColor = SystemColors.Desktop;
             button1.ForeColor = SystemColors.Window;
-            button1.Location = new Point(12, 211);
+            button1.Location = new Point(52, 211);
             button1.Name = "button1";
             button1.Size = new Size(77, 40);
             button1.TabIndex = 10;
@@ -257,22 +266,13 @@
             // 
             button3.BackColor = SystemColors.Desktop;
             button3.ForeColor = SystemColors.Window;
-            button3.Location = new Point(448, 99);
+            button3.Location = new Point(365, 99);
             button3.Name = "button3";
             button3.Size = new Size(77, 40);
             button3.TabIndex = 11;
             button3.Text = "Open Editor";
             button3.UseVisualStyleBackColor = false;
             button3.Click += SendToEditor_Click;
-            // 
-            // openEditorToolStripMenuItem
-            // 
-            openEditorToolStripMenuItem.ForeColor = SystemColors.Window;
-            openEditorToolStripMenuItem.Image = (Image)resources.GetObject("openEditorToolStripMenuItem.Image");
-            openEditorToolStripMenuItem.Name = "openEditorToolStripMenuItem";
-            openEditorToolStripMenuItem.Size = new Size(199, 22);
-            openEditorToolStripMenuItem.Text = "Open Editor";
-            openEditorToolStripMenuItem.Click += SendToEditor_Click;
             // 
             // Driver
             // 

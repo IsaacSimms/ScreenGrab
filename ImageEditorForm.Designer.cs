@@ -34,6 +34,7 @@
             pictureBoxImage = new PictureBox();
             EditorMenu = new MenuStrip();
             openToolStripMenuItem = new ToolStripMenuItem();
+            saveToolStripMenuItem = new ToolStripMenuItem();
             EditorToolStrip = new ToolStrip();
             toolStripButton2 = new ToolStripButton();
             toolStripButton1 = new ToolStripButton();
@@ -55,6 +56,7 @@
             // 
             // btnGoHome
             // 
+            btnGoHome.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnGoHome.BackColor = SystemColors.Desktop;
             btnGoHome.ForeColor = SystemColors.Window;
             btnGoHome.Location = new Point(1058, 12);
@@ -67,7 +69,8 @@
             // 
             // pictureBoxImage
             // 
-            pictureBoxImage.Location = new Point(0, 105);
+            pictureBoxImage.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            pictureBoxImage.Location = new Point(12, 116);
             pictureBoxImage.Name = "pictureBoxImage";
             pictureBoxImage.Size = new Size(1123, 550);
             pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
@@ -76,13 +79,12 @@
             // 
             // EditorMenu
             // 
-            EditorMenu.Anchor = AnchorStyles.None;
             EditorMenu.BackColor = SystemColors.Desktop;
             EditorMenu.Dock = DockStyle.None;
-            EditorMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem });
+            EditorMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem });
             EditorMenu.Location = new Point(170, 51);
             EditorMenu.Name = "EditorMenu";
-            EditorMenu.Size = new Size(65, 24);
+            EditorMenu.Size = new Size(237, 24);
             EditorMenu.TabIndex = 25;
             EditorMenu.Text = "menuStrip1";
             // 
@@ -95,9 +97,16 @@
             openToolStripMenuItem.Text = "Open...";
             openToolStripMenuItem.Click += btnLoadImage_Click;
             // 
+            // saveToolStripMenuItem
+            // 
+            saveToolStripMenuItem.ForeColor = SystemColors.Window;
+            saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            saveToolStripMenuItem.Size = new Size(52, 20);
+            saveToolStripMenuItem.Text = "Save...";
+            saveToolStripMenuItem.Click += btnSaveImage_Click;
+            // 
             // EditorToolStrip
             // 
-            EditorToolStrip.Anchor = AnchorStyles.None;
             EditorToolStrip.BackColor = SystemColors.Desktop;
             EditorToolStrip.Dock = DockStyle.None;
             EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, btnSelectColor });
@@ -172,5 +181,6 @@
         private ToolStripButton btnSelectColor;
         private ToolStripButton toolStripButton1;
         private ToolStripButton toolStripButton2;
+        private ToolStripMenuItem saveToolStripMenuItem;
     }
 }
