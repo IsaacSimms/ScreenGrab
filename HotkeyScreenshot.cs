@@ -53,7 +53,9 @@ namespace ScreenGrab
         private readonly int _ActiveWindowDelayHotkeyId;    // ID for active window delayed screenshot hotkey
         private readonly int _RegionSelectDelayHotkeyId;    // ID for region select delayed screenshot hotkey
         private readonly int _OpenClipboardInPaintHotkeyId; // ID for open clipboard image in paint hotkey
+        private readonly int _OpenEditorHotkeyId;           // ID for open editor hotkey
         public event Action<string>? OnScreenshotTaken;     // event to notify when a screenshot is taken
+        public event Action? OnOpenEditor;                  // event to notify when editor is opened
 
         // == Register hotkeys == //
         // attach hotkey configruation to handle
@@ -78,6 +80,7 @@ namespace ScreenGrab
             _ActiveWindowDelayHotkeyId    = 4;
             _RegionSelectDelayHotkeyId    = 5;
             _OpenClipboardInPaintHotkeyId = 6;
+            _OpenEditorHotkeyId           = 7;
             AttachToHandle(owner.Handle);      // register all hotkeys
             //IntPtr hwnd = this.Handle;
         }
@@ -92,6 +95,7 @@ namespace ScreenGrab
             RegisterFromConfig(_ActiveWindowDelayHotkeyId,    _config.ActiveWindowDelayedCapture);
             RegisterFromConfig(_RegionSelectDelayHotkeyId,    _config.RegionDelayedCapture);
             RegisterFromConfig(_OpenClipboardInPaintHotkeyId, _config.OpenPaint);
+            RegisterFromConfig(_OpenEditorHotkeyId,           _config.OpenEditor);
         }
         // == Unregister hotkeys  == //
         public void UnregisterHotkeys()
@@ -103,6 +107,7 @@ namespace ScreenGrab
             UnregisterHotKey(_handle, _ActiveWindowDelayHotkeyId);
             UnregisterHotKey(_handle, _RegionSelectDelayHotkeyId);
             UnregisterHotKey(_handle, _OpenClipboardInPaintHotkeyId);
+            UnregisterHotKey(_handle, _OpenEditorHotkeyId);
         }
         private void RegisterFromConfig(int id, HotkeyDefinition def)
         {
@@ -142,6 +147,7 @@ namespace ScreenGrab
             _config.ActiveWindowDelayedCapture = newConfig.ActiveWindowDelayedCapture;
             _config.RegionDelayedCapture       = newConfig.RegionDelayedCapture;
             _config.OpenPaint                  = newConfig.OpenPaint;
+            _config.OpenEditor                 = newConfig.OpenEditor;
             RegisterAllHotkeys(); // re-register hotkeys with new configuration
         }
 
@@ -175,6 +181,10 @@ namespace ScreenGrab
                 else if (id == _OpenClipboardInPaintHotkeyId) // check if open clipboard in paint hotkey was pressed
                 {
                     OpenClipboardImageInPaint.OpenImageInPaint();
+                }
+                else if (id == _OpenEditorHotkeyId)           // check if open editor hotkey was pressed
+                {
+                    OnOpenEditor?.Invoke();                    // trigger event to notify editor should be opened
                 }
             }
             // pass message to base WndProc

@@ -16,7 +16,7 @@ namespace ScreenGrab
         //track current hot being configured
         private enum HotkeyBeingConfigured
         {
-            None, Active, Region, ActiveDelayed, RegionDelayed, Paint
+            None, Active, Region, ActiveDelayed, RegionDelayed, Paint, Editor
         }
         private HotkeyBeingConfigured _currentHotkeyEditTarget = HotkeyBeingConfigured.None; // initialize to none
         public event Action<HotkeyConfig>? HotkeysChanged;                                   // event to notify main app of hotkey changes
@@ -32,6 +32,7 @@ namespace ScreenGrab
             txtActiveDelayed.Text = _config.ActiveWindowDelayedCapture.ToString();
             txtRegionDelayed.Text = _config.RegionDelayedCapture.ToString();
             txtPaint.Text = _config.OpenPaint.ToString();
+            txtEditor.Text = _config.OpenEditor.ToString();
             txtChangeScreenCaptureFileLocation.Text = _config.ScreenshotSaveLocation;
 
             //make text boxes read-only to prevent manual editing
@@ -46,6 +47,7 @@ namespace ScreenGrab
             txtDelayedActiveWindowConfigHeader.ReadOnly  = true;
             txtDelayedCaptureRegionConfigHeader.ReadOnly = true;
             txtOpenPNGInPaintConfigHeader.ReadOnly       = true;
+            txtOpenEditorHeader.ReadOnly                 = true;
             txtSaveFileLocationHeader.ReadOnly           = true;
             // receive keydown events for text boxes
             this.KeyPreview = true;
@@ -78,7 +80,12 @@ namespace ScreenGrab
             _currentHotkeyEditTarget = HotkeyBeingConfigured.Paint;
             lblStatus.Text = "Press new hotkey for open MS Paint...";
         }
-       private void btnChangeScreenCaptureFileLocation_Click(object sender, EventArgs e)    // change save file location button
+        private void btnChangeOpenEditorHotkeyConfig_Click(object sender, EventArgs e)         // open in editor hotkey
+        {
+            _currentHotkeyEditTarget = HotkeyBeingConfigured.Editor; // not implemented yet
+            lblStatus.Text = "Press new hotkey for open image editor...";
+        }
+        private void btnChangeScreenCaptureFileLocation_Click(object sender, EventArgs e)    // change save file location button
         {
             using (var folderDialog = new FolderBrowserDialog())
             {
@@ -142,6 +149,11 @@ namespace ScreenGrab
                     _config.OpenPaint = def;
                     txtPaint.Text = def.ToString();
                     break;
+                case HotkeyBeingConfigured.Editor:
+                    _config.OpenEditor = def;
+                    txtEditor.Text = def.ToString();
+                    break;
+
             }
             // reset current hotkey being configured and status label
             _currentHotkeyEditTarget = HotkeyBeingConfigured.None;

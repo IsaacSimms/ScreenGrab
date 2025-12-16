@@ -131,8 +131,26 @@ namespace ScreenGrab
                 }
             }
         }
+        // == MENUSTRIP: CLICK BUTTON == COPY IMAGE TO CLIPBOARD == //
+        private void btnCopyToClipboard_Click(object sender, EventArgs e)
+        {
+            if (_editableImage != null)
+            {
+                Clipboard.SetImage(_editableImage); // copy image to clipboard
+                ScreenshotMessageBox.ShowMessage(
+                $"ScreenGrab: Edited image copied to clipboard",
+                $"ScreenGrab",
+                4000);
+            }
+            else
+            {
+                ScreenshotMessageBox.ShowMessage(
+                $"ScreenGrab: There is no image in editor to copy",
+                $"ScreenGrab",
+                4000);
+            }
+        }
 
-      
 
         // == TOOLSTRIP: FUNCTIONALITY FOR SELECTING COLOR FOR DRAWING == //
         // button to select color for drawing

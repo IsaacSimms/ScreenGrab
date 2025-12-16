@@ -37,7 +37,8 @@ namespace ScreenGrab
             this.Hide();                                                                // hide the form on startup
             this.ShowInTaskbar = false;                                                 // remove from taskbar
             _hotkeyScreenshot = new HotkeyScreenshot(this, _hotkeyConfig);              // initialize HotkeyScreenshot class
-            _hotkeyScreenshot.OnScreenshotTaken += HotkeyScreenshot_OnScreenshotTaken;  // wire up event handler
+            _hotkeyScreenshot.OnScreenshotTaken += HotkeyScreenshot_OnScreenshotTaken;  // wire up event handler for screenshot taken
+            _hotkeyScreenshot.OnOpenEditor += OpenImageEditor;                          // wire up event handler for open image editor
 
             // set up system tray icon
             SystemTrayIcon.Visible = true;                                         // make icon visible
@@ -82,6 +83,22 @@ namespace ScreenGrab
                 $"ScreenGrab saved to:\n{filePath}",       // message
                 $"ScreenGrab",                             // title //not displaying in current config
                 4000);                                     // duration in ms
+        }
+
+        // event handler for open image editor event
+        private void OpenImageEditor()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(OpenImageEditor));
+                return;
+            }
+            var imageEditorForm = new ImageEditorForm
+            {
+                Tag = this, // set owner so ImageEditorForm can return to this instance instead of creating a new Driver // This is used in ImageEditorForm.cs for graceful transitions
+                ShowInTaskbar = true
+            };
+            imageEditorForm.Show();
         }
         // overide OnFormClosing to clean up resources on app closing
         protected override void OnFormClosing(FormClosingEventArgs e)

@@ -51,6 +51,9 @@
             txtChangeScreenCaptureFileLocation = new TextBox();
             btnChangeScreenCaptureFileLocation = new Button();
             btnGoHome = new Button();
+            txtOpenEditorHeader = new TextBox();
+            txtEditor = new TextBox();
+            btnOpenEditorHotkeyConfig = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -306,12 +309,48 @@
             btnGoHome.UseVisualStyleBackColor = false;
             btnGoHome.Click += btnGoHome_Click;
             // 
+            // txtOpenEditorHeader
+            // 
+            txtOpenEditorHeader.BackColor = SystemColors.Desktop;
+            txtOpenEditorHeader.ForeColor = SystemColors.Window;
+            txtOpenEditorHeader.Location = new Point(17, 275);
+            txtOpenEditorHeader.Name = "txtOpenEditorHeader";
+            txtOpenEditorHeader.Size = new Size(153, 23);
+            txtOpenEditorHeader.TabIndex = 22;
+            txtOpenEditorHeader.Text = "Open Editor";
+            txtOpenEditorHeader.TextAlign = HorizontalAlignment.Center;
+            // 
+            // txtEditor
+            // 
+            txtEditor.BackColor = SystemColors.Desktop;
+            txtEditor.ForeColor = SystemColors.Window;
+            txtEditor.Location = new Point(176, 275);
+            txtEditor.Name = "txtEditor";
+            txtEditor.Size = new Size(122, 23);
+            txtEditor.TabIndex = 23;
+            txtEditor.TextAlign = HorizontalAlignment.Center;
+            // 
+            // btnOpenEditorHotkeyConfig
+            // 
+            btnOpenEditorHotkeyConfig.BackColor = SystemColors.Desktop;
+            btnOpenEditorHotkeyConfig.ForeColor = SystemColors.Window;
+            btnOpenEditorHotkeyConfig.Location = new Point(304, 275);
+            btnOpenEditorHotkeyConfig.Name = "btnOpenEditorHotkeyConfig";
+            btnOpenEditorHotkeyConfig.Size = new Size(75, 23);
+            btnOpenEditorHotkeyConfig.TabIndex = 24;
+            btnOpenEditorHotkeyConfig.Text = "Change";
+            btnOpenEditorHotkeyConfig.UseVisualStyleBackColor = false;
+            btnOpenEditorHotkeyConfig.Click += btnChangeOpenEditorHotkeyConfig_Click;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(852, 368);
+            Controls.Add(btnOpenEditorHotkeyConfig);
+            Controls.Add(txtEditor);
+            Controls.Add(txtOpenEditorHeader);
             Controls.Add(btnGoHome);
             Controls.Add(btnChangeScreenCaptureFileLocation);
             Controls.Add(txtChangeScreenCaptureFileLocation);
@@ -367,5 +406,8 @@
         private TextBox txtChangeScreenCaptureFileLocation;
         private Button btnChangeScreenCaptureFileLocation;
         private Button btnGoHome;
+        private TextBox txtOpenEditorHeader;
+        private TextBox txtEditor;
+        private Button btnOpenEditorHotkeyConfig;
     }
 }

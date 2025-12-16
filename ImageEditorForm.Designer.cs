@@ -35,6 +35,7 @@
             EditorMenu = new MenuStrip();
             openToolStripMenuItem = new ToolStripMenuItem();
             saveToolStripMenuItem = new ToolStripMenuItem();
+            copyToClipboardToolStripMenuItem = new ToolStripMenuItem();
             EditorToolStrip = new ToolStrip();
             toolStripButton2 = new ToolStripButton();
             toolStripButton1 = new ToolStripButton();
@@ -82,10 +83,10 @@
             // 
             EditorMenu.BackColor = SystemColors.Desktop;
             EditorMenu.Dock = DockStyle.None;
-            EditorMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem });
+            EditorMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, copyToClipboardToolStripMenuItem });
             EditorMenu.Location = new Point(170, 51);
             EditorMenu.Name = "EditorMenu";
-            EditorMenu.Size = new Size(117, 24);
+            EditorMenu.Size = new Size(233, 24);
             EditorMenu.TabIndex = 25;
             EditorMenu.Text = "menuStrip1";
             // 
@@ -106,6 +107,14 @@
             saveToolStripMenuItem.Text = "Save...";
             saveToolStripMenuItem.Click += btnSaveImage_Click;
             // 
+            // copyToClipboardToolStripMenuItem
+            // 
+            copyToClipboardToolStripMenuItem.ForeColor = SystemColors.Window;
+            copyToClipboardToolStripMenuItem.Name = "copyToClipboardToolStripMenuItem";
+            copyToClipboardToolStripMenuItem.Size = new Size(116, 20);
+            copyToClipboardToolStripMenuItem.Text = "Copy to Clipboard";
+            copyToClipboardToolStripMenuItem.Click += btnCopyToClipboard_Click;
+            // 
             // EditorToolStrip
             // 
             EditorToolStrip.BackColor = SystemColors.Desktop;
@@ -113,7 +122,7 @@
             EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, toolStripButton3, btnSelectColor });
             EditorToolStrip.Location = new Point(12, 78);
             EditorToolStrip.Name = "EditorToolStrip";
-            EditorToolStrip.Size = new Size(135, 25);
+            EditorToolStrip.Size = new Size(104, 25);
             EditorToolStrip.TabIndex = 26;
             EditorToolStrip.Text = "toolStrip1";
             // 
@@ -193,5 +202,6 @@
         private ToolStripButton toolStripButton2;
         private ToolStripMenuItem saveToolStripMenuItem;
         private ToolStripButton toolStripButton3;
+        private ToolStripMenuItem copyToClipboardToolStripMenuItem;
     }
 }

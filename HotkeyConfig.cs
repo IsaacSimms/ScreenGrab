@@ -82,6 +82,12 @@ namespace ScreenGrab
             Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
             Key       = Keys.P
         };
+        // open editor window
+        public HotkeyDefinition OpenEditor { get; set; } = new HotkeyDefinition
+        {
+            Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
+            Key       = Keys.E
+        };
         //  screenshot save location // defaults to oneDrive Pictures folder //
         public string ScreenshotSaveLocation { get; set; } = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), 
