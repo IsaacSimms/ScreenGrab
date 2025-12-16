@@ -38,6 +38,7 @@
             EditorToolStrip = new ToolStrip();
             toolStripButton2 = new ToolStripButton();
             toolStripButton1 = new ToolStripButton();
+            toolStripButton3 = new ToolStripButton();
             btnSelectColor = new ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
@@ -70,7 +71,7 @@
             // pictureBoxImage
             // 
             pictureBoxImage.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            pictureBoxImage.Location = new Point(12, 116);
+            pictureBoxImage.Location = new Point(0, 117);
             pictureBoxImage.Name = "pictureBoxImage";
             pictureBoxImage.Size = new Size(1123, 550);
             pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
@@ -84,7 +85,7 @@
             EditorMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem });
             EditorMenu.Location = new Point(170, 51);
             EditorMenu.Name = "EditorMenu";
-            EditorMenu.Size = new Size(237, 24);
+            EditorMenu.Size = new Size(117, 24);
             EditorMenu.TabIndex = 25;
             EditorMenu.Text = "menuStrip1";
             // 
@@ -109,10 +110,10 @@
             // 
             EditorToolStrip.BackColor = SystemColors.Desktop;
             EditorToolStrip.Dock = DockStyle.None;
-            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, btnSelectColor });
+            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, toolStripButton3, btnSelectColor });
             EditorToolStrip.Location = new Point(12, 78);
             EditorToolStrip.Name = "EditorToolStrip";
-            EditorToolStrip.Size = new Size(81, 25);
+            EditorToolStrip.Size = new Size(135, 25);
             EditorToolStrip.TabIndex = 26;
             EditorToolStrip.Text = "toolStrip1";
             // 
@@ -123,7 +124,7 @@
             toolStripButton2.ImageTransparentColor = Color.Magenta;
             toolStripButton2.Name = "toolStripButton2";
             toolStripButton2.Size = new Size(23, 22);
-            toolStripButton2.Text = "toolStripButton2";
+            toolStripButton2.Text = "btnRectangle";
             toolStripButton2.Click += btnDrawRectangle_Click;
             // 
             // toolStripButton1
@@ -133,8 +134,18 @@
             toolStripButton1.ImageTransparentColor = Color.Magenta;
             toolStripButton1.Name = "toolStripButton1";
             toolStripButton1.Size = new Size(23, 22);
-            toolStripButton1.Text = "toolStripButton1";
+            toolStripButton1.Text = "btnArrow";
             toolStripButton1.Click += btnDrawArrow_Click;
+            // 
+            // toolStripButton3
+            // 
+            toolStripButton3.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButton3.Image = (Image)resources.GetObject("toolStripButton3.Image");
+            toolStripButton3.ImageTransparentColor = Color.Magenta;
+            toolStripButton3.Name = "toolStripButton3";
+            toolStripButton3.Size = new Size(23, 22);
+            toolStripButton3.Text = "btnFreeform";
+            toolStripButton3.Click += btnDrawFreeform_Click;
             // 
             // btnSelectColor
             // 
@@ -177,10 +188,10 @@
         private MenuStrip EditorMenu;
         private ToolStripMenuItem openToolStripMenuItem;
         private ToolStrip EditorToolStrip;
-        private ToolStripSplitButton toolStripSplitButton1;
         private ToolStripButton btnSelectColor;
         private ToolStripButton toolStripButton1;
         private ToolStripButton toolStripButton2;
         private ToolStripMenuItem saveToolStripMenuItem;
+        private ToolStripButton toolStripButton3;
     }
 }

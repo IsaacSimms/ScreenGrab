@@ -20,17 +20,20 @@ namespace ScreenGrab
         {
             None,
             Rectangle,
-            Arrow
+            Arrow,
+            Freeform
         }
+        // == private variables == //
         private Image?      _currentImage;                         // local variable for storing loaded iamge
         private Bitmap?     _editableImage;                        // local variable for storing editable image
         private DrawingTool _activeDrawingTool = DrawingTool.None; // currently selected drawing tool // initially none
-        private Point      _drawStartPoint;                        //starting point for drawing
-        private Point      _drawEndPoint;                          //ending point for drawing
-        private bool       _isDrawing = false;                     //flag to indicate if drawing is in progress
-        private Color      _SelectedColor = Color.Red;             //default color (red) for drawing
-        private Pen?       _currentPen;                            //pen for drawing shapes
-         
+        private Point       _drawStartPoint;                        //starting point for drawing
+        private Point       _drawEndPoint;                          //ending point for drawing
+        private bool        _isDrawing = false;                     //flag to indicate if drawing is in progress
+        private Color       _SelectedColor = Color.Red;             //default color (red) for drawing
+        private Pen?        _currentPen;                            //pen for drawing shapes
+        private List<Point> _freeformPoints = new List<Point>();      //points for freeform drawing
+
         // == constructor == //
         public ImageEditorForm()
         {
@@ -129,6 +132,7 @@ namespace ScreenGrab
             }
         }
 
+      
 
         // == TOOLSTRIP: FUNCTIONALITY FOR SELECTING COLOR FOR DRAWING == //
         // button to select color for drawing
@@ -198,6 +202,11 @@ namespace ScreenGrab
         {
             ActivateDrawingTool(DrawingTool.Arrow);
         }
+        // == button to select freeform drawing tool == //
+        private void btnDrawFreeform_Click(object sender, EventArgs e)
+        {
+            ActivateDrawingTool(DrawingTool.Freeform);
+        }
 
         // == END OF TOOL SELECTION FUNCTIONALITY == //
 
@@ -207,9 +216,14 @@ namespace ScreenGrab
         {
             if (_activeDrawingTool != DrawingTool.None && e.Button == MouseButtons.Left && _currentPen != null && _editableImage != null)
             {
-                _isDrawing = true;                // set drawing flag
-                _drawStartPoint = e.Location;     // set starting point
-                _drawEndPoint = e.Location;       // initialize ending point
+                _isDrawing = true;                              // set drawing flag
+                _drawStartPoint = e.Location;                   // set starting point
+                _drawEndPoint = e.Location;                     // initialize ending point
+                if (_activeDrawingTool == DrawingTool.Freeform) //for freeform drawing
+                {
+                    _freeformPoints.Clear();                    // clear previous points
+                    _freeformPoints.Add(e.Location);            // add starting point
+                }
             }
         }
         // continue drawing shape on image
@@ -217,8 +231,12 @@ namespace ScreenGrab
         {
             if (_isDrawing && _activeDrawingTool != DrawingTool.None)
             {
-                _drawEndPoint = e.Location;       // update ending point
-                pictureBoxImage.Invalidate();     // request redraw to show preview
+                _drawEndPoint = e.Location;          // update ending point
+                if (_activeDrawingTool == DrawingTool.Freeform)
+                {
+                    _freeformPoints.Add(e.Location); // add point for freeform drawing
+                }
+                pictureBoxImage.Invalidate();       // request redraw to show preview
             }
         }
         // finish drawing shape on image
@@ -226,12 +244,16 @@ namespace ScreenGrab
         {
             if (_isDrawing && _activeDrawingTool != DrawingTool.None && _editableImage != null)
             {
-                _drawEndPoint = e.Location;       // set ending point
-                _isDrawing = false;               // reset drawing flag
+                _drawEndPoint = e.Location;          // set ending point
+                if (_activeDrawingTool == DrawingTool.Freeform)
+                {
+                    _freeformPoints.Add(e.Location); // add final point for freeform drawing
+                }
+                _isDrawing = false;                  // reset drawing flag
 
                 // draw final shape on image
-                DrawShapeOnImage();               // draw shape on image
-                pictureBoxImage.Invalidate();     // refresh picture box to show final drawing
+                DrawShapeOnImage();                  // draw shape on image
+                pictureBoxImage.Invalidate();        // refresh picture box to show final drawing
             }
         }
         // paint event to show drawing preview
@@ -247,6 +269,9 @@ namespace ScreenGrab
                         break;
                     case DrawingTool.Arrow:
                         DrawArrowPreview(e.Graphics);
+                        break;
+                    case DrawingTool.Freeform:
+                        DrawFreeformPreview(e.Graphics);
                         break;
                 }
             }
@@ -275,6 +300,15 @@ namespace ScreenGrab
                 }
             }
         }
+        // == draw freeform preview == //
+        private void DrawFreeformPreview(Graphics g)
+        {
+            if (_freeformPoints.Count > 1 || _currentPen != null)
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
+                g.DrawLines(_currentPen, _freeformPoints.ToArray());                // draw freeform lines
+            }
+        }
 
         // == draw shape on image == //
         private void DrawShapeOnImage()
@@ -296,7 +330,15 @@ namespace ScreenGrab
                         case DrawingTool.Arrow:
                             DrawArrowOnImage(g, imageStart, imageEnd);
                             break;
-                    }
+                        case DrawingTool.Freeform:
+                            List<Point> imagePoints = new List<Point>();
+                            foreach (Point p in _freeformPoints)
+                            {
+                                imagePoints.Add(ConvertToImageCoordinates(p)); // convert each point
+                        }
+                        DrawFreeformOnImage(g, imagePoints);
+                            break;
+                }
                 }
             // update picture box with edited image
             pictureBoxImage.Image = _editableImage;
@@ -322,6 +364,15 @@ namespace ScreenGrab
                     arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(5,5);
                     g.DrawLine(arrowPen, start, end);
                 }
+            }
+        }
+        // == draw freeform on image // helper for DrawShapeOnImage() == //
+        private void DrawFreeformOnImage(Graphics g, List<Point> points)
+        {
+            if (points.Count > 1 && _currentPen != null)
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
+                g.DrawLines(_currentPen, points.ToArray());                         // draw freeform lines
             }
         }
 
@@ -382,6 +433,7 @@ namespace ScreenGrab
             _editableImage?.Dispose();       // dispose editable image
             _currentImage = null;            // clear reference
             _editableImage = null;           // clear reference
+            _freeformPoints.Clear();         // clear freeform points
             base.OnFormClosing(e);           // call base class method
 
         }
