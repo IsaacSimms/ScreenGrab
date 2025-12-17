@@ -88,10 +88,12 @@ namespace ScreenGrab
             Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
             Key       = Keys.E
         };
-        //  screenshot save location // defaults to oneDrive Pictures folder //
+        //  screenshot save location // defaults to oneDrive Pictures folder
         public string ScreenshotSaveLocation { get; set; } = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), 
                 "ScreenGrab"
         );
+        // auto-copy to clipboard option // default to true
+        public bool AutoCopyToClipboard { get; set; } = true;
     }
 }

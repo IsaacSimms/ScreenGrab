@@ -54,6 +54,8 @@
             txtOpenEditorHeader = new TextBox();
             txtEditor = new TextBox();
             btnOpenEditorHotkeyConfig = new Button();
+            txtAutoCopyHeader = new TextBox();
+            chkAutoCopyToClipboard = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -312,6 +314,7 @@
             // txtOpenEditorHeader
             // 
             txtOpenEditorHeader.BackColor = SystemColors.Desktop;
+            txtOpenEditorHeader.BorderStyle = BorderStyle.FixedSingle;
             txtOpenEditorHeader.ForeColor = SystemColors.Window;
             txtOpenEditorHeader.Location = new Point(17, 275);
             txtOpenEditorHeader.Name = "txtOpenEditorHeader";
@@ -323,6 +326,7 @@
             // txtEditor
             // 
             txtEditor.BackColor = SystemColors.Desktop;
+            txtEditor.BorderStyle = BorderStyle.FixedSingle;
             txtEditor.ForeColor = SystemColors.Window;
             txtEditor.Location = new Point(176, 275);
             txtEditor.Name = "txtEditor";
@@ -342,12 +346,38 @@
             btnOpenEditorHotkeyConfig.UseVisualStyleBackColor = false;
             btnOpenEditorHotkeyConfig.Click += btnChangeOpenEditorHotkeyConfig_Click;
             // 
+            // txtAutoCopyHeader
+            // 
+            txtAutoCopyHeader.BackColor = SystemColors.Desktop;
+            txtAutoCopyHeader.BorderStyle = BorderStyle.FixedSingle;
+            txtAutoCopyHeader.ForeColor = SystemColors.Window;
+            txtAutoCopyHeader.Location = new Point(385, 159);
+            txtAutoCopyHeader.Name = "txtAutoCopyHeader";
+            txtAutoCopyHeader.Size = new Size(153, 23);
+            txtAutoCopyHeader.TabIndex = 25;
+            txtAutoCopyHeader.Text = "Auto-Copy to Clipboard:";
+            txtAutoCopyHeader.TextAlign = HorizontalAlignment.Center;
+            // 
+            // chkAutoCopyToClipboard
+            // 
+            chkAutoCopyToClipboard.CheckAlign = ContentAlignment.MiddleCenter;
+            chkAutoCopyToClipboard.Checked = true;
+            chkAutoCopyToClipboard.CheckState = CheckState.Checked;
+            chkAutoCopyToClipboard.Location = new Point(544, 160);
+            chkAutoCopyToClipboard.Name = "chkAutoCopyToClipboard";
+            chkAutoCopyToClipboard.Size = new Size(122, 23);
+            chkAutoCopyToClipboard.TabIndex = 26;
+            chkAutoCopyToClipboard.UseVisualStyleBackColor = true;
+            chkAutoCopyToClipboard.CheckedChanged += chkAutoCopyToClipboard_CheckedChanged;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(852, 368);
+            Controls.Add(chkAutoCopyToClipboard);
+            Controls.Add(txtAutoCopyHeader);
             Controls.Add(btnOpenEditorHotkeyConfig);
             Controls.Add(txtEditor);
             Controls.Add(txtOpenEditorHeader);
@@ -409,5 +439,7 @@
         private TextBox txtOpenEditorHeader;
         private TextBox txtEditor;
         private Button btnOpenEditorHotkeyConfig;
+        private TextBox txtAutoCopyHeader;
+        private CheckBox chkAutoCopyToClipboard;
     }
 }

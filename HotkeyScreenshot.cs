@@ -562,7 +562,10 @@ namespace ScreenGrab
                 g.CopyFromScreen(area.Location, Point.Empty, area.Size);   // capture screenshot from specified area
             }
             // save to clipboard
-            Clipboard.SetImage(bitmap);
+            if (_config.AutoCopyToClipboard)
+            {
+                Clipboard.SetImage(bitmap);
+            }
 
             // save to OneDrive folder
             string basePath = _config.ScreenshotSaveLocation;
@@ -638,7 +641,11 @@ namespace ScreenGrab
             }
 
             // save to clipboard
-            Clipboard.SetImage(maskedCapture);
+            if (_config.AutoCopyToClipboard)
+            {
+                Clipboard.SetImage(maskedCapture);
+            }
+            ;
 
             // save to OneDrive folder
             string basePath = _config.ScreenshotSaveLocation;
