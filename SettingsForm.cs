@@ -110,7 +110,7 @@ namespace ScreenGrab
         private void chkAutoCopyToClipboard_CheckedChanged(object sender, EventArgs e) // auto copy to clipboard checkbox change handler
         {
             _config.AutoCopyToClipboard = chkAutoCopyToClipboard.Checked;              // update config based on checkbox state
-            lblStatus.Text = _config.AutoCopyToClipboard
+            lblStatus.Text = _config.AutoCopyToClipboard                               // update status label
                 ? "Auto-copy to clipboard enabled."
                 : "Auto-copy to clipboard disabled.";
             SaveFileLocationChanged?.Invoke(_config);                                  // raise event to notify main app of change
