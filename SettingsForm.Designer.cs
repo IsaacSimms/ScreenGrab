@@ -56,6 +56,8 @@
             btnOpenEditorHotkeyConfig = new Button();
             txtAutoCopyHeader = new TextBox();
             chkAutoCopyToClipboard = new CheckBox();
+            txtAutoOpenEditorHeader = new TextBox();
+            chkAutoOpenEditorOnCapture = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -261,7 +263,7 @@
             pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
             pictureBox1.Location = new Point(12, 12);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(227, 76);
+            pictureBox1.Size = new Size(227, 83);
             pictureBox1.TabIndex = 17;
             pictureBox1.TabStop = false;
             // 
@@ -370,12 +372,37 @@
             chkAutoCopyToClipboard.UseVisualStyleBackColor = true;
             chkAutoCopyToClipboard.CheckedChanged += chkAutoCopyToClipboard_CheckedChanged;
             // 
+            // txtAutoOpenEditorHeader
+            // 
+            txtAutoOpenEditorHeader.BackColor = SystemColors.Desktop;
+            txtAutoOpenEditorHeader.BorderStyle = BorderStyle.FixedSingle;
+            txtAutoOpenEditorHeader.ForeColor = SystemColors.Window;
+            txtAutoOpenEditorHeader.Location = new Point(385, 188);
+            txtAutoOpenEditorHeader.Name = "txtAutoOpenEditorHeader";
+            txtAutoOpenEditorHeader.Size = new Size(153, 23);
+            txtAutoOpenEditorHeader.TabIndex = 27;
+            txtAutoOpenEditorHeader.Text = "Auto-Open Editor";
+            txtAutoOpenEditorHeader.TextAlign = HorizontalAlignment.Center;
+            // 
+            // chkAutoOpenEditorOnCapture
+            // 
+            chkAutoOpenEditorOnCapture.CheckAlign = ContentAlignment.MiddleCenter;
+            chkAutoOpenEditorOnCapture.Location = new Point(544, 189);
+            chkAutoOpenEditorOnCapture.Name = "chkAutoOpenEditorOnCapture";
+            chkAutoOpenEditorOnCapture.Size = new Size(122, 22);
+            chkAutoOpenEditorOnCapture.TabIndex = 28;
+            chkAutoOpenEditorOnCapture.TextAlign = ContentAlignment.BottomCenter;
+            chkAutoOpenEditorOnCapture.UseVisualStyleBackColor = true;
+            chkAutoOpenEditorOnCapture.CheckedChanged += chkAutoOpenInEditor_CheckedChanged;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(852, 368);
+            Controls.Add(chkAutoOpenEditorOnCapture);
+            Controls.Add(txtAutoOpenEditorHeader);
             Controls.Add(chkAutoCopyToClipboard);
             Controls.Add(txtAutoCopyHeader);
             Controls.Add(btnOpenEditorHotkeyConfig);
@@ -441,5 +468,7 @@
         private Button btnOpenEditorHotkeyConfig;
         private TextBox txtAutoCopyHeader;
         private CheckBox chkAutoCopyToClipboard;
+        private TextBox txtAutoOpenEditorHeader;
+        private CheckBox chkAutoOpenEditorOnCapture;
     }
 }

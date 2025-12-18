@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -64,6 +65,32 @@ namespace ScreenGrab
                 _editableImage = new Bitmap(_currentImage);                            // create editable bitmap copy
                 pictureBoxImage.Image = _editableImage;                                 // assign image to picture box
                 this.Text = $"Image Editor - {System.IO.Path.GetFileName(imagePath)}"; // set form title
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading image: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        // == construcotr to load image from Image object (used to load from clipboard) == //
+        public ImageEditorForm(Image image) : this()
+        {
+            LoadImageFromObject(image);
+        }
+        // == load image from Image object == //
+        private void LoadImageFromObject(Image image)
+        {
+            try
+            {
+                // Store a copy of the image to avoid issues with disposed objects
+                var _oldCurrentImage = _currentImage;
+                var _oldEditableImage = _editableImage;
+
+                _currentImage = new Bitmap(image);         // create copy of image
+                _editableImage = new Bitmap(image);        // create editable bitmap copy
+                pictureBoxImage.Image = _editableImage;            // assign image to picture box
+                _oldCurrentImage?.Dispose();                          // dispose previous image if any
+                _oldEditableImage?.Dispose();                         // dispose previous editable image if any
+                this.Text = $"Image Editor - Clipboard Image";     // set form title
             }
             catch (Exception ex)
             {

@@ -35,6 +35,7 @@ namespace ScreenGrab
             txtEditor.Text = _config.OpenEditor.ToString();
             txtChangeScreenCaptureFileLocation.Text = _config.ScreenshotSaveLocation;
             chkAutoCopyToClipboard.Checked = _config.AutoCopyToClipboard;
+            chkAutoOpenEditorOnCapture.Checked = _config.AutoOpenEditorOnCapture;
 
             //make text boxes read-only to prevent manual editing
             txtActive.ReadOnly                           = true;
@@ -51,6 +52,7 @@ namespace ScreenGrab
             txtOpenEditorHeader.ReadOnly                 = true;
             txtSaveFileLocationHeader.ReadOnly           = true;
             txtAutoCopyHeader.ReadOnly                   = true;
+            txtAutoOpenEditorHeader.ReadOnly             = true;
             // receive keydown events for text boxes
             this.KeyPreview = true;
             this.KeyUp += new KeyEventHandler(SettingsForm_KeyDown);               //
@@ -107,12 +109,22 @@ namespace ScreenGrab
                 }
             }
         }
+        // == auto copy to clipboard checkbox change handler == //
         private void chkAutoCopyToClipboard_CheckedChanged(object sender, EventArgs e) // auto copy to clipboard checkbox change handler
         {
             _config.AutoCopyToClipboard = chkAutoCopyToClipboard.Checked;              // update config based on checkbox state
             lblStatus.Text = _config.AutoCopyToClipboard
                 ? "Auto-copy to clipboard enabled."
                 : "Auto-copy to clipboard disabled.";
+            SaveFileLocationChanged?.Invoke(_config);                                  // raise event to notify main app of change
+        }
+        // == auto open in editor checkbox change handler == //
+        private void chkAutoOpenInEditor_CheckedChanged(object sender, EventArgs e) // auto open in editor checkbox change handler
+        {
+            _config.AutoOpenEditorOnCapture = chkAutoOpenEditorOnCapture.Checked;                    // update config based on checkbox state
+            lblStatus.Text = _config.AutoOpenEditorOnCapture
+                ? "Auto-open in editor enabled."
+                : "Auto-open in editor disabled.";
             SaveFileLocationChanged?.Invoke(_config);                                  // raise event to notify main app of change
         }
 

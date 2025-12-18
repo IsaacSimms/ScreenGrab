@@ -95,5 +95,7 @@ namespace ScreenGrab
         );
         // auto-copy to clipboard option // default to true
         public bool AutoCopyToClipboard { get; set; } = true;
+        // auto-open editor option // default to false
+        public bool AutoOpenEditorOnCapture { get; set; } = false;
     }
 }

@@ -83,6 +83,27 @@ namespace ScreenGrab
                 $"ScreenGrab saved to:\n{filePath}",       // message
                 $"ScreenGrab",                             // title //not displaying in current config
                 4000);                                     // duration in ms
+
+            //auto open image editor if configured
+            if (_hotkeyConfig.AutoOpenEditorOnCapture)
+            {
+                OpenEditorWithFile(filePath);
+            }
+        }
+        // open image editor with file path
+        private void OpenEditorWithFile(string filePath)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action<string>(OpenEditorWithFile), filePath);
+                return;
+            }
+            var imageEditorForm = new ImageEditorForm(filePath)
+            {
+                Tag = this, // set owner so ImageEditorForm can return to this instance instead of creating a new Driver // This is used in ImageEditorForm.cs for graceful transitions
+                ShowInTaskbar = true
+            };
+            imageEditorForm.Show();
         }
 
         // event handler for open image editor event
@@ -93,11 +114,27 @@ namespace ScreenGrab
                 Invoke(new Action(OpenImageEditor));
                 return;
             }
-            var imageEditorForm = new ImageEditorForm
+            // check if clipboard has image
+            ImageEditorForm imageEditorForm;
+            if (Clipboard.ContainsImage())
             {
-                Tag = this, // set owner so ImageEditorForm can return to this instance instead of creating a new Driver // This is used in ImageEditorForm.cs for graceful transitions
-                ShowInTaskbar = true
-            };
+                Image? clipboardImage = Clipboard.GetImage();
+                if (clipboardImage != null)
+                {
+                    imageEditorForm = new ImageEditorForm(clipboardImage);
+                }
+                else
+                {
+                    imageEditorForm = new ImageEditorForm();
+                }
+            }
+            else
+            { 
+                imageEditorForm = new ImageEditorForm();
+            }
+
+            imageEditorForm.Tag           = this; // set owner so ImageEditorForm can return to this instance instead of creating a new Driver // This is used in ImageEditorForm.cs for graceful transitions
+            imageEditorForm.ShowInTaskbar = true;
             imageEditorForm.Show();
         }
         // overide OnFormClosing to clean up resources on app closing
@@ -127,6 +164,11 @@ namespace ScreenGrab
                 _hotkeyScreenshot?.UpdateHotkeyConfig(_hotkeyConfig);
                 ConfigurationManager.SaveConfiguration(_hotkeyConfig);
             };
+            settingsForm.SaveFileLocationChanged += config =>
+            {
+                _hotkeyConfig = config;
+                ConfigurationManager.SaveConfiguration(_hotkeyConfig);
+            };
             settingsForm.ShowInTaskbar = true;
             settingsForm.Show();
             this.Hide();                // hide the main form // keep persistent state
@@ -136,11 +178,27 @@ namespace ScreenGrab
         // when button is clicked, open Image Editor form
         private void SendToEditor_Click(object sender, EventArgs e)
         {
-            var imageEditorForm = new ImageEditorForm();
+            ImageEditorForm imageEditorForm;
+            if (Clipboard.ContainsImage())
+            {
+                Image? clipboardImage = Clipboard.GetImage();
+                if (clipboardImage != null)
+                {
+                    imageEditorForm = new ImageEditorForm(clipboardImage);
+                }
+                else
+                {
+                    imageEditorForm = new ImageEditorForm();
+                }
+            }
+            else
+            {
+                imageEditorForm = new ImageEditorForm();
+            }
             imageEditorForm.Tag = this; // set owner so ImageEditorForm can return to this instance instead of creating a new Driver // This is used in ImageEditorForm.cs for graceful transitions
             imageEditorForm.ShowInTaskbar = true;
             imageEditorForm.Show();
-            this.Hide();               // hide the main form // keep persistent state
+            this.Hide();                // hide the main form // keep persistent state
             this.ShowInTaskbar = false;
         }
 
