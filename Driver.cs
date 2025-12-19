@@ -34,11 +34,12 @@ namespace ScreenGrab
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            this.Hide();                                                                // hide the form on startup
-            this.ShowInTaskbar = false;                                                 // remove from taskbar
-            _hotkeyScreenshot = new HotkeyScreenshot(this, _hotkeyConfig);              // initialize HotkeyScreenshot class
-            _hotkeyScreenshot.OnScreenshotTaken += HotkeyScreenshot_OnScreenshotTaken;  // wire up event handler for screenshot taken
-            _hotkeyScreenshot.OnOpenEditor += OpenImageEditor;                          // wire up event handler for open image editor
+            this.Hide();                                                                     // hide the form on startup
+            this.ShowInTaskbar = false;                                                      // remove from taskbar
+            _hotkeyScreenshot = new HotkeyScreenshot(this, _hotkeyConfig);                   // initialize HotkeyScreenshot class
+            _hotkeyScreenshot.OnScreenshotTaken += HotkeyScreenshot_OnScreenshotTaken;       // wire up event handler for screenshot taken
+            _hotkeyScreenshot.OnScreenshotCaptured += HotkeyScreenshot_OnScreenshotCaptured; // wire up event handler for screenshot captured
+            _hotkeyScreenshot.OnOpenEditor += OpenImageEditor;                               // wire up event handler for open image editor
 
             // set up system tray icon
             SystemTrayIcon.Visible = true;                                         // make icon visible
@@ -83,13 +84,38 @@ namespace ScreenGrab
                 $"ScreenGrab saved to:\n{filePath}",       // message
                 $"ScreenGrab",                             // title //not displaying in current config
                 4000);                                     // duration in ms
-
+        }
+        // == Methods for opening image editor with bitmap == //
+        // event handler for screenshot captured event
+        private void HotkeyScreenshot_OnScreenshotCaptured(Bitmap screenshot)
+        {
             //auto open image editor if configured
             if (_hotkeyConfig.AutoOpenEditorOnCapture)
             {
-                OpenEditorWithFile(filePath);
+                OpenEditorWithBitmap(screenshot);
+            }
+            else
+            {
+                screenshot.Dispose(); // clean up bitmap if not used
             }
         }
+        // open image editor with bitmap
+        private void OpenEditorWithBitmap(Bitmap bitmap)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action<Bitmap>(OpenEditorWithBitmap), bitmap);
+                return;
+            }
+            var imageEditorForm = new ImageEditorForm(bitmap)
+            {
+                Tag = this, // set owner so ImageEditorForm can return to this instance instead of creating a new Driver // This is used in ImageEditorForm.cs for graceful transitions
+                ShowInTaskbar = true
+            };
+            imageEditorForm.Show();
+        }
+        // == end methods for opening image editor with bitmap == //
+
         // open image editor with file path
         private void OpenEditorWithFile(string filePath)
         {

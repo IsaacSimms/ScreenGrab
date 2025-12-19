@@ -58,6 +58,8 @@
             chkAutoCopyToClipboard = new CheckBox();
             txtAutoOpenEditorHeader = new TextBox();
             chkAutoOpenEditorOnCapture = new CheckBox();
+            txtFileSaveToggleHeader = new TextBox();
+            chkSaveToFileLocation = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -353,7 +355,7 @@
             txtAutoCopyHeader.BackColor = SystemColors.Desktop;
             txtAutoCopyHeader.BorderStyle = BorderStyle.FixedSingle;
             txtAutoCopyHeader.ForeColor = SystemColors.Window;
-            txtAutoCopyHeader.Location = new Point(385, 159);
+            txtAutoCopyHeader.Location = new Point(385, 188);
             txtAutoCopyHeader.Name = "txtAutoCopyHeader";
             txtAutoCopyHeader.Size = new Size(153, 23);
             txtAutoCopyHeader.TabIndex = 25;
@@ -365,7 +367,7 @@
             chkAutoCopyToClipboard.CheckAlign = ContentAlignment.MiddleCenter;
             chkAutoCopyToClipboard.Checked = true;
             chkAutoCopyToClipboard.CheckState = CheckState.Checked;
-            chkAutoCopyToClipboard.Location = new Point(544, 160);
+            chkAutoCopyToClipboard.Location = new Point(544, 187);
             chkAutoCopyToClipboard.Name = "chkAutoCopyToClipboard";
             chkAutoCopyToClipboard.Size = new Size(122, 23);
             chkAutoCopyToClipboard.TabIndex = 26;
@@ -377,7 +379,7 @@
             txtAutoOpenEditorHeader.BackColor = SystemColors.Desktop;
             txtAutoOpenEditorHeader.BorderStyle = BorderStyle.FixedSingle;
             txtAutoOpenEditorHeader.ForeColor = SystemColors.Window;
-            txtAutoOpenEditorHeader.Location = new Point(385, 188);
+            txtAutoOpenEditorHeader.Location = new Point(385, 217);
             txtAutoOpenEditorHeader.Name = "txtAutoOpenEditorHeader";
             txtAutoOpenEditorHeader.Size = new Size(153, 23);
             txtAutoOpenEditorHeader.TabIndex = 27;
@@ -387,7 +389,7 @@
             // chkAutoOpenEditorOnCapture
             // 
             chkAutoOpenEditorOnCapture.CheckAlign = ContentAlignment.MiddleCenter;
-            chkAutoOpenEditorOnCapture.Location = new Point(544, 189);
+            chkAutoOpenEditorOnCapture.Location = new Point(544, 218);
             chkAutoOpenEditorOnCapture.Name = "chkAutoOpenEditorOnCapture";
             chkAutoOpenEditorOnCapture.Size = new Size(122, 22);
             chkAutoOpenEditorOnCapture.TabIndex = 28;
@@ -395,12 +397,38 @@
             chkAutoOpenEditorOnCapture.UseVisualStyleBackColor = true;
             chkAutoOpenEditorOnCapture.CheckedChanged += chkAutoOpenInEditor_CheckedChanged;
             // 
+            // txtFileSaveToggleHeader
+            // 
+            txtFileSaveToggleHeader.BackColor = SystemColors.Desktop;
+            txtFileSaveToggleHeader.BorderStyle = BorderStyle.FixedSingle;
+            txtFileSaveToggleHeader.ForeColor = SystemColors.Window;
+            txtFileSaveToggleHeader.Location = new Point(385, 159);
+            txtFileSaveToggleHeader.Name = "txtFileSaveToggleHeader";
+            txtFileSaveToggleHeader.Size = new Size(153, 23);
+            txtFileSaveToggleHeader.TabIndex = 29;
+            txtFileSaveToggleHeader.Text = "Save to File Location";
+            txtFileSaveToggleHeader.TextAlign = HorizontalAlignment.Center;
+            // 
+            // chkSaveToFileLocation
+            // 
+            chkSaveToFileLocation.CheckAlign = ContentAlignment.MiddleCenter;
+            chkSaveToFileLocation.Checked = true;
+            chkSaveToFileLocation.CheckState = CheckState.Checked;
+            chkSaveToFileLocation.Location = new Point(544, 159);
+            chkSaveToFileLocation.Name = "chkSaveToFileLocation";
+            chkSaveToFileLocation.Size = new Size(122, 23);
+            chkSaveToFileLocation.TabIndex = 30;
+            chkSaveToFileLocation.UseVisualStyleBackColor = true;
+            chkSaveToFileLocation.CheckedChanged += chkSaveToFileLocation_CheckChanged;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(852, 368);
+            Controls.Add(chkSaveToFileLocation);
+            Controls.Add(txtFileSaveToggleHeader);
             Controls.Add(chkAutoOpenEditorOnCapture);
             Controls.Add(txtAutoOpenEditorHeader);
             Controls.Add(chkAutoCopyToClipboard);
@@ -470,5 +498,7 @@
         private CheckBox chkAutoCopyToClipboard;
         private TextBox txtAutoOpenEditorHeader;
         private CheckBox chkAutoOpenEditorOnCapture;
+        private TextBox txtFileSaveToggleHeader;
+        private CheckBox chkSaveToFileLocation;
     }
 }

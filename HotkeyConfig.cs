@@ -93,6 +93,8 @@ namespace ScreenGrab
                 Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), 
                 "ScreenGrab"
         );
+        // save to file location toggle // default to true
+        public bool SaveToFileLocation { get; set; } = true;
         // auto-copy to clipboard option // default to true
         public bool AutoCopyToClipboard { get; set; } = true;
         // auto-open editor option // default to false

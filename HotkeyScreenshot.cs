@@ -55,6 +55,7 @@ namespace ScreenGrab
         private readonly int _OpenClipboardInPaintHotkeyId; // ID for open clipboard image in paint hotkey
         private readonly int _OpenEditorHotkeyId;           // ID for open editor hotkey
         public event Action<string>? OnScreenshotTaken;     // event to notify when a screenshot is taken
+        public event Action<Bitmap>? OnScreenshotCaptured; // event to notify when a screenshot is captured
         public event Action? OnOpenEditor;                  // event to notify when editor is opened
 
         // == Register hotkeys == //
@@ -148,6 +149,10 @@ namespace ScreenGrab
             _config.RegionDelayedCapture       = newConfig.RegionDelayedCapture;
             _config.OpenPaint                  = newConfig.OpenPaint;
             _config.OpenEditor                 = newConfig.OpenEditor;
+            _config.ScreenshotSaveLocation     = newConfig.ScreenshotSaveLocation;
+            _config.SaveToFileLocation         = newConfig.SaveToFileLocation;
+            _config.AutoCopyToClipboard        = newConfig.AutoCopyToClipboard;
+            _config.AutoOpenEditorOnCapture    = newConfig.AutoOpenEditorOnCapture;
             RegisterAllHotkeys(); // re-register hotkeys with new configuration
         }
 
@@ -398,13 +403,21 @@ namespace ScreenGrab
         // == Capture active window after delay == //
         public async void CaptureActiveWindowDelayed()
         {
+            ScreenshotMessageBox.ShowMessage(
+                $"ScreenGrab: Delayed capture in 5 seconds...",
+                $"ScreenGrab",
+                2000);
             await Task.Delay(5000); // 5 second delay
             CaptureActiveWindow();
         }
         // == Capture selected region after delay == //
         public async void CaptureRegionDelayed()
         {
-            await Task.Delay(3000); // 5 second delay
+            ScreenshotMessageBox.ShowMessage(
+                $"ScreenGrab: Delayed capture in 5 seconds...",
+                $"ScreenGrab",
+                2000);
+            await Task.Delay(5000); // 5 second delay
             CaptureRegion();
         }
 
@@ -567,29 +580,45 @@ namespace ScreenGrab
                 Clipboard.SetImage(bitmap);
             }
 
-            // save to OneDrive folder
-            string basePath = _config.ScreenshotSaveLocation;
-            if (!Directory.Exists(basePath))
+            //save to file location if enabled
+            if (_config.SaveToFileLocation)
             {
-                Directory.CreateDirectory(basePath);                            // create directory if it does not exist
-            }
-            string fileName = $"{prefix}_{DateTime.Now:yyyyMMdd_HHmmss}.png";   // generate filename with prefix and timestamp
-            string filePath = Path.Combine(basePath, fileName);                 // full file path
+                //save to OneDrive folder
+                string basePath = _config.ScreenshotSaveLocation;
+                if (!Directory.Exists(basePath))
+                {
+                    Directory.CreateDirectory(basePath);
+                }
+                string fileName = $"{prefix}_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+                string filePath = Path.Combine(basePath, fileName);
 
-            // save bitmap as PNG
-            try
-            {
-                bitmap.Save(filePath, ImageFormat.Png);
-                OnScreenshotTaken?.Invoke(filePath); // trigger event to notify screenshot taken
+                //save bitmap as png
+                try
+                {
+                    bitmap.Save(filePath, ImageFormat.Png);
+                    OnScreenshotTaken?.Invoke(filePath);
+                }
+                catch (Exception ex)
+                {
+                    ScreenshotMessageBox.ShowMessage(
+                        $"ScreenGrab: Failed to save screenshot: {ex.Message}.",
+                        $"ScreenGrab:",
+                        4000);
+                    System.Diagnostics.Debug.WriteLine($"Failed to take screenshot: {ex.Message}");
+                    throw new InvalidOperationException($"Failed to take screenshot: {ex.Message}.");
+                }
             }
-            catch (Exception ex)
+            else
             {
-                ScreenshotMessageBox.ShowMessage(                                                  // show message box on screenshot taken
-                $"ScreenGrab: Failed to save screenshot: {ex.Message}.",                           // message
-                $"ScreenGrab",                                                                     // title //not displaying in current config
-                4000);                                                                             // duration in ms
-                System.Diagnostics.Debug.WriteLine($"Failed to take a screenshot: {ex.Message}");
-                throw new InvalidOperationException($"Failed to take a screenshot: {ex.Message}.");
+                ScreenshotMessageBox.ShowMessage(
+                    $"ScreenGrab: Screenshot taken.",
+                    $"ScreenGrab:",
+                    4000);
+            }
+            if (_config.AutoOpenEditorOnCapture)
+            {
+                Bitmap bitmapCopy = new Bitmap(bitmap);   // create a copy of the bitmap to pass to the editor
+                OnScreenshotCaptured?.Invoke(bitmapCopy); // trigger event to notify screenshot captured
             }
         }
 
@@ -645,31 +674,45 @@ namespace ScreenGrab
             {
                 Clipboard.SetImage(maskedCapture);
             }
-            ;
 
-            // save to OneDrive folder
-            string basePath = _config.ScreenshotSaveLocation;
-            if (!Directory.Exists(basePath))
+            if (_config.SaveToFileLocation)
             {
-                Directory.CreateDirectory(basePath);                            // create directory if it does not exist
-            }
-            string fileName = $"{prefix}_{DateTime.Now:yyyyMMdd_HHmmss}.png";   // generate filename with prefix and timestamp
-            string filePath = Path.Combine(basePath, fileName);                 // full file path
+                // save to OneDrive folder
+                string basePath = _config.ScreenshotSaveLocation;
+                if (!Directory.Exists(basePath))
+                {
+                    Directory.CreateDirectory(basePath);                            // create directory if it does not exist
+                }
+                string fileName = $"{prefix}_{DateTime.Now:yyyyMMdd_HHmmss}.png";   // generate filename with prefix and timestamp
+                string filePath = Path.Combine(basePath, fileName);                 // full file path
 
-            // save masked bitmap as PNG
-            try
-            {
-                maskedCapture.Save(filePath, ImageFormat.Png);
-                OnScreenshotTaken?.Invoke(filePath); // trigger event to notify screenshot taken
+                // save masked bitmap as PNG
+                try
+                {
+                    maskedCapture.Save(filePath, ImageFormat.Png);
+                    OnScreenshotTaken?.Invoke(filePath); // trigger event to notify screenshot taken
+                }
+                catch (Exception ex)
+                {
+                    ScreenshotMessageBox.ShowMessage(
+                        $"ScreenGrab: Failed to save screenshot: {ex.Message}.",                           // message
+                        $"ScreenGrab",                                                                     // title //not displaying in current config
+                        4000);                                                                             // duration in ms
+                    System.Diagnostics.Debug.WriteLine($"Failed to take a screenshot: {ex.Message}");
+                    throw new InvalidOperationException($"Failed to take a screenshot: {ex.Message}.");
+                }
             }
-            catch (Exception ex)
+            else
             {
                 ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: Failed to save screenshot: {ex.Message}.",                           // message
-                    $"ScreenGrab",                                                                     // title //not displaying in current config
-                    4000);                                                                             // duration in ms
-                System.Diagnostics.Debug.WriteLine($"Failed to take a screenshot: {ex.Message}");
-                throw new InvalidOperationException($"Failed to take a screenshot: {ex.Message}.");
+                    $"ScreenGrab: Screenshot taken.",
+                    $"ScreenGrab:",
+                    4000);
+            }
+            if (_config.AutoOpenEditorOnCapture)
+            {
+                Bitmap bitmapCopy = new Bitmap(maskedCapture);   // create a copy of the bitmap to pass to the editor
+                OnScreenshotCaptured?.Invoke(bitmapCopy);        // trigger event to notify screenshot captured
             }
         }
 

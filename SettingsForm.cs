@@ -27,15 +27,16 @@ namespace ScreenGrab
             _config = config;        // assign passed config to variable within class
 
             // set text boxes to current hotkey settings
-            txtActive.Text = _config.ActiveWindowCapture.ToString();
-            txtRegion.Text = _config.RegionCapture.ToString();
-            txtActiveDelayed.Text = _config.ActiveWindowDelayedCapture.ToString();
-            txtRegionDelayed.Text = _config.RegionDelayedCapture.ToString();
-            txtPaint.Text = _config.OpenPaint.ToString();
-            txtEditor.Text = _config.OpenEditor.ToString();
+            txtActive.Text                          = _config.ActiveWindowCapture.ToString();
+            txtRegion.Text                          = _config.RegionCapture.ToString();
+            txtActiveDelayed.Text                   = _config.ActiveWindowDelayedCapture.ToString();
+            txtRegionDelayed.Text                   = _config.RegionDelayedCapture.ToString();
+            txtPaint.Text                           = _config.OpenPaint.ToString();
+            txtEditor.Text                          = _config.OpenEditor.ToString();
             txtChangeScreenCaptureFileLocation.Text = _config.ScreenshotSaveLocation;
-            chkAutoCopyToClipboard.Checked = _config.AutoCopyToClipboard;
-            chkAutoOpenEditorOnCapture.Checked = _config.AutoOpenEditorOnCapture;
+            chkAutoCopyToClipboard.Checked          = _config.AutoCopyToClipboard;
+            chkAutoOpenEditorOnCapture.Checked      = _config.AutoOpenEditorOnCapture;
+            chkSaveToFileLocation.Checked           = _config.SaveToFileLocation;
 
             //make text boxes read-only to prevent manual editing
             txtActive.ReadOnly                           = true;
@@ -53,6 +54,7 @@ namespace ScreenGrab
             txtSaveFileLocationHeader.ReadOnly           = true;
             txtAutoCopyHeader.ReadOnly                   = true;
             txtAutoOpenEditorHeader.ReadOnly             = true;
+            txtSaveFileLocationHeader.ReadOnly           = true;
             // receive keydown events for text boxes
             this.KeyPreview = true;
             this.KeyUp += new KeyEventHandler(SettingsForm_KeyDown);               //
@@ -126,6 +128,15 @@ namespace ScreenGrab
                 ? "Auto-open in editor enabled."
                 : "Auto-open in editor disabled.";
             SaveFileLocationChanged?.Invoke(_config);                                  // raise event to notify main app of change
+        }
+        // == save to file location checkbox change handler == //
+        private void chkSaveToFileLocation_CheckChanged(object sender, EventArgs e)
+        {
+            _config.SaveToFileLocation = chkSaveToFileLocation.Checked;  // update config based on checkbox state
+            lblStatus.Text = _config.SaveToFileLocation
+                ? "Auto-save to file location enabled."
+                : "Auto-save to file location disabled.";
+            SaveFileLocationChanged?.Invoke(_config);
         }
 
         // keydown event handler to capture new hotkey
