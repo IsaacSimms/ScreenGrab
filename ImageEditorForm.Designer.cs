@@ -40,6 +40,7 @@
             toolStripButton2 = new ToolStripButton();
             toolStripButton1 = new ToolStripButton();
             toolStripButton3 = new ToolStripButton();
+            toolStripButton4 = new ToolStripButton();
             btnSelectColor = new ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
@@ -119,10 +120,10 @@
             // 
             EditorToolStrip.BackColor = SystemColors.Desktop;
             EditorToolStrip.Dock = DockStyle.None;
-            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, toolStripButton3, btnSelectColor });
+            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, toolStripButton3, toolStripButton4, btnSelectColor });
             EditorToolStrip.Location = new Point(12, 78);
             EditorToolStrip.Name = "EditorToolStrip";
-            EditorToolStrip.Size = new Size(104, 25);
+            EditorToolStrip.Size = new Size(158, 25);
             EditorToolStrip.TabIndex = 26;
             EditorToolStrip.Text = "toolStrip1";
             // 
@@ -155,6 +156,17 @@
             toolStripButton3.Size = new Size(23, 22);
             toolStripButton3.Text = "btnFreeform";
             toolStripButton3.Click += btnDrawFreeform_Click;
+            // 
+            // toolStripButton4
+            // 
+            toolStripButton4.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButton4.Image = (Image)resources.GetObject("toolStripButton4.Image");
+            toolStripButton4.ImageTransparentColor = Color.Magenta;
+            toolStripButton4.Name = "toolStripButton4";
+            toolStripButton4.Size = new Size(23, 22);
+            toolStripButton4.Text = "toolStripButton4";
+            toolStripButton4.ToolTipText = "btnText";
+            toolStripButton4.Click += btnDrawText_Click;
             // 
             // btnSelectColor
             // 
@@ -203,5 +215,6 @@
         private ToolStripMenuItem saveToolStripMenuItem;
         private ToolStripButton toolStripButton3;
         private ToolStripMenuItem copyToClipboardToolStripMenuItem;
+        private ToolStripButton toolStripButton4;
     }
 }

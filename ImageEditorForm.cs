@@ -11,6 +11,7 @@ using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace ScreenGrab
 {
@@ -22,18 +23,24 @@ namespace ScreenGrab
             None,
             Rectangle,
             Arrow,
-            Freeform
+            Freeform,
+            Text
         }
         // == private variables == //
-        private Image?      _currentImage;                         // local variable for storing loaded iamge
-        private Bitmap?     _editableImage;                        // local variable for storing editable image
+        private Image? _currentImage;                         // local variable for storing loaded iamge
+        private Bitmap? _editableImage;                        // local variable for storing editable image
         private DrawingTool _activeDrawingTool = DrawingTool.None; // currently selected drawing tool // initially none
-        private Point       _drawStartPoint;                        //starting point for drawing
-        private Point       _drawEndPoint;                          //ending point for drawing
-        private bool        _isDrawing = false;                     //flag to indicate if drawing is in progress
-        private Color       _SelectedColor = Color.Red;             //default color (red) for drawing
-        private Pen?        _currentPen;                            //pen for drawing shapes
+        private Point _drawStartPoint;                        //starting point for drawing
+        private Point _drawEndPoint;                          //ending point for drawing
+        private bool _isDrawing = false;                     //flag to indicate if drawing is in progress
+        private Color _SelectedColor = Color.Red;             //default color (red) for drawing
+        private Pen? _currentPen;                            //pen for drawing shapes
         private List<Point> _freeformPoints = new List<Point>();      //points for freeform drawing
+        // text tool variables
+        private RichTextBox? _textBox;
+        private Point _textStartPoint;
+        private Font _textFont = new Font("Arial", 16, FontStyle.Bold); // default font for text tool
+        private bool _isTextInputActive = false;               // flag to indicate if text input is active
 
         // == constructor == //
         public ImageEditorForm()
@@ -45,8 +52,8 @@ namespace ScreenGrab
             // wire up mouse events for drawing
             pictureBoxImage.MouseDown += pictureBoxImage_MouseDown;
             pictureBoxImage.MouseMove += pictureBoxImage_MouseMove;
-            pictureBoxImage.MouseUp   += pictureBoxImage_MouseUp;
-            pictureBoxImage.Paint     += pictureBoxImage_Paint;
+            pictureBoxImage.MouseUp += pictureBoxImage_MouseUp;
+            pictureBoxImage.Paint += pictureBoxImage_Paint;
         }
 
         // == constructor to load image from path == //
@@ -185,8 +192,8 @@ namespace ScreenGrab
         {
             using (ColorDialog colorDialog = new ColorDialog())
             {
-                colorDialog.Color         = _SelectedColor; // set current selected color
-                colorDialog.FullOpen      = true;           // allow full color selection
+                colorDialog.Color = _SelectedColor; // set current selected color
+                colorDialog.FullOpen = true;           // allow full color selection
                 colorDialog.AllowFullOpen = true;
                 if (colorDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -253,7 +260,136 @@ namespace ScreenGrab
             ActivateDrawingTool(DrawingTool.Freeform);
         }
 
+        // == button to select text drawing tool == //
+        private void btnDrawText_Click(object sender, EventArgs e)
+        {
+            ActivateDrawingTool(DrawingTool.Text);
+        }
+
         // == END OF TOOL SELECTION FUNCTIONALITY == //
+
+        // == TEXT TOOOL FUNCTIONALITY == //
+        // Custom textbox for text input
+        public class TransparentTextBox : RichTextBox
+        {
+            public TransparentTextBox()
+            {
+                SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+                SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+                BackColor = Color.Transparent; // semi-transparent background
+            }
+            // ovveride paint background
+            protected override void OnPaintBackground(PaintEventArgs e)
+            {
+                // Do not paint background to keep it transparent
+                if (Parent != null)
+                {
+                    e.Graphics.TranslateTransform(-Left, -Top);
+                    Parent.GetType().GetMethod("OnPaintBackground", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)?
+                        .Invoke(Parent, new object[] { e });
+                    e.Graphics.TranslateTransform(Left, Top);
+                }
+            }
+        }
+        private void ShowTextInputBox(Point location)
+        {
+            // commit previous text if any
+            CommitTextToImage();
+            _textStartPoint = location; // set text insertion point
+            _isTextInputActive = true;
+
+            var textBox = new TransparentTextBox()
+            {
+                Location = new Point(pictureBoxImage.Location.X + location.X, pictureBoxImage.Location.Y + location.Y),
+                Multiline = true,
+                Font = _textFont,
+                ForeColor = _SelectedColor,
+                BorderStyle = BorderStyle.None,
+                MinimumSize = new Size(100, 30),
+                Width = 200,
+                ScrollBars = RichTextBoxScrollBars.None
+                //Visible = false
+            };
+            _textBox = textBox;
+
+            // wire up events
+            _textBox.KeyDown += TextBox_KeyDown;
+            _textBox.LostFocus += TextBox_LostFocus;
+            _textBox.TextChanged += TextBox_TextChanged;
+
+            // add textbox to form
+            pictureBoxImage.Controls.Add(_textBox);
+            _textBox.BringToFront();
+            _textBox.Focus(); // focus textbox for immediate typing
+        }
+
+        // commit text to image on Enter key press
+        private void TextBox_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter && _textBox != null)
+            {
+                e.Handled = true; // prevent ding sound
+                CommitTextToImage();
+            }
+            else if (e.KeyCode == Keys.Escape) // cancel text input on Escape key
+            {
+                CancelTextInput();
+            }
+        }
+        private void TextBox_LostFocus(object? sender, EventArgs e)
+        {
+            CommitTextToImage();
+        }
+        // redraw textbox on text change
+        private void TextBox_TextChanged(object? sender, EventArgs e)
+        {
+            pictureBoxImage.Invalidate(); // request redraw to update textbox display
+        }
+        // commit text from textbox to image
+        private void CommitTextToImage()
+        {
+            if (_textBox != null && _editableImage != null)
+            {
+                string text = _textBox.Text.Trim();
+                if (!string.IsNullOrEmpty(text))
+                {
+                    using (Graphics g = Graphics.FromImage(_editableImage))
+                    {
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
+                        g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;          // improve text quality
+                        Point imagePoint = ConvertToImageCoordinates(_textStartPoint);      // convert to image coordinates
+                        using (Brush textBrush = new SolidBrush(_SelectedColor))
+                        {
+                            g.DrawString(text, _textFont, textBrush, imagePoint);           // draw text on image
+                        }
+                    }
+                    // update picture box with edited image
+                    pictureBoxImage.Image = _editableImage;
+                }
+                // remove textbox from form
+                RemoveTextInputBox();
+            }
+        }
+        // cancel text input and remove textbox
+        private void CancelTextInput()
+        {
+            RemoveTextInputBox();
+        }
+        // remove textbox from form
+        private void RemoveTextInputBox()
+        {
+            if (_textBox != null)
+            {
+                // unhook events
+                _textBox.KeyDown -= TextBox_KeyDown;
+                _textBox.LostFocus -= TextBox_LostFocus;
+                _textBox.TextChanged -= TextBox_TextChanged;
+                _textBox.Dispose();              // dispose textbox
+                _textBox = null;                 // clear reference
+                _isTextInputActive = false;     // reset text input flag
+                pictureBoxImage.Invalidate();   // request redraw to remove textbox display
+            }
+        }
 
         // == EVENTS DRAWING FUNCTIONALITY == //
         // start drawing shape on image
@@ -261,6 +397,7 @@ namespace ScreenGrab
         {
             if (_activeDrawingTool != DrawingTool.None && e.Button == MouseButtons.Left && _currentPen != null && _editableImage != null)
             {
+
                 _isDrawing = true;                              // set drawing flag
                 _drawStartPoint = e.Location;                   // set starting point
                 _drawEndPoint = e.Location;                     // initialize ending point
@@ -268,6 +405,11 @@ namespace ScreenGrab
                 {
                     _freeformPoints.Clear();                    // clear previous points
                     _freeformPoints.Add(e.Location);            // add starting point
+                }
+                if (_activeDrawingTool == DrawingTool.Text)    // for text tool
+                {
+                    ShowTextInputBox(e.Location);               // show text input box
+                    return;
                 }
             }
         }
@@ -285,7 +427,7 @@ namespace ScreenGrab
             }
         }
         // finish drawing shape on image
-        private void pictureBoxImage_MouseUp(object? sender, MouseEventArgs e) 
+        private void pictureBoxImage_MouseUp(object? sender, MouseEventArgs e)
         {
             if (_isDrawing && _activeDrawingTool != DrawingTool.None && _editableImage != null)
             {
@@ -320,6 +462,37 @@ namespace ScreenGrab
                         break;
                 }
             }
+            // draw textbox if active
+            if (_isTextInputActive && _textBox != null)
+            {
+                // textbox is drawn automatically as a control
+                DrawTextPreview(e.Graphics);
+            }
+        }
+
+        // draw text preview in textbox
+        private void DrawTextPreview(Graphics g)
+        {
+            if (_textBox != null)
+            {
+                string text = _textBox.Text;
+                if (string.IsNullOrEmpty(text))
+                {
+                    text = " | "; // placeholder text
+                }
+                else
+                {
+                    text += " | "; // add cursor indicator
+                }
+                // improve quality
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+                // use brush for text color
+                using (Brush textBrush = new SolidBrush(_SelectedColor))
+                {
+                    g.DrawString(text, _textFont, textBrush, _textStartPoint);
+                }
+            }
         }
         // == END OF DRAWING EVENTS == //
 
@@ -327,20 +500,20 @@ namespace ScreenGrab
         // == draw rectangle preview == //
         private void DrawRectanglePreview(Graphics g)
         {
-            int x      = Math.Min(_drawStartPoint.X, _drawEndPoint.X);
-            int y      = Math.Min(_drawStartPoint.Y, _drawEndPoint.Y);
-            int width  = Math.Abs(_drawEndPoint.X - _drawStartPoint.X);
+            int x = Math.Min(_drawStartPoint.X, _drawEndPoint.X);
+            int y = Math.Min(_drawStartPoint.Y, _drawEndPoint.Y);
+            int width = Math.Abs(_drawEndPoint.X - _drawStartPoint.X);
             int height = Math.Abs(_drawEndPoint.Y - _drawStartPoint.Y);
             g.DrawRectangle(_currentPen!, x, y, width, height);
         }
         // == draw arrow preview == //
         private void DrawArrowPreview(Graphics g)
         {
-            if (_currentPen != null) 
+            if (_currentPen != null)
             {
                 using (Pen arrowPen = new Pen(_SelectedColor, 3))
                 {
-                    arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(5,5);
+                    arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(5, 5);
                     g.DrawLine(arrowPen, _drawStartPoint, _drawEndPoint);
                 }
             }
@@ -360,31 +533,31 @@ namespace ScreenGrab
         {
             if (_editableImage == null || _currentPen == null) return;
 
-                using (Graphics g = Graphics.FromImage(_editableImage))
-                {
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
-                    Point imageStart = ConvertToImageCoordinates(_drawStartPoint); // convert start point
-                    Point imageEnd   = ConvertToImageCoordinates(_drawEndPoint);   // convert end point
+            using (Graphics g = Graphics.FromImage(_editableImage))
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
+                Point imageStart = ConvertToImageCoordinates(_drawStartPoint); // convert start point
+                Point imageEnd = ConvertToImageCoordinates(_drawEndPoint);   // convert end point
 
-                    // draw shape based on selected tool
-                    switch (_activeDrawingTool)
-                    {
-                        case DrawingTool.Rectangle:
-                            DrawRectangleOnImage(g, imageStart, imageEnd);
-                            break;
-                        case DrawingTool.Arrow:
-                            DrawArrowOnImage(g, imageStart, imageEnd);
-                            break;
-                        case DrawingTool.Freeform:
-                            List<Point> imagePoints = new List<Point>();
-                            foreach (Point p in _freeformPoints)
-                            {
-                                imagePoints.Add(ConvertToImageCoordinates(p)); // convert each point
+                // draw shape based on selected tool
+                switch (_activeDrawingTool)
+                {
+                    case DrawingTool.Rectangle:
+                        DrawRectangleOnImage(g, imageStart, imageEnd);
+                        break;
+                    case DrawingTool.Arrow:
+                        DrawArrowOnImage(g, imageStart, imageEnd);
+                        break;
+                    case DrawingTool.Freeform:
+                        List<Point> imagePoints = new List<Point>();
+                        foreach (Point p in _freeformPoints)
+                        {
+                            imagePoints.Add(ConvertToImageCoordinates(p)); // convert each point
                         }
                         DrawFreeformOnImage(g, imagePoints);
-                            break;
+                        break;
                 }
-                }
+            }
             // update picture box with edited image
             pictureBoxImage.Image = _editableImage;
         }
@@ -392,9 +565,9 @@ namespace ScreenGrab
         // == draw rectangle on image // helper for DrawShapeOnImage() == //
         private void DrawRectangleOnImage(Graphics g, Point start, Point end)
         {
-            int x      = Math.Min(start.X, end.X);
-            int y      = Math.Min(start.Y, end.Y);
-            int width  = Math.Abs(end.X - start.X);
+            int x = Math.Min(start.X, end.X);
+            int y = Math.Min(start.Y, end.Y);
+            int width = Math.Abs(end.X - start.X);
             int height = Math.Abs(end.Y - start.Y);
             g.DrawRectangle(_currentPen!, x, y, width, height);
         }
@@ -402,11 +575,11 @@ namespace ScreenGrab
         // == draw arrow on image // helper for DrawShapeOnImage() == //
         private void DrawArrowOnImage(Graphics g, Point start, Point end)
         {
-            if (_currentPen != null) 
+            if (_currentPen != null)
             {
                 using (Pen arrowPen = new Pen(_SelectedColor, 5))
                 {
-                    arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(5,5);
+                    arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(5, 5);
                     g.DrawLine(arrowPen, start, end);
                 }
             }
@@ -425,21 +598,21 @@ namespace ScreenGrab
         private Point ConvertToImageCoordinates(Point pictureBoxPoint)
         {
             if (pictureBoxImage.Image == null) return pictureBoxPoint;
-            if (pictureBoxImage.SizeMode == PictureBoxSizeMode.Zoom && _editableImage != null) 
+            if (pictureBoxImage.SizeMode == PictureBoxSizeMode.Zoom && _editableImage != null)
             {
                 // calculate scaling factors
                 float imageAspect = (float)_editableImage.Width / _editableImage.Height;   // aspect ratio of the image
-                float boxAspect   = (float)pictureBoxImage.Width / pictureBoxImage.Height; // aspect ratio of the picture box
+                float boxAspect = (float)pictureBoxImage.Width / pictureBoxImage.Height; // aspect ratio of the picture box
                 float scaleFactor;                                                         // scaling factor
                 int offsetX = 0; int offsetY = 0;                                          // offsets for centering image
                 // determine scaling and offsets
-                if (imageAspect > boxAspect) 
+                if (imageAspect > boxAspect)
                 {
                     // image is wider than box
                     scaleFactor = (float)_editableImage.Width / pictureBoxImage.Width;
                     offsetY = (pictureBoxImage.Height - (int)(_editableImage.Height / scaleFactor)) / 2;
                 }
-                else 
+                else
                 {
                     // image is taller than box
                     scaleFactor = (float)_editableImage.Height / pictureBoxImage.Height;
