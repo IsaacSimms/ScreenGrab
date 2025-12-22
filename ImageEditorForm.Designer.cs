@@ -40,6 +40,7 @@
             toolStripButton2 = new ToolStripButton();
             toolStripButton1 = new ToolStripButton();
             toolStripButton3 = new ToolStripButton();
+            toolStripButton5 = new ToolStripButton();
             toolStripButton4 = new ToolStripButton();
             btnSelectColor = new ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -73,7 +74,7 @@
             // pictureBoxImage
             // 
             pictureBoxImage.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            pictureBoxImage.Location = new Point(0, 117);
+            pictureBoxImage.Location = new Point(12, 106);
             pictureBoxImage.Name = "pictureBoxImage";
             pictureBoxImage.Size = new Size(1123, 550);
             pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
@@ -119,11 +120,13 @@
             // EditorToolStrip
             // 
             EditorToolStrip.BackColor = SystemColors.Desktop;
+            EditorToolStrip.BackgroundImageLayout = ImageLayout.None;
             EditorToolStrip.Dock = DockStyle.None;
-            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, toolStripButton3, toolStripButton4, btnSelectColor });
+            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, toolStripButton3, toolStripButton5, toolStripButton4, btnSelectColor });
             EditorToolStrip.Location = new Point(12, 78);
             EditorToolStrip.Name = "EditorToolStrip";
-            EditorToolStrip.Size = new Size(158, 25);
+            EditorToolStrip.RenderMode = ToolStripRenderMode.System;
+            EditorToolStrip.Size = new Size(181, 25);
             EditorToolStrip.TabIndex = 26;
             EditorToolStrip.Text = "toolStrip1";
             // 
@@ -156,6 +159,16 @@
             toolStripButton3.Size = new Size(23, 22);
             toolStripButton3.Text = "btnFreeform";
             toolStripButton3.Click += btnDrawFreeform_Click;
+            // 
+            // toolStripButton5
+            // 
+            toolStripButton5.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButton5.Image = (Image)resources.GetObject("toolStripButton5.Image");
+            toolStripButton5.ImageTransparentColor = Color.Magenta;
+            toolStripButton5.Name = "toolStripButton5";
+            toolStripButton5.Size = new Size(23, 22);
+            toolStripButton5.Text = "toolStripButton5";
+            toolStripButton5.Click += btnDrawHighlight_Click;
             // 
             // toolStripButton4
             // 
@@ -216,5 +229,6 @@
         private ToolStripButton toolStripButton3;
         private ToolStripMenuItem copyToClipboardToolStripMenuItem;
         private ToolStripButton toolStripButton4;
+        private ToolStripButton toolStripButton5;
     }
 }

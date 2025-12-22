@@ -24,7 +24,8 @@ namespace ScreenGrab
             Rectangle,
             Arrow,
             Freeform,
-            Text
+            Text,
+            Highlight
         }
         // == private variables == //
         private Image? _currentImage;                         // local variable for storing loaded iamge
@@ -265,6 +266,11 @@ namespace ScreenGrab
         {
             ActivateDrawingTool(DrawingTool.Text);
         }
+        // == button to select highlight drawing tool == //
+        private void btnDrawHighlight_Click(object sender, EventArgs e)
+        {
+            ActivateDrawingTool(DrawingTool.Highlight);
+        }
 
         // == END OF TOOL SELECTION FUNCTIONALITY == //
 
@@ -300,15 +306,14 @@ namespace ScreenGrab
 
             var textBox = new TransparentTextBox()
             {
-                Location = new Point(pictureBoxImage.Location.X + location.X, pictureBoxImage.Location.Y + location.Y),
+                Location = new Point(-1000, -1000), // temporary box off-screen // transparant textbox will be drawn at correct location in Paint event
                 Multiline = true,
                 Font = _textFont,
                 ForeColor = _SelectedColor,
                 BorderStyle = BorderStyle.None,
                 MinimumSize = new Size(100, 30),
                 Width = 200,
-                ScrollBars = RichTextBoxScrollBars.None
-                //Visible = false
+                ScrollBars = RichTextBoxScrollBars.None,
             };
             _textBox = textBox;
 
@@ -381,13 +386,41 @@ namespace ScreenGrab
             if (_textBox != null)
             {
                 // unhook events
-                _textBox.KeyDown -= TextBox_KeyDown;
-                _textBox.LostFocus -= TextBox_LostFocus;
+                _textBox.KeyDown     -= TextBox_KeyDown;
+                _textBox.LostFocus   -= TextBox_LostFocus;
                 _textBox.TextChanged -= TextBox_TextChanged;
+                this.Controls.Remove(_textBox);  // remove textbox from form
                 _textBox.Dispose();              // dispose textbox
                 _textBox = null;                 // clear reference
-                _isTextInputActive = false;     // reset text input flag
-                pictureBoxImage.Invalidate();   // request redraw to remove textbox display
+                _isTextInputActive = false;      // reset text input flag
+                pictureBoxImage.Invalidate();    // request redraw to remove textbox display
+            }
+        }
+        // == END OF TEXT TOOL FUNCTIONALITY == //
+
+        // == HIGHLIGHTING TOOL FUNCTIONALITY == //
+        private void DrawHighlightPreview(Graphics g)
+        {
+            int x = Math.Min(_drawStartPoint.X, _drawEndPoint.X);
+            int y = Math.Min(_drawStartPoint.Y, _drawEndPoint.Y);
+            int width = Math.Abs(_drawEndPoint.X - _drawStartPoint.X);
+            int height = Math.Abs(_drawEndPoint.Y - _drawStartPoint.Y);
+            Color color = Color.FromArgb(80, _SelectedColor); // semi-transparent color
+            using (Brush highlightBrush = new SolidBrush(color))
+            {
+                g.FillRectangle(highlightBrush, x, y, width, height);
+            }
+        }
+        private void DrawHighlightOnImage(Graphics g, Point start, Point end)
+        {
+            int x = Math.Min(start.X, end.X);
+            int y = Math.Min(start.Y, end.Y);
+            int width = Math.Abs(end.X - start.X);
+            int height = Math.Abs(end.Y - start.Y);
+            Color color = Color.FromArgb(80, _SelectedColor); // semi-transparent color
+            using (Brush highlightBrush = new SolidBrush(color))
+            {
+                g.FillRectangle(highlightBrush, x, y, width, height);
             }
         }
 
@@ -459,6 +492,9 @@ namespace ScreenGrab
                         break;
                     case DrawingTool.Freeform:
                         DrawFreeformPreview(e.Graphics);
+                        break;
+                    case DrawingTool.Highlight:
+                        DrawHighlightPreview(e.Graphics);
                         break;
                 }
             }
@@ -555,6 +591,9 @@ namespace ScreenGrab
                             imagePoints.Add(ConvertToImageCoordinates(p)); // convert each point
                         }
                         DrawFreeformOnImage(g, imagePoints);
+                        break;
+                    case DrawingTool.Highlight:
+                        DrawHighlightOnImage(g, imageStart, imageEnd);
                         break;
                 }
             }
