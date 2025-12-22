@@ -41,6 +41,7 @@
             toolStripButton1 = new ToolStripButton();
             toolStripButton3 = new ToolStripButton();
             toolStripButton5 = new ToolStripButton();
+            toolStripButton6 = new ToolStripButton();
             toolStripButton4 = new ToolStripButton();
             btnSelectColor = new ToolStripButton();
             btnSendToSettings = new Button();
@@ -123,11 +124,11 @@
             EditorToolStrip.BackColor = SystemColors.Desktop;
             EditorToolStrip.BackgroundImageLayout = ImageLayout.None;
             EditorToolStrip.Dock = DockStyle.None;
-            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, toolStripButton3, toolStripButton5, toolStripButton4, btnSelectColor });
+            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, toolStripButton3, toolStripButton5, toolStripButton6, toolStripButton4, btnSelectColor });
             EditorToolStrip.Location = new Point(12, 78);
             EditorToolStrip.Name = "EditorToolStrip";
             EditorToolStrip.RenderMode = ToolStripRenderMode.System;
-            EditorToolStrip.Size = new Size(150, 25);
+            EditorToolStrip.Size = new Size(204, 25);
             EditorToolStrip.TabIndex = 26;
             EditorToolStrip.Text = "toolStrip1";
             // 
@@ -170,6 +171,16 @@
             toolStripButton5.Size = new Size(23, 22);
             toolStripButton5.Text = "toolStripButton5";
             toolStripButton5.Click += btnDrawHighlight_Click;
+            // 
+            // toolStripButton6
+            // 
+            toolStripButton6.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButton6.Image = (Image)resources.GetObject("toolStripButton6.Image");
+            toolStripButton6.ImageTransparentColor = Color.Magenta;
+            toolStripButton6.Name = "toolStripButton6";
+            toolStripButton6.Size = new Size(23, 22);
+            toolStripButton6.Text = "toolStripButton6";
+            toolStripButton6.Click += btnDrawBlur_Click;
             // 
             // toolStripButton4
             // 
@@ -245,5 +256,6 @@
         private ToolStripButton toolStripButton4;
         private ToolStripButton toolStripButton5;
         private Button btnSendToSettings;
+        private ToolStripButton toolStripButton6;
     }
 }

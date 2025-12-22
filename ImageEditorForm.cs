@@ -25,7 +25,8 @@ namespace ScreenGrab
             Arrow,
             Freeform,
             Text,
-            Highlight
+            Highlight,
+            Blur
         }
         // == private variables == //
         private Image? _currentImage;                         // local variable for storing loaded iamge
@@ -271,6 +272,11 @@ namespace ScreenGrab
         {
             ActivateDrawingTool(DrawingTool.Highlight);
         }
+        // == button to select blur drawing tool == //
+        private void btnDrawBlur_Click(object sender, EventArgs e)
+        {
+            ActivateDrawingTool(DrawingTool.Blur);
+        }
 
         // == END OF TOOL SELECTION FUNCTIONALITY == //
 
@@ -423,6 +429,63 @@ namespace ScreenGrab
                 g.FillRectangle(highlightBrush, x, y, width, height);
             }
         }
+        // == END OF HIGHLIGHTING TOOL FUNCTIONALITY == //
+
+        // == BLUR TOOL FUNCTIONALITY == //
+        // draw blur preview
+        private void DrawBlurPreview(Graphics g)
+        {
+            int x = Math.Min(_drawStartPoint.X, _drawEndPoint.X);
+            int y = Math.Min(_drawStartPoint.Y, _drawEndPoint.Y);
+            int width = Math.Abs(_drawEndPoint.X - _drawStartPoint.X);
+            int height = Math.Abs(_drawEndPoint.Y - _drawStartPoint.Y);
+            Color color = Color.FromArgb(120, Color.Gray); // semi-transparent gray
+            using (Brush blurBrush = new SolidBrush(color))
+            {
+                g.FillRectangle(blurBrush, x, y, width, height);
+            }
+        }
+        // draw blur on image
+        private void DrawBlurOnImage(Graphics g, Point start, Point end)
+        {
+            int x = Math.Min(start.X, end.X);
+            int y = Math.Min(start.Y, end.Y);
+            int width = Math.Abs(end.X - start.X);
+            int height = Math.Abs(end.Y - start.Y);
+            if (width <= 0 || height <= 0) return; // avoid invalid dimensions
+
+            // clean up image bounds before use
+            x = Math.Max(x, 0);
+            y = Math.Max(y, 0);
+            width = Math.Min(width, _editableImage!.Width - x);
+            height = Math.Min(height, _editableImage!.Height - y);
+
+            // create blur rectangle
+            Rectangle blurRect = new Rectangle(x, y, width, height);
+
+            // extract the area to be blurred
+            using (Bitmap blurArea = _editableImage!.Clone(blurRect, _editableImage.PixelFormat))
+            {
+                int pixelSize = 5; // size of the blur pixelation // adjust for stronger/weaker blur
+                int smallWidth = Math.Max(1, blurArea.Width / pixelSize);
+                int smallHeight = Math.Max(1, blurArea.Height / pixelSize);
+
+                using (Bitmap smallBitMap = new Bitmap(smallWidth, smallHeight))
+                {
+                    using (Graphics gSmall = Graphics.FromImage(smallBitMap))
+                    {
+                        gSmall.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                        gSmall.DrawImage(blurArea, 0, 0, smallWidth, smallHeight);
+                    }
+                    // scale back to original size
+                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                    g.DrawImage(smallBitMap, blurRect);
+                }
+
+            }
+        }
+
+
 
         // == EVENTS DRAWING FUNCTIONALITY == //
         // start drawing shape on image
@@ -495,6 +558,9 @@ namespace ScreenGrab
                         break;
                     case DrawingTool.Highlight:
                         DrawHighlightPreview(e.Graphics);
+                        break;
+                    case DrawingTool.Blur:
+                        DrawBlurPreview(e.Graphics);
                         break;
                 }
             }
@@ -594,6 +660,9 @@ namespace ScreenGrab
                         break;
                     case DrawingTool.Highlight:
                         DrawHighlightOnImage(g, imageStart, imageEnd);
+                        break;
+                    case DrawingTool.Blur:
+                        DrawBlurOnImage(g, imageStart, imageEnd);
                         break;
                 }
             }
