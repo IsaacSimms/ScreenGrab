@@ -681,6 +681,27 @@ namespace ScreenGrab
             this.Close();                                        // close settings form to return to main app
         }
 
+        // == Send to settings form button == //
+        private void btnSendToSettingsFromEditor_Click(object sender, EventArgs e)
+        {
+            Form? parentForm = this.Tag as Form;
+            if (parentForm != null && parentForm is Driver driverForm)
+            {
+                var settingsForm = new SettingsForm(driverForm.GetHotkeyConfig());
+                settingsForm.Tag = parentForm;
+                settingsForm.HotkeysChanged += config =>
+                {
+                    driverForm.UpdateHotkeyConfig(config);
+                };
+                settingsForm.ShowInTaskbar = true;                 // show in taskbar
+                settingsForm.Show();                               // show settings form
+                this.Close();                                        // close editor form
+            }
+            else
+            {
+                MessageBox.Show("Unable to open Settings: Parent form not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         // == clean resources on form closing ==//
         private void ImageEditorForm_FormClosing(object sender, FormClosingEventArgs e)
         {

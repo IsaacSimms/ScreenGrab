@@ -200,6 +200,18 @@ namespace ScreenGrab
             this.Hide();                // hide the main form // keep persistent state
             this.ShowInTaskbar = false;
         }
+        // == FOR SENDING TO SETTIGNS FROM EDITOR == // // required becuase ImageEditorForm cannot access settings instance directly like driver can
+        public HotkeyConfig GetHotkeyConfig()
+        {
+            return _hotkeyConfig;
+        }
+        public void UpdateHotkeyConfig(HotkeyConfig config)
+        {
+            _hotkeyConfig = config;
+            _hotkeyScreenshot?.UpdateHotkeyConfig(_hotkeyConfig);
+            ConfigurationManager.SaveConfiguration(_hotkeyConfig);
+        }
+        // == END FOR SENDING TO SETTINGS FROM EDITOR == //
 
         // when button is clicked, open Image Editor form
         private void SendToEditor_Click(object sender, EventArgs e)

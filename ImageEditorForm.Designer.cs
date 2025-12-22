@@ -43,6 +43,7 @@
             toolStripButton5 = new ToolStripButton();
             toolStripButton4 = new ToolStripButton();
             btnSelectColor = new ToolStripButton();
+            btnSendToSettings = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
             EditorMenu.SuspendLayout();
@@ -126,7 +127,7 @@
             EditorToolStrip.Location = new Point(12, 78);
             EditorToolStrip.Name = "EditorToolStrip";
             EditorToolStrip.RenderMode = ToolStripRenderMode.System;
-            EditorToolStrip.Size = new Size(181, 25);
+            EditorToolStrip.Size = new Size(150, 25);
             EditorToolStrip.TabIndex = 26;
             EditorToolStrip.Text = "toolStrip1";
             // 
@@ -190,12 +191,25 @@
             btnSelectColor.Text = "toolStripButton1";
             btnSelectColor.Click += btnSelectColor_Click;
             // 
+            // btnSendToSettings
+            // 
+            btnSendToSettings.BackColor = SystemColors.Desktop;
+            btnSendToSettings.ForeColor = SystemColors.Window;
+            btnSendToSettings.Location = new Point(975, 12);
+            btnSendToSettings.Name = "btnSendToSettings";
+            btnSendToSettings.Size = new Size(77, 40);
+            btnSendToSettings.TabIndex = 27;
+            btnSendToSettings.Text = "Settings";
+            btnSendToSettings.UseVisualStyleBackColor = false;
+            btnSendToSettings.Click += btnSendToSettingsFromEditor_Click;
+            // 
             // ImageEditorForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Desktop;
             ClientSize = new Size(1147, 667);
+            Controls.Add(btnSendToSettings);
             Controls.Add(EditorToolStrip);
             Controls.Add(pictureBoxImage);
             Controls.Add(btnGoHome);
@@ -230,5 +244,6 @@
         private ToolStripMenuItem copyToClipboardToolStripMenuItem;
         private ToolStripButton toolStripButton4;
         private ToolStripButton toolStripButton5;
+        private Button btnSendToSettings;
     }
 }
