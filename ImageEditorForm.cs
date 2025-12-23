@@ -1,5 +1,6 @@
 ﻿///// Manages the image editor and functionalities //////
 
+using Microsoft.VisualBasic.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,20 +30,28 @@ namespace ScreenGrab
             Blur
         }
         // == private variables == //
-        private Image? _currentImage;                         // local variable for storing loaded iamge
-        private Bitmap? _editableImage;                        // local variable for storing editable image
-        private DrawingTool _activeDrawingTool = DrawingTool.None; // currently selected drawing tool // initially none
-        private Point _drawStartPoint;                        //starting point for drawing
-        private Point _drawEndPoint;                          //ending point for drawing
-        private bool _isDrawing = false;                     //flag to indicate if drawing is in progress
-        private Color _SelectedColor = Color.Red;             //default color (red) for drawing
-        private Pen? _currentPen;                            //pen for drawing shapes
-        private List<Point> _freeformPoints = new List<Point>();      //points for freeform drawing
+        private Image?         _currentImage;                                     // local variable for storing loaded iamge
+        private Bitmap?        _editableImage;                                    // local variable for storing editable image
+        private DrawingTool    _activeDrawingTool = DrawingTool.None;             // currently selected drawing tool // initially none
+        private Point          _drawStartPoint;                                   // starting point for drawing
+        private Point          _drawEndPoint;                                     // ending point for drawing
+        private bool           _isDrawing = false;                                // flag to indicate if drawing is in progress
+        private Color          _SelectedColor = Color.Red;                        // default color (red) for drawing
+        private Pen?           _currentPen;                                       // pen for drawing shapes
+        private List<Point>    _freeformPoints = new List<Point>();               // points for freeform drawing
         // text tool variables
-        private RichTextBox? _textBox;
-        private Point _textStartPoint;
-        private Font _textFont = new Font("Arial", 16, FontStyle.Bold); // default font for text tool
-        private bool _isTextInputActive = false;               // flag to indicate if text input is active
+        private RichTextBox?   _textBox;
+        private Point          _textStartPoint;
+        private Font           _textFont = new Font("Arial", 16, FontStyle.Bold); // default font for text tool
+        private bool           _isTextInputActive = false;                        // flag to indicate if text input is active
+        // undo tool variables 
+        private Stack <Bitmap> _undoStack = new Stack<Bitmap>();                  // stack to store previous image states for undo functionality
+        private const int      MaxUndoSteps = 30;                                 // maximum number of undo steps to store
+        // zoom variables
+        private float          _zoomFactor  = 1.0f;                               // current zoom factor
+        private const float    ZoomMin  = 0.1f;                                   // minimum zoom level
+        private const float    ZoomMax  = 5.0f;                                   // maximum zoom level
+        private const float    ZoomStep = 0.1f;                                   // zoom step increment
 
         // == constructor == //
         public ImageEditorForm()
@@ -52,10 +61,32 @@ namespace ScreenGrab
             UpdateColorButtonDisplay();               // update button display with default color
 
             // wire up mouse events for drawing
-            pictureBoxImage.MouseDown += pictureBoxImage_MouseDown;
-            pictureBoxImage.MouseMove += pictureBoxImage_MouseMove;
-            pictureBoxImage.MouseUp += pictureBoxImage_MouseUp;
-            pictureBoxImage.Paint += pictureBoxImage_Paint;
+            pictureBoxImage.MouseDown  += pictureBoxImage_MouseDown;
+            pictureBoxImage.MouseMove  += pictureBoxImage_MouseMove;
+            pictureBoxImage.MouseUp    += pictureBoxImage_MouseUp;
+            pictureBoxImage.Paint      += pictureBoxImage_Paint;
+            pictureBoxImage.MouseWheel += pictureBoxImage_MouseWheel; // for zooming
+
+            // for ctrl + Z for undo shortcut
+            this.KeyPreview = true; // allow form to capture key events
+            this.KeyDown += ImageEditorForm_KeyDown;
+        }
+
+        //== KEYBOARD SHORTCUT HANDLING == //
+        private void ImageEditorForm_KeyDown(object? sender, KeyEventArgs e)
+        {
+            // handle Ctrl + Z for undo
+            if (e.Control && e.KeyCode == Keys.Z)
+            {
+                Undo();
+                e.Handled = true; // prevent further processing
+            }
+            // ctrl + 0 to reset zoom
+            else if (e.Control && e.KeyCode == Keys.D0)
+            {
+                ResetZoom();
+                e.Handled = true; // prevent further processing
+            }
         }
 
         // == constructor to load image from path == //
@@ -230,6 +261,132 @@ namespace ScreenGrab
         }
         // == END OF COLOR SELECTION FUNCTIONALITY == //
 
+        // == MENUSTRIP: UNDO FUNCTIONALITY == //
+        private void SaveStateForUndo()
+        {
+            if (_editableImage == null) return;
+
+            // limit undo stack size
+            if (_undoStack.Count >= MaxUndoSteps)
+            {
+                var items = _undoStack.ToArray();
+                _undoStack.Clear();
+                for (int i = items.Length - 2; i >= 0; i--)
+                {
+                    _undoStack.Push(items[i]); // keep all but the oldest state
+                }
+                items[items.Length - 1].Dispose(); // dispose oldest state
+            }
+            // push current state onto stack
+            _undoStack.Push(new Bitmap(_editableImage));
+        }
+
+        // undo functionality
+        private void Undo()
+        {
+            if (_undoStack.Count > 0 && _editableImage != null)
+            {
+                _editableImage.Dispose();
+                _editableImage = _undoStack.Pop(); // pop last state
+                pictureBoxImage.Image = _editableImage; // update picture box
+                pictureBoxImage.Invalidate();          // refresh display
+            }
+        }
+        // button to undo last action
+        private void btnUndo_Click(object sender, EventArgs e)
+        {
+            Undo();
+        }
+
+        // == END OF UNDO FUNCTIONALITY == //
+
+        // == ZOOM FUNCTIONALITY == //
+        // mouse wheel event for zooming
+        private void pictureBoxImage_MouseWheel(object? sender, MouseEventArgs e)
+        {
+            if (Control.ModifierKeys == Keys.None && _editableImage != null)
+            {
+                Point mousePosBeforeZoom = e.Location; // store mouse position relative to image before zoom
+                float oldZoomFactor = _zoomFactor;  // calculate zoom
+                if (e.Delta > 0)
+                {
+                    _zoomFactor = Math.Min(_zoomFactor + ZoomStep, ZoomMax); // zoom in
+                }
+                else
+                {
+                    _zoomFactor = Math.Max(_zoomFactor - ZoomStep, ZoomMin); // zoom out
+                }
+                ApplyZoom(mousePosBeforeZoom, oldZoomFactor);
+            }
+        }
+
+        // apply zoom to picture box
+        private void ApplyZoom(Point? mousePos = null, float oldZoom = 1.0f)
+        {
+            if (_editableImage == null) return;
+            Panel? container = pictureBoxImage.Parent as Panel;
+
+            // calculate new size based on zoom factor
+            int newWidth = (int)(_editableImage.Width * _zoomFactor);
+            int newHeight = (int)(_editableImage.Height * _zoomFactor);
+
+            // update picture box size
+            if (_zoomFactor == 1.0f)
+            {
+                pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
+                pictureBoxImage.Dock = DockStyle.Fill;
+            }
+            else
+            {
+                pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
+                pictureBoxImage.Dock = DockStyle.None;
+
+                if (mousePos.HasValue && container != null && oldZoom > 0)
+                {
+                    // Get current scroll position (AutoScrollPosition returns negative values)
+                    Point currentScroll = container.AutoScrollPosition;
+                    int oldScrollX = -currentScroll.X;
+                    int oldScrollY = -currentScroll.Y;
+
+                    // Calculate the mouse position in the ACTUAL image space
+                    // mousePos is relative to PictureBox, which might be at Zoom mode
+                    // We need to convert it to the original image coordinates
+                    float imageMouseX = mousePos.Value.X / oldZoom;
+                    float imageMouseY = mousePos.Value.Y / oldZoom;
+
+                    // Update size first
+                    pictureBoxImage.Size = new Size(newWidth, newHeight);
+
+                    // Calculate new scroll position to keep the same image point under cursor
+                    // The cursor should remain at the same position relative to the panel
+                    int newScrollX = (int)(imageMouseX * _zoomFactor) - mousePos.Value.X;
+                    int newScrollY = (int)(imageMouseY * _zoomFactor) - mousePos.Value.Y;
+
+                    // Adjust for the container position
+                    newScrollX += oldScrollX;
+                    newScrollY += oldScrollY;
+
+                    // Set scroll position
+                    container.AutoScrollPosition = new Point(
+                        Math.Max(0, newScrollX),
+                        Math.Max(0, newScrollY)
+                    );
+                }
+                else
+                {
+                    pictureBoxImage.Size = new Size(newWidth, newHeight);
+                }
+            }
+            pictureBoxImage.Invalidate();
+        }
+
+        // reset zoom to 100%
+        private void ResetZoom()
+        {
+            _zoomFactor = 1.0f;
+            ApplyZoom();
+        }
+        // == END OF ZOOM FUNCTIONALITY == //
         // TOOLSTRIP: TOOL SELECTION FUNCTIONALITY == //
         // == method to activate selected drawing tool == //
         private void ActivateDrawingTool(DrawingTool tool)
@@ -280,7 +437,7 @@ namespace ScreenGrab
 
         // == END OF TOOL SELECTION FUNCTIONALITY == //
 
-        // == TEXT TOOOL FUNCTIONALITY == //
+        // == TEXT TOOL FUNCTIONALITY == //
         // Custom textbox for text input
         public class TransparentTextBox : RichTextBox
         {
@@ -484,7 +641,7 @@ namespace ScreenGrab
 
             }
         }
-
+        // == END OF BLUR TOOL FUNCTIONALITY == //
 
 
         // == EVENTS DRAWING FUNCTIONALITY == //
@@ -625,8 +782,8 @@ namespace ScreenGrab
         {
             if (_freeformPoints.Count > 1 || _currentPen != null)
             {
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
-                g.DrawLines(_currentPen, _freeformPoints.ToArray());                // draw freeform lines
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;  // improve quality
+                g.DrawLines(_currentPen!, _freeformPoints.ToArray());                // draw freeform lines
             }
         }
 
@@ -634,6 +791,7 @@ namespace ScreenGrab
         private void DrawShapeOnImage()
         {
             if (_editableImage == null || _currentPen == null) return;
+            SaveStateForUndo(); // save current state for undo functionality
 
             using (Graphics g = Graphics.FromImage(_editableImage))
             {
@@ -733,7 +891,6 @@ namespace ScreenGrab
             }
             return pictureBoxPoint;
         }
-
         // == END DRAWING METHODS == //
 
         // == button to open form named "Driver" == //
@@ -774,6 +931,11 @@ namespace ScreenGrab
         // == clean resources on form closing ==//
         private void ImageEditorForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // dispose of undo stack
+            while (_undoStack.Count > 0)
+            {
+                _undoStack.Pop().Dispose();
+            }
             btnSelectColor.Image?.Dispose(); // dispose of selected color image
             _currentImage?.Dispose();        // dispose loaded image
             _currentPen?.Dispose();          // dispose drawing pen

@@ -44,11 +44,14 @@
             toolStripButton6 = new ToolStripButton();
             toolStripButton4 = new ToolStripButton();
             btnSelectColor = new ToolStripButton();
+            toolStripButton7 = new ToolStripButton();
             btnSendToSettings = new Button();
+            panelImageContainer = new Panel();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
             EditorMenu.SuspendLayout();
             EditorToolStrip.SuspendLayout();
+            panelImageContainer.SuspendLayout();
             SuspendLayout();
             // 
             // pictureBox1
@@ -75,8 +78,7 @@
             // 
             // pictureBoxImage
             // 
-            pictureBoxImage.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            pictureBoxImage.Location = new Point(12, 106);
+            pictureBoxImage.Location = new Point(0, 0);
             pictureBoxImage.Name = "pictureBoxImage";
             pictureBoxImage.Size = new Size(1123, 550);
             pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
@@ -124,11 +126,11 @@
             EditorToolStrip.BackColor = SystemColors.Desktop;
             EditorToolStrip.BackgroundImageLayout = ImageLayout.None;
             EditorToolStrip.Dock = DockStyle.None;
-            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, toolStripButton3, toolStripButton5, toolStripButton6, toolStripButton4, btnSelectColor });
+            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, toolStripButton3, toolStripButton5, toolStripButton6, toolStripButton4, btnSelectColor, toolStripButton7 });
             EditorToolStrip.Location = new Point(12, 78);
             EditorToolStrip.Name = "EditorToolStrip";
             EditorToolStrip.RenderMode = ToolStripRenderMode.System;
-            EditorToolStrip.Size = new Size(204, 25);
+            EditorToolStrip.Size = new Size(196, 25);
             EditorToolStrip.TabIndex = 26;
             EditorToolStrip.Text = "toolStrip1";
             // 
@@ -202,8 +204,19 @@
             btnSelectColor.Text = "toolStripButton1";
             btnSelectColor.Click += btnSelectColor_Click;
             // 
+            // toolStripButton7
+            // 
+            toolStripButton7.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButton7.Image = (Image)resources.GetObject("toolStripButton7.Image");
+            toolStripButton7.ImageTransparentColor = Color.Magenta;
+            toolStripButton7.Name = "toolStripButton7";
+            toolStripButton7.Size = new Size(23, 22);
+            toolStripButton7.Text = "toolStripButton7";
+            toolStripButton7.Click += btnUndo_Click;
+            // 
             // btnSendToSettings
             // 
+            btnSendToSettings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnSendToSettings.BackColor = SystemColors.Desktop;
             btnSendToSettings.ForeColor = SystemColors.Window;
             btnSendToSettings.Location = new Point(975, 12);
@@ -214,15 +227,25 @@
             btnSendToSettings.UseVisualStyleBackColor = false;
             btnSendToSettings.Click += btnSendToSettingsFromEditor_Click;
             // 
+            // panelImageContainer
+            // 
+            panelImageContainer.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            panelImageContainer.AutoScroll = true;
+            panelImageContainer.Controls.Add(pictureBoxImage);
+            panelImageContainer.Location = new Point(12, 106);
+            panelImageContainer.Name = "panelImageContainer";
+            panelImageContainer.Size = new Size(1123, 550);
+            panelImageContainer.TabIndex = 28;
+            // 
             // ImageEditorForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Desktop;
             ClientSize = new Size(1147, 667);
+            Controls.Add(panelImageContainer);
             Controls.Add(btnSendToSettings);
             Controls.Add(EditorToolStrip);
-            Controls.Add(pictureBoxImage);
             Controls.Add(btnGoHome);
             Controls.Add(pictureBox1);
             Controls.Add(EditorMenu);
@@ -235,6 +258,7 @@
             EditorMenu.PerformLayout();
             EditorToolStrip.ResumeLayout(false);
             EditorToolStrip.PerformLayout();
+            panelImageContainer.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -257,5 +281,7 @@
         private ToolStripButton toolStripButton5;
         private Button btnSendToSettings;
         private ToolStripButton toolStripButton6;
+        private ToolStripButton toolStripButton7;
+        private Panel panelImageContainer;
     }
 }
