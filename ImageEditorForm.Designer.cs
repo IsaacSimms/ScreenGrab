@@ -47,11 +47,16 @@
             toolStripButton7 = new ToolStripButton();
             btnSendToSettings = new Button();
             panelImageContainer = new Panel();
+            ZoomToolStrip = new ToolStrip();
+            btnZoomPlus = new ToolStripButton();
+            btnZoomMinus = new ToolStripButton();
+            btnZoomReset = new ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
             EditorMenu.SuspendLayout();
             EditorToolStrip.SuspendLayout();
             panelImageContainer.SuspendLayout();
+            ZoomToolStrip.SuspendLayout();
             SuspendLayout();
             // 
             // pictureBox1
@@ -237,12 +242,52 @@
             panelImageContainer.Size = new Size(1123, 550);
             panelImageContainer.TabIndex = 28;
             // 
+            // ZoomToolStrip
+            // 
+            ZoomToolStrip.BackColor = SystemColors.Desktop;
+            ZoomToolStrip.Dock = DockStyle.None;
+            ZoomToolStrip.Items.AddRange(new ToolStripItem[] { btnZoomPlus, btnZoomMinus, btnZoomReset });
+            ZoomToolStrip.Location = new Point(1054, 78);
+            ZoomToolStrip.Name = "ZoomToolStrip";
+            ZoomToolStrip.RenderMode = ToolStripRenderMode.System;
+            ZoomToolStrip.Size = new Size(112, 25);
+            ZoomToolStrip.TabIndex = 29;
+            ZoomToolStrip.Text = "toolStrip1";
+            // 
+            // btnZoomPlus
+            // 
+            btnZoomPlus.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnZoomPlus.Image = (Image)resources.GetObject("btnZoomPlus.Image");
+            btnZoomPlus.ImageTransparentColor = Color.Magenta;
+            btnZoomPlus.Name = "btnZoomPlus";
+            btnZoomPlus.Size = new Size(23, 22);
+            btnZoomPlus.Click += btnZoomIn_Click;
+            // 
+            // btnZoomMinus
+            // 
+            btnZoomMinus.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnZoomMinus.Image = (Image)resources.GetObject("btnZoomMinus.Image");
+            btnZoomMinus.ImageTransparentColor = Color.Magenta;
+            btnZoomMinus.Name = "btnZoomMinus";
+            btnZoomMinus.Size = new Size(23, 22);
+            btnZoomMinus.Click += btnZoomOut_Click;
+            // 
+            // btnZoomReset
+            // 
+            btnZoomReset.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnZoomReset.Image = (Image)resources.GetObject("btnZoomReset.Image");
+            btnZoomReset.ImageTransparentColor = Color.Magenta;
+            btnZoomReset.Name = "btnZoomReset";
+            btnZoomReset.Size = new Size(23, 22);
+            btnZoomReset.Click += btnResetZoom_Click;
+            // 
             // ImageEditorForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Desktop;
             ClientSize = new Size(1147, 667);
+            Controls.Add(ZoomToolStrip);
             Controls.Add(panelImageContainer);
             Controls.Add(btnSendToSettings);
             Controls.Add(EditorToolStrip);
@@ -259,6 +304,8 @@
             EditorToolStrip.ResumeLayout(false);
             EditorToolStrip.PerformLayout();
             panelImageContainer.ResumeLayout(false);
+            ZoomToolStrip.ResumeLayout(false);
+            ZoomToolStrip.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -283,5 +330,9 @@
         private ToolStripButton toolStripButton6;
         private ToolStripButton toolStripButton7;
         private Panel panelImageContainer;
+        private ToolStrip ZoomToolStrip;
+        private ToolStripButton btnZoomPlus;
+        private ToolStripButton btnZoomMinus;
+        private ToolStripButton btnZoomReset;
     }
 }

@@ -386,6 +386,28 @@ namespace ScreenGrab
             _zoomFactor = 1.0f;
             ApplyZoom();
         }
+
+        // == ZOOM BUTTONS == //
+        // zoom in button
+        private void btnZoomIn_Click(object sender, EventArgs e)
+        {
+            if (_editableImage == null) return;
+            _zoomFactor = Math.Min(_zoomFactor + ZoomStep, ZoomMax);
+            ApplyZoom(); // no mouse position provided
+        }
+        // zoom out button
+        private void btnZoomOut_Click(object sender, EventArgs e)
+        {
+            if (_editableImage == null) return;
+            _zoomFactor = Math.Max(_zoomFactor - ZoomStep, ZoomMin);
+            ApplyZoom(); // no mouse position provided
+        }
+        // reset zoom button
+        private void btnResetZoom_Click(object sender, EventArgs e)
+        {
+            ResetZoom();
+        }
+
         // == END OF ZOOM FUNCTIONALITY == //
         // TOOLSTRIP: TOOL SELECTION FUNCTIONALITY == //
         // == method to activate selected drawing tool == //
