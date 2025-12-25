@@ -73,7 +73,7 @@
             btnGoHome.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnGoHome.BackColor = SystemColors.Desktop;
             btnGoHome.ForeColor = SystemColors.Window;
-            btnGoHome.Location = new Point(1058, 12);
+            btnGoHome.Location = new Point(1337, 12);
             btnGoHome.Name = "btnGoHome";
             btnGoHome.Size = new Size(77, 40);
             btnGoHome.TabIndex = 22;
@@ -85,7 +85,7 @@
             // 
             pictureBoxImage.Location = new Point(0, 0);
             pictureBoxImage.Name = "pictureBoxImage";
-            pictureBoxImage.Size = new Size(1123, 550);
+            pictureBoxImage.Size = new Size(1402, 766);
             pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxImage.TabIndex = 24;
             pictureBoxImage.TabStop = false;
@@ -224,7 +224,7 @@
             btnSendToSettings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnSendToSettings.BackColor = SystemColors.Desktop;
             btnSendToSettings.ForeColor = SystemColors.Window;
-            btnSendToSettings.Location = new Point(975, 12);
+            btnSendToSettings.Location = new Point(1254, 12);
             btnSendToSettings.Name = "btnSendToSettings";
             btnSendToSettings.Size = new Size(77, 40);
             btnSendToSettings.TabIndex = 27;
@@ -239,7 +239,7 @@
             panelImageContainer.Controls.Add(pictureBoxImage);
             panelImageContainer.Location = new Point(12, 106);
             panelImageContainer.Name = "panelImageContainer";
-            panelImageContainer.Size = new Size(1123, 550);
+            panelImageContainer.Size = new Size(1402, 767);
             panelImageContainer.TabIndex = 28;
             // 
             // ZoomToolStrip
@@ -247,10 +247,10 @@
             ZoomToolStrip.BackColor = SystemColors.Desktop;
             ZoomToolStrip.Dock = DockStyle.None;
             ZoomToolStrip.Items.AddRange(new ToolStripItem[] { btnZoomPlus, btnZoomMinus, btnZoomReset });
-            ZoomToolStrip.Location = new Point(1054, 78);
+            ZoomToolStrip.Location = new Point(1337, 78);
             ZoomToolStrip.Name = "ZoomToolStrip";
             ZoomToolStrip.RenderMode = ToolStripRenderMode.System;
-            ZoomToolStrip.Size = new Size(112, 25);
+            ZoomToolStrip.Size = new Size(81, 25);
             ZoomToolStrip.TabIndex = 29;
             ZoomToolStrip.Text = "toolStrip1";
             // 
@@ -286,7 +286,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Desktop;
-            ClientSize = new Size(1147, 667);
+            ClientSize = new Size(1426, 884);
             Controls.Add(ZoomToolStrip);
             Controls.Add(panelImageContainer);
             Controls.Add(btnSendToSettings);

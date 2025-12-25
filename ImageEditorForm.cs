@@ -257,7 +257,9 @@ namespace ScreenGrab
                 }
             }
             // set button image to color bitmap
+            var oldImage = btnSelectColor.Image;
             btnSelectColor.Image = colorBitmap;
+            oldImage?.Dispose(); // dispose previous image
         }
         // == END OF COLOR SELECTION FUNCTIONALITY == //
 
@@ -953,11 +955,21 @@ namespace ScreenGrab
         // == clean resources on form closing ==//
         private void ImageEditorForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // unsubscribe event handlers
+            pictureBoxImage.MouseDown   -= pictureBoxImage_MouseDown;
+            pictureBoxImage.MouseMove   -= pictureBoxImage_MouseMove;
+            pictureBoxImage.MouseUp     -= pictureBoxImage_MouseUp; 
+            pictureBoxImage.Paint       -= pictureBoxImage_Paint;
+            pictureBoxImage.MouseWheel  -= pictureBoxImage_MouseWheel;
+            this.KeyDown                -= ImageEditorForm_KeyDown;
+
             // dispose of undo stack
             while (_undoStack.Count > 0)
             {
                 _undoStack.Pop().Dispose();
             }
+
+            // dispose of resources
             btnSelectColor.Image?.Dispose(); // dispose of selected color image
             _currentImage?.Dispose();        // dispose loaded image
             _currentPen?.Dispose();          // dispose drawing pen
