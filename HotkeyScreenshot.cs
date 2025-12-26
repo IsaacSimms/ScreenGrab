@@ -1,7 +1,7 @@
 ﻿///// This class handles screen capture logic, hotkey registration, png save logic, with error handling and messaging /////
 ///// using hotkeys defined in HotkeyConfig.cs /////
 
-// namespaces
+
 using Microsoft.VisualBasic.Devices;
 using System;
 using System.Drawing;

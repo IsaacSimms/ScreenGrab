@@ -27,7 +27,8 @@ namespace ScreenGrab
             Freeform,
             Text,
             Highlight,
-            Blur
+            Blur,
+            Line
         }
         // == private variables == //
         private Image?         _currentImage;                                     // local variable for storing loaded iamge
@@ -495,6 +496,11 @@ namespace ScreenGrab
         {
             ActivateDrawingTool(DrawingTool.Blur);
         }
+        // == button to select line drawing tool == //
+        private void btnDrawLine_Click(object sender, EventArgs e)
+        {
+            ActivateDrawingTool(DrawingTool.Line);
+        }
 
         // == END OF TOOL SELECTION FUNCTIONALITY == //
 
@@ -780,6 +786,9 @@ namespace ScreenGrab
                     case DrawingTool.Blur:
                         DrawBlurPreview(e.Graphics);
                         break;
+                    case DrawingTool.Line:
+                        DrawLinePreview(e.Graphics);
+                        break;
                 }
             }
             // draw textbox if active
@@ -848,6 +857,15 @@ namespace ScreenGrab
             }
         }
 
+        // == draw line preview == //
+        private void DrawLinePreview(Graphics g)
+        {
+            if (_currentPen != null)
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
+                g.DrawLine(_currentPen, _drawStartPoint, _drawEndPoint);            // draw line
+            }
+        }
         // == draw shape on image == //
         private void DrawShapeOnImage()
         {
@@ -883,6 +901,9 @@ namespace ScreenGrab
                     case DrawingTool.Blur:
                         DrawBlurOnImage(g, imageStart, imageEnd);
                         break;
+                    case DrawingTool.Line:
+                        DrawLineOnImage(g, imageStart, imageEnd);
+                        break;
                 }
             }
             // update picture box with edited image
@@ -904,7 +925,7 @@ namespace ScreenGrab
         {
             if (_currentPen != null)
             {
-                using (Pen arrowPen = new Pen(_SelectedColor, 5))
+                using (Pen arrowPen = new Pen(_SelectedColor, _brushSize))
                 {
                     arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(_brushSize, _brushSize);
                     g.DrawLine(arrowPen, start, end);
@@ -951,6 +972,16 @@ namespace ScreenGrab
                 return new Point(imageX, imageY);
             }
             return pictureBoxPoint;
+        }
+
+        // == Draw line on image method
+        private void DrawLineOnImage(Graphics g, Point start, Point end)
+        {
+            if (_currentPen != null)
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
+                g.DrawLine(_currentPen, start, end);                                // draw line
+            }
         }
         // == END DRAWING METHODS == //
 

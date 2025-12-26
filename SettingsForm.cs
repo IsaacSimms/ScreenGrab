@@ -1,6 +1,6 @@
 ﻿///// Code block that controls the setting page of the ScreenGrab application. /////
 /// Give the user ability to configure hotkey settings in the future. ///
-/// 
+
 
 using System;
 using System.Formats.Asn1;
@@ -55,6 +55,9 @@ namespace ScreenGrab
             txtAutoCopyHeader.ReadOnly                   = true;
             txtAutoOpenEditorHeader.ReadOnly             = true;
             txtSaveFileLocationHeader.ReadOnly           = true;
+            txtGeneralSettingsHeader.ReadOnly            = true;
+            txtPowerUserHeader.ReadOnly                  = true;
+            txtSystemCaptureModeToggleHeader.ReadOnly    = true;
             // receive keydown events for text boxes
             this.KeyPreview = true;
             this.KeyUp += new KeyEventHandler(SettingsForm_KeyDown);               //

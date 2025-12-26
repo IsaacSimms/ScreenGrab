@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageEditorForm));
-            pictureBox1 = new PictureBox();
+            EditorHeader = new PictureBox();
             btnGoHome = new Button();
             pictureBoxImage = new PictureBox();
             EditorMenu = new MenuStrip();
@@ -38,6 +38,7 @@
             copyToClipboardToolStripMenuItem = new ToolStripMenuItem();
             EditorToolStrip = new ToolStrip();
             toolStripButton2 = new ToolStripButton();
+            toolStripButton8 = new ToolStripButton();
             toolStripButton1 = new ToolStripButton();
             toolStripButton3 = new ToolStripButton();
             toolStripButton5 = new ToolStripButton();
@@ -53,7 +54,7 @@
             btnZoomReset = new ToolStripButton();
             trackBarBrushSize = new TrackBar();
             lblBrushSize = new Label();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EditorHeader).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
             EditorMenu.SuspendLayout();
             EditorToolStrip.SuspendLayout();
@@ -62,14 +63,14 @@
             ((System.ComponentModel.ISupportInitialize)trackBarBrushSize).BeginInit();
             SuspendLayout();
             // 
-            // pictureBox1
+            // EditorHeader
             // 
-            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(12, 0);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(167, 75);
-            pictureBox1.TabIndex = 0;
-            pictureBox1.TabStop = false;
+            EditorHeader.Image = (Image)resources.GetObject("EditorHeader.Image");
+            EditorHeader.Location = new Point(12, 0);
+            EditorHeader.Name = "EditorHeader";
+            EditorHeader.Size = new Size(167, 75);
+            EditorHeader.TabIndex = 0;
+            EditorHeader.TabStop = false;
             // 
             // btnGoHome
             // 
@@ -88,7 +89,7 @@
             // 
             pictureBoxImage.Location = new Point(0, -13);
             pictureBoxImage.Name = "pictureBoxImage";
-            pictureBoxImage.Size = new Size(1402, 766);
+            pictureBoxImage.Size = new Size(1402, 779);
             pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxImage.TabIndex = 24;
             pictureBoxImage.TabStop = false;
@@ -111,6 +112,7 @@
             openToolStripMenuItem.Name = "openToolStripMenuItem";
             openToolStripMenuItem.Size = new Size(57, 20);
             openToolStripMenuItem.Text = "Open...";
+            openToolStripMenuItem.ToolTipText = "Open Image";
             openToolStripMenuItem.Click += btnLoadImage_Click;
             // 
             // saveToolStripMenuItem
@@ -119,6 +121,7 @@
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             saveToolStripMenuItem.Size = new Size(52, 20);
             saveToolStripMenuItem.Text = "Save...";
+            saveToolStripMenuItem.ToolTipText = "Save Image";
             saveToolStripMenuItem.Click += btnSaveImage_Click;
             // 
             // copyToClipboardToolStripMenuItem
@@ -127,6 +130,7 @@
             copyToClipboardToolStripMenuItem.Name = "copyToClipboardToolStripMenuItem";
             copyToClipboardToolStripMenuItem.Size = new Size(116, 20);
             copyToClipboardToolStripMenuItem.Text = "Copy to Clipboard";
+            copyToClipboardToolStripMenuItem.ToolTipText = "Copy Image to Clipboard";
             copyToClipboardToolStripMenuItem.Click += btnCopyToClipboard_Click;
             // 
             // EditorToolStrip
@@ -134,11 +138,11 @@
             EditorToolStrip.BackColor = SystemColors.Desktop;
             EditorToolStrip.BackgroundImageLayout = ImageLayout.None;
             EditorToolStrip.Dock = DockStyle.None;
-            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton1, toolStripButton3, toolStripButton5, toolStripButton6, toolStripButton4, btnSelectColor, toolStripButton7 });
+            EditorToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButton2, toolStripButton8, toolStripButton1, toolStripButton3, toolStripButton5, toolStripButton6, toolStripButton4, btnSelectColor, toolStripButton7 });
             EditorToolStrip.Location = new Point(12, 78);
             EditorToolStrip.Name = "EditorToolStrip";
             EditorToolStrip.RenderMode = ToolStripRenderMode.System;
-            EditorToolStrip.Size = new Size(196, 25);
+            EditorToolStrip.Size = new Size(219, 25);
             EditorToolStrip.TabIndex = 26;
             EditorToolStrip.Text = "toolStrip1";
             // 
@@ -150,7 +154,19 @@
             toolStripButton2.Name = "toolStripButton2";
             toolStripButton2.Size = new Size(23, 22);
             toolStripButton2.Text = "btnRectangle";
+            toolStripButton2.ToolTipText = "Rectangle";
             toolStripButton2.Click += btnDrawRectangle_Click;
+            // 
+            // toolStripButton8
+            // 
+            toolStripButton8.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButton8.Image = (Image)resources.GetObject("toolStripButton8.Image");
+            toolStripButton8.ImageTransparentColor = Color.Magenta;
+            toolStripButton8.Name = "toolStripButton8";
+            toolStripButton8.Size = new Size(23, 22);
+            toolStripButton8.Text = "toolStripButton8";
+            toolStripButton8.ToolTipText = "Line";
+            toolStripButton8.Click += btnDrawLine_Click;
             // 
             // toolStripButton1
             // 
@@ -160,6 +176,7 @@
             toolStripButton1.Name = "toolStripButton1";
             toolStripButton1.Size = new Size(23, 22);
             toolStripButton1.Text = "btnArrow";
+            toolStripButton1.ToolTipText = "Arrow";
             toolStripButton1.Click += btnDrawArrow_Click;
             // 
             // toolStripButton3
@@ -170,6 +187,7 @@
             toolStripButton3.Name = "toolStripButton3";
             toolStripButton3.Size = new Size(23, 22);
             toolStripButton3.Text = "btnFreeform";
+            toolStripButton3.ToolTipText = "Freeform";
             toolStripButton3.Click += btnDrawFreeform_Click;
             // 
             // toolStripButton5
@@ -180,6 +198,7 @@
             toolStripButton5.Name = "toolStripButton5";
             toolStripButton5.Size = new Size(23, 22);
             toolStripButton5.Text = "toolStripButton5";
+            toolStripButton5.ToolTipText = "Highlight";
             toolStripButton5.Click += btnDrawHighlight_Click;
             // 
             // toolStripButton6
@@ -190,6 +209,7 @@
             toolStripButton6.Name = "toolStripButton6";
             toolStripButton6.Size = new Size(23, 22);
             toolStripButton6.Text = "toolStripButton6";
+            toolStripButton6.ToolTipText = "Blur";
             toolStripButton6.Click += btnDrawBlur_Click;
             // 
             // toolStripButton4
@@ -200,7 +220,7 @@
             toolStripButton4.Name = "toolStripButton4";
             toolStripButton4.Size = new Size(23, 22);
             toolStripButton4.Text = "toolStripButton4";
-            toolStripButton4.ToolTipText = "btnText";
+            toolStripButton4.ToolTipText = "Text";
             toolStripButton4.Click += btnDrawText_Click;
             // 
             // btnSelectColor
@@ -210,6 +230,7 @@
             btnSelectColor.Name = "btnSelectColor";
             btnSelectColor.Size = new Size(23, 22);
             btnSelectColor.Text = "toolStripButton1";
+            btnSelectColor.ToolTipText = "Select Color";
             btnSelectColor.Click += btnSelectColor_Click;
             // 
             // toolStripButton7
@@ -220,6 +241,7 @@
             toolStripButton7.Name = "toolStripButton7";
             toolStripButton7.Size = new Size(23, 22);
             toolStripButton7.Text = "toolStripButton7";
+            toolStripButton7.ToolTipText = "Undo";
             toolStripButton7.Click += btnUndo_Click;
             // 
             // btnSendToSettings
@@ -286,11 +308,12 @@
             // 
             // trackBarBrushSize
             // 
-            trackBarBrushSize.Location = new Point(211, 78);
-            trackBarBrushSize.Maximum = 50;
+            trackBarBrushSize.Location = new Point(237, 78);
+            trackBarBrushSize.Maximum = 20;
             trackBarBrushSize.Name = "trackBarBrushSize";
             trackBarBrushSize.Size = new Size(202, 45);
             trackBarBrushSize.TabIndex = 30;
+            trackBarBrushSize.Tag = "Brush Size";
             trackBarBrushSize.TickFrequency = 2;
             trackBarBrushSize.TickStyle = TickStyle.None;
             trackBarBrushSize.Scroll += trackBarBrushSize_Scroll;
@@ -299,7 +322,7 @@
             // 
             lblBrushSize.AutoSize = true;
             lblBrushSize.ForeColor = SystemColors.Window;
-            lblBrushSize.Location = new Point(211, 60);
+            lblBrushSize.Location = new Point(237, 60);
             lblBrushSize.Name = "lblBrushSize";
             lblBrushSize.Size = new Size(63, 15);
             lblBrushSize.TabIndex = 31;
@@ -318,12 +341,12 @@
             Controls.Add(trackBarBrushSize);
             Controls.Add(EditorToolStrip);
             Controls.Add(btnGoHome);
-            Controls.Add(pictureBox1);
+            Controls.Add(EditorHeader);
             Controls.Add(EditorMenu);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "ImageEditorForm";
             Text = "ScreenGrab";
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EditorHeader).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).EndInit();
             EditorMenu.ResumeLayout(false);
             EditorMenu.PerformLayout();
@@ -339,7 +362,7 @@
 
         #endregion
 
-        private PictureBox pictureBox1;
+        private PictureBox EditorHeader;
         private Button btnGoHome;
         private PictureBox pictureBoxImage;
         private MenuStrip EditorMenu;
@@ -363,5 +386,6 @@
         private ToolStripButton btnZoomReset;
         private TrackBar trackBarBrushSize;
         private Label lblBrushSize;
+        private ToolStripButton toolStripButton8;
     }
 }

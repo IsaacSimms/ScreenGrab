@@ -46,7 +46,7 @@
             btnChangeDelayedRegionCaptureConfig = new Button();
             btnOpenPNGInPaintHotkeyConfig = new Button();
             lblStatus = new Label();
-            pictureBox1 = new PictureBox();
+            settingsHeader = new PictureBox();
             txtSaveFileLocationHeader = new TextBox();
             txtChangeScreenCaptureFileLocation = new TextBox();
             btnChangeScreenCaptureFileLocation = new Button();
@@ -60,7 +60,11 @@
             chkAutoOpenEditorOnCapture = new CheckBox();
             txtFileSaveToggleHeader = new TextBox();
             chkSaveToFileLocation = new CheckBox();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            txtGeneralSettingsHeader = new TextBox();
+            txtPowerUserHeader = new TextBox();
+            txtSystemCaptureModeToggleHeader = new TextBox();
+            chkEnableSystemCapture = new CheckBox();
+            ((System.ComponentModel.ISupportInitialize)settingsHeader).BeginInit();
             SuspendLayout();
             // 
             // txtActive
@@ -127,7 +131,7 @@
             txtHotkeySettingsGUIHeader.Name = "txtHotkeySettingsGUIHeader";
             txtHotkeySettingsGUIHeader.Size = new Size(100, 23);
             txtHotkeySettingsGUIHeader.TabIndex = 5;
-            txtHotkeySettingsGUIHeader.Text = "Hotkeys";
+            txtHotkeySettingsGUIHeader.Text = "Hotkeys:";
             txtHotkeySettingsGUIHeader.TextAlign = HorizontalAlignment.Center;
             // 
             // txtCaptureActiveWindowConfigHeader
@@ -255,19 +259,19 @@
             lblStatus.AutoSize = true;
             lblStatus.BorderStyle = BorderStyle.FixedSingle;
             lblStatus.ForeColor = SystemColors.Window;
-            lblStatus.Location = new Point(17, 322);
+            lblStatus.Location = new Point(17, 508);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(2, 17);
             lblStatus.TabIndex = 16;
             // 
-            // pictureBox1
+            // settingsHeader
             // 
-            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(12, 12);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(227, 83);
-            pictureBox1.TabIndex = 17;
-            pictureBox1.TabStop = false;
+            settingsHeader.Image = (Image)resources.GetObject("settingsHeader.Image");
+            settingsHeader.Location = new Point(12, 12);
+            settingsHeader.Name = "settingsHeader";
+            settingsHeader.Size = new Size(227, 83);
+            settingsHeader.TabIndex = 17;
+            settingsHeader.TabStop = false;
             // 
             // txtSaveFileLocationHeader
             // 
@@ -324,7 +328,7 @@
             txtOpenEditorHeader.Name = "txtOpenEditorHeader";
             txtOpenEditorHeader.Size = new Size(153, 23);
             txtOpenEditorHeader.TabIndex = 22;
-            txtOpenEditorHeader.Text = "Open Editor";
+            txtOpenEditorHeader.Text = "Open Editor:";
             txtOpenEditorHeader.TextAlign = HorizontalAlignment.Center;
             // 
             // txtEditor
@@ -383,7 +387,7 @@
             txtAutoOpenEditorHeader.Name = "txtAutoOpenEditorHeader";
             txtAutoOpenEditorHeader.Size = new Size(153, 23);
             txtAutoOpenEditorHeader.TabIndex = 27;
-            txtAutoOpenEditorHeader.Text = "Auto-Open Editor";
+            txtAutoOpenEditorHeader.Text = "Auto-Open Editor:";
             txtAutoOpenEditorHeader.TextAlign = HorizontalAlignment.Center;
             // 
             // chkAutoOpenEditorOnCapture
@@ -406,7 +410,7 @@
             txtFileSaveToggleHeader.Name = "txtFileSaveToggleHeader";
             txtFileSaveToggleHeader.Size = new Size(153, 23);
             txtFileSaveToggleHeader.TabIndex = 29;
-            txtFileSaveToggleHeader.Text = "Save to File Location";
+            txtFileSaveToggleHeader.Text = "Save to File Location:";
             txtFileSaveToggleHeader.TextAlign = HorizontalAlignment.Center;
             // 
             // chkSaveToFileLocation
@@ -421,12 +425,63 @@
             chkSaveToFileLocation.UseVisualStyleBackColor = true;
             chkSaveToFileLocation.CheckedChanged += chkSaveToFileLocation_CheckChanged;
             // 
+            // txtGeneralSettingsHeader
+            // 
+            txtGeneralSettingsHeader.BackColor = SystemColors.Desktop;
+            txtGeneralSettingsHeader.BorderStyle = BorderStyle.FixedSingle;
+            txtGeneralSettingsHeader.ForeColor = SystemColors.Window;
+            txtGeneralSettingsHeader.Location = new Point(385, 101);
+            txtGeneralSettingsHeader.Name = "txtGeneralSettingsHeader";
+            txtGeneralSettingsHeader.Size = new Size(100, 23);
+            txtGeneralSettingsHeader.TabIndex = 31;
+            txtGeneralSettingsHeader.Text = "General:";
+            txtGeneralSettingsHeader.TextAlign = HorizontalAlignment.Center;
+            // 
+            // txtPowerUserHeader
+            // 
+            txtPowerUserHeader.BackColor = SystemColors.Desktop;
+            txtPowerUserHeader.BorderStyle = BorderStyle.FixedSingle;
+            txtPowerUserHeader.ForeColor = SystemColors.Window;
+            txtPowerUserHeader.Location = new Point(17, 304);
+            txtPowerUserHeader.Name = "txtPowerUserHeader";
+            txtPowerUserHeader.Size = new Size(100, 23);
+            txtPowerUserHeader.TabIndex = 32;
+            txtPowerUserHeader.Text = "Power User:";
+            txtPowerUserHeader.TextAlign = HorizontalAlignment.Center;
+            // 
+            // txtSystemCaptureModeToggleHeader
+            // 
+            txtSystemCaptureModeToggleHeader.BackColor = SystemColors.Desktop;
+            txtSystemCaptureModeToggleHeader.BorderStyle = BorderStyle.FixedSingle;
+            txtSystemCaptureModeToggleHeader.ForeColor = SystemColors.Window;
+            txtSystemCaptureModeToggleHeader.Location = new Point(17, 333);
+            txtSystemCaptureModeToggleHeader.Multiline = true;
+            txtSystemCaptureModeToggleHeader.Name = "txtSystemCaptureModeToggleHeader";
+            txtSystemCaptureModeToggleHeader.Size = new Size(188, 39);
+            txtSystemCaptureModeToggleHeader.TabIndex = 33;
+            txtSystemCaptureModeToggleHeader.Text = "Enable System Capture Mode: (Modifies active window capture)";
+            // 
+            // chkEnableSystemCapture
+            // 
+            chkEnableSystemCapture.CheckAlign = ContentAlignment.MiddleCenter;
+            chkEnableSystemCapture.Checked = true;
+            chkEnableSystemCapture.CheckState = CheckState.Checked;
+            chkEnableSystemCapture.Location = new Point(211, 332);
+            chkEnableSystemCapture.Name = "chkEnableSystemCapture";
+            chkEnableSystemCapture.Size = new Size(122, 40);
+            chkEnableSystemCapture.TabIndex = 34;
+            chkEnableSystemCapture.UseVisualStyleBackColor = true;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
-            ClientSize = new Size(852, 368);
+            ClientSize = new Size(852, 634);
+            Controls.Add(chkEnableSystemCapture);
+            Controls.Add(txtSystemCaptureModeToggleHeader);
+            Controls.Add(txtPowerUserHeader);
+            Controls.Add(txtGeneralSettingsHeader);
             Controls.Add(chkSaveToFileLocation);
             Controls.Add(txtFileSaveToggleHeader);
             Controls.Add(chkAutoOpenEditorOnCapture);
@@ -440,7 +495,7 @@
             Controls.Add(btnChangeScreenCaptureFileLocation);
             Controls.Add(txtChangeScreenCaptureFileLocation);
             Controls.Add(txtSaveFileLocationHeader);
-            Controls.Add(pictureBox1);
+            Controls.Add(settingsHeader);
             Controls.Add(lblStatus);
             Controls.Add(btnOpenPNGInPaintHotkeyConfig);
             Controls.Add(btnChangeDelayedRegionCaptureConfig);
@@ -462,7 +517,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "SettingsForm";
             Text = "Screengrab";
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)settingsHeader).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -486,7 +541,7 @@
         private Button btnChangeDelayedRegionCaptureConfig;
         private Button btnOpenPNGInPaintHotkeyConfig;
         private Label lblStatus;
-        private PictureBox pictureBox1;
+        private PictureBox settingsHeader;
         private TextBox txtSaveFileLocationHeader;
         private TextBox txtChangeScreenCaptureFileLocation;
         private Button btnChangeScreenCaptureFileLocation;
@@ -500,5 +555,9 @@
         private CheckBox chkAutoOpenEditorOnCapture;
         private TextBox txtFileSaveToggleHeader;
         private CheckBox chkSaveToFileLocation;
+        private TextBox txtGeneralSettingsHeader;
+        private TextBox txtPowerUserHeader;
+        private TextBox txtSystemCaptureModeToggleHeader;
+        private CheckBox chkEnableSystemCapture;
     }
 }

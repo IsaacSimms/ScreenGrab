@@ -45,7 +45,7 @@
             btnSendToSettings = new Button();
             btnShutdownScreengrab = new Button();
             activeWindowScreenshotButton = new Button();
-            pictureBox1 = new PictureBox();
+            DriverHeader = new PictureBox();
             regionScreenshotButton = new Button();
             delayedActiveWindowScreenshotButton = new Button();
             delayedRegionScreenshotButton = new Button();
@@ -53,7 +53,7 @@
             button1 = new Button();
             button3 = new Button();
             SystemTrayMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)DriverHeader).BeginInit();
             SuspendLayout();
             // 
             // SystemTrayIcon
@@ -193,14 +193,14 @@
             activeWindowScreenshotButton.UseVisualStyleBackColor = false;
             activeWindowScreenshotButton.Click += activeWindowScreenshotButton_Click;
             // 
-            // pictureBox1
+            // DriverHeader
             // 
-            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(12, 8);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(221, 60);
-            pictureBox1.TabIndex = 5;
-            pictureBox1.TabStop = false;
+            DriverHeader.Image = (Image)resources.GetObject("DriverHeader.Image");
+            DriverHeader.Location = new Point(12, 12);
+            DriverHeader.Name = "DriverHeader";
+            DriverHeader.Size = new Size(221, 60);
+            DriverHeader.TabIndex = 5;
+            DriverHeader.TabStop = false;
             // 
             // regionScreenshotButton
             // 
@@ -287,7 +287,7 @@
             Controls.Add(delayedRegionScreenshotButton);
             Controls.Add(delayedActiveWindowScreenshotButton);
             Controls.Add(regionScreenshotButton);
-            Controls.Add(pictureBox1);
+            Controls.Add(DriverHeader);
             Controls.Add(activeWindowScreenshotButton);
             Controls.Add(btnShutdownScreengrab);
             Controls.Add(btnSendToSettings);
@@ -297,7 +297,7 @@
             Name = "Driver";
             Text = " ScreenGrab";
             SystemTrayMenu.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)DriverHeader).EndInit();
             ResumeLayout(false);
         }
 
@@ -311,7 +311,7 @@
         private ToolStripMenuItem settingsToolStripMenuItem;
         private Button btnShutdownScreengrab;
         private Button activeWindowScreenshotButton;
-        private PictureBox pictureBox1;
+        private PictureBox DriverHeader;
         private Button regionScreenshotButton;
         private Button delayedActiveWindowScreenshotButton;
         private Button delayedRegionScreenshotButton;
