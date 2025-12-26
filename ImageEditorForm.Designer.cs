@@ -51,18 +51,21 @@
             btnZoomPlus = new ToolStripButton();
             btnZoomMinus = new ToolStripButton();
             btnZoomReset = new ToolStripButton();
+            trackBarBrushSize = new TrackBar();
+            lblBrushSize = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
             EditorMenu.SuspendLayout();
             EditorToolStrip.SuspendLayout();
             panelImageContainer.SuspendLayout();
             ZoomToolStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBarBrushSize).BeginInit();
             SuspendLayout();
             // 
             // pictureBox1
             // 
             pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(0, 0);
+            pictureBox1.Location = new Point(12, 0);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(167, 75);
             pictureBox1.TabIndex = 0;
@@ -83,7 +86,7 @@
             // 
             // pictureBoxImage
             // 
-            pictureBoxImage.Location = new Point(0, 0);
+            pictureBoxImage.Location = new Point(0, -13);
             pictureBoxImage.Name = "pictureBoxImage";
             pictureBoxImage.Size = new Size(1402, 766);
             pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
@@ -95,7 +98,7 @@
             EditorMenu.BackColor = SystemColors.Desktop;
             EditorMenu.Dock = DockStyle.None;
             EditorMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, copyToClipboardToolStripMenuItem });
-            EditorMenu.Location = new Point(170, 51);
+            EditorMenu.Location = new Point(1019, 28);
             EditorMenu.Name = "EditorMenu";
             EditorMenu.Size = new Size(233, 24);
             EditorMenu.TabIndex = 25;
@@ -281,6 +284,27 @@
             btnZoomReset.Size = new Size(23, 22);
             btnZoomReset.Click += btnResetZoom_Click;
             // 
+            // trackBarBrushSize
+            // 
+            trackBarBrushSize.Location = new Point(211, 78);
+            trackBarBrushSize.Maximum = 50;
+            trackBarBrushSize.Name = "trackBarBrushSize";
+            trackBarBrushSize.Size = new Size(202, 45);
+            trackBarBrushSize.TabIndex = 30;
+            trackBarBrushSize.TickFrequency = 2;
+            trackBarBrushSize.TickStyle = TickStyle.None;
+            trackBarBrushSize.Scroll += trackBarBrushSize_Scroll;
+            // 
+            // lblBrushSize
+            // 
+            lblBrushSize.AutoSize = true;
+            lblBrushSize.ForeColor = SystemColors.Window;
+            lblBrushSize.Location = new Point(211, 60);
+            lblBrushSize.Name = "lblBrushSize";
+            lblBrushSize.Size = new Size(63, 15);
+            lblBrushSize.TabIndex = 31;
+            lblBrushSize.Text = "Brush Size:";
+            // 
             // ImageEditorForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -290,6 +314,8 @@
             Controls.Add(ZoomToolStrip);
             Controls.Add(panelImageContainer);
             Controls.Add(btnSendToSettings);
+            Controls.Add(lblBrushSize);
+            Controls.Add(trackBarBrushSize);
             Controls.Add(EditorToolStrip);
             Controls.Add(btnGoHome);
             Controls.Add(pictureBox1);
@@ -306,6 +332,7 @@
             panelImageContainer.ResumeLayout(false);
             ZoomToolStrip.ResumeLayout(false);
             ZoomToolStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)trackBarBrushSize).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -334,5 +361,7 @@
         private ToolStripButton btnZoomPlus;
         private ToolStripButton btnZoomMinus;
         private ToolStripButton btnZoomReset;
+        private TrackBar trackBarBrushSize;
+        private Label lblBrushSize;
     }
 }

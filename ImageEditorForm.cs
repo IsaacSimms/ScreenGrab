@@ -39,6 +39,7 @@ namespace ScreenGrab
         private Color          _SelectedColor = Color.Red;                        // default color (red) for drawing
         private Pen?           _currentPen;                                       // pen for drawing shapes
         private List<Point>    _freeformPoints = new List<Point>();               // points for freeform drawing
+        private int            _brushSize = 5;                                    // varaible brush size for drawing including default
         // text tool variables
         private RichTextBox?   _textBox;
         private Point          _textStartPoint;
@@ -59,6 +60,10 @@ namespace ScreenGrab
             InitializeComponent();
             _currentPen = new Pen(_SelectedColor, 5); // initialize pen with default color and width
             UpdateColorButtonDisplay();               // update button display with default color
+
+            // wire resize event for repositioning toolstrips
+            this.Resize += ImageEditorForm_Resize;
+            PositionToolStripsRelativeToPanel();
 
             // wire up mouse events for drawing
             pictureBoxImage.MouseDown  += pictureBoxImage_MouseDown;
@@ -88,7 +93,27 @@ namespace ScreenGrab
                 e.Handled = true; // prevent further processing
             }
         }
+        // == REPOSITION TOOLSTRIPS ON RESIZE == //
+        private void ImageEditorForm_Resize(object? sender, EventArgs e)
+        {
+            PositionToolStripsRelativeToPanel();
 
+            // apply zoom to image after form resize
+            if (_editableImage != null)
+            {
+                ApplyZoom();
+            }
+        }
+        private void PositionToolStripsRelativeToPanel()
+        {
+            // position EditorToolStrip at top left of panel
+            EditorToolStrip.Location = new Point(
+                panelImageContainer.Left,
+                panelImageContainer.Top - EditorToolStrip.Height - 3);
+            ZoomToolStrip.Location = new Point(
+                panelImageContainer.Right - ZoomToolStrip.Width,
+                panelImageContainer.Top - ZoomToolStrip.Height - 3);
+        }
         // == constructor to load image from path == //
         public ImageEditorForm(string imagePath) : this()
         {
@@ -232,7 +257,7 @@ namespace ScreenGrab
                 {
                     _SelectedColor = colorDialog.Color;       // update selected color
                     _currentPen?.Dispose();                   // dispose previous pen
-                    _currentPen = new Pen(_SelectedColor, 2); // create new pen with selected color
+                    _currentPen = new Pen(_SelectedColor, _brushSize); // create new pen with selected color
                     UpdateColorButtonDisplay();               // update button display
                 }
             }
@@ -262,6 +287,18 @@ namespace ScreenGrab
             oldImage?.Dispose(); // dispose previous image
         }
         // == END OF COLOR SELECTION FUNCTIONALITY == //
+
+        // == BRUSH SIZE SELECTION FUNCTIONALITY == //
+        private void trackBarBrushSize_Scroll(object sender, EventArgs e)
+        {
+            _brushSize = trackBarBrushSize.Value;                 // update brush size
+            _currentPen?.Dispose();                              // dispose previous pen
+            _currentPen = new Pen(_SelectedColor, _brushSize);   // create new pen with updated size
+
+            // Update text font size depending on brush size for consistency
+            _textFont.Dispose();                                           // dispose previous font
+            _textFont = new Font("Arial", _brushSize + 8, FontStyle.Bold); // create new font with updated size
+        }
 
         // == MENUSTRIP: UNDO FUNCTIONALITY == //
         private void SaveStateForUndo()
@@ -794,9 +831,9 @@ namespace ScreenGrab
         {
             if (_currentPen != null)
             {
-                using (Pen arrowPen = new Pen(_SelectedColor, 3))
+                using (Pen arrowPen = new Pen(_SelectedColor, _brushSize))
                 {
-                    arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(5, 5);
+                    arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(_brushSize, _brushSize);
                     g.DrawLine(arrowPen, _drawStartPoint, _drawEndPoint);
                 }
             }
@@ -869,7 +906,7 @@ namespace ScreenGrab
             {
                 using (Pen arrowPen = new Pen(_SelectedColor, 5))
                 {
-                    arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(5, 5);
+                    arrowPen.CustomEndCap = new System.Drawing.Drawing2D.AdjustableArrowCap(_brushSize, _brushSize);
                     g.DrawLine(arrowPen, start, end);
                 }
             }
