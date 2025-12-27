@@ -30,9 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SystemInfoCapture));
             pictureBox1 = new PictureBox();
-            pictureBox2 = new PictureBox();
+            pictureBoxScreenshot = new PictureBox();
+            txtSystemInfo = new TextBox();
+            btnHome = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxScreenshot).BeginInit();
             SuspendLayout();
             // 
             // pictureBox1
@@ -44,32 +46,58 @@
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             // 
-            // pictureBox2
+            // pictureBoxScreenshot
             // 
-            pictureBox2.Location = new Point(12, 88);
-            pictureBox2.Name = "pictureBox2";
-            pictureBox2.Size = new Size(1228, 524);
-            pictureBox2.TabIndex = 1;
-            pictureBox2.TabStop = false;
+            pictureBoxScreenshot.Location = new Point(12, 88);
+            pictureBoxScreenshot.Name = "pictureBoxScreenshot";
+            pictureBoxScreenshot.Size = new Size(1402, 700);
+            pictureBoxScreenshot.TabIndex = 1;
+            pictureBoxScreenshot.TabStop = false;
+            // 
+            // txtSystemInfo
+            // 
+            txtSystemInfo.BackColor = SystemColors.Desktop;
+            txtSystemInfo.BorderStyle = BorderStyle.FixedSingle;
+            txtSystemInfo.ForeColor = SystemColors.Window;
+            txtSystemInfo.Location = new Point(12, 825);
+            txtSystemInfo.Name = "txtSystemInfo";
+            txtSystemInfo.Size = new Size(1402, 23);
+            txtSystemInfo.TabIndex = 2;
+            // 
+            // btnHome
+            // 
+            btnHome.BackColor = SystemColors.Desktop;
+            btnHome.ForeColor = SystemColors.Window;
+            btnHome.Location = new Point(1337, 12);
+            btnHome.Name = "btnHome";
+            btnHome.Size = new Size(77, 40);
+            btnHome.TabIndex = 3;
+            btnHome.Text = "Home";
+            btnHome.UseVisualStyleBackColor = false;
             // 
             // SystemInfoCapture
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Desktop;
-            ClientSize = new Size(1426, 884);
-            Controls.Add(pictureBox2);
+            ClientSize = new Size(1426, 1188);
+            Controls.Add(btnHome);
+            Controls.Add(txtSystemInfo);
+            Controls.Add(pictureBoxScreenshot);
             Controls.Add(pictureBox1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "SystemInfoCapture";
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxScreenshot).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private PictureBox pictureBox1;
-        private PictureBox pictureBox2;
+        private PictureBox pictureBoxScreenshot;
+        private TextBox txtSystemInfo;
+        private Button btnHome;
     }
 }
