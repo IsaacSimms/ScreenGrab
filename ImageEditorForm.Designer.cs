@@ -96,10 +96,11 @@
             // 
             // EditorMenu
             // 
+            EditorMenu.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             EditorMenu.BackColor = SystemColors.Desktop;
             EditorMenu.Dock = DockStyle.None;
             EditorMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, copyToClipboardToolStripMenuItem });
-            EditorMenu.Location = new Point(1019, 28);
+            EditorMenu.Location = new Point(1018, 28);
             EditorMenu.Name = "EditorMenu";
             EditorMenu.Size = new Size(233, 24);
             EditorMenu.TabIndex = 25;

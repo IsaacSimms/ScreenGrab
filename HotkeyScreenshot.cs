@@ -17,6 +17,7 @@ using System.Drawing.Text; // for async delay (used in delayed screenshot)
 using System.Collections.Generic;
 using System.Linq;
 using System.Drawing.Drawing2D;
+using System.Runtime.CompilerServices;
 
 namespace ScreenGrab
 {
@@ -36,6 +37,16 @@ namespace ScreenGrab
         private static extern IntPtr GetForegroundWindow();                                       // gets handle of active window
         [DllImport("user32.dll")]
         private static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);                  // gets dimensions of active window
+
+        // == WinAPI DPI Awareness Context Imports == //
+        [DllImport("user32.dll")]
+        private static extern bool SetProcessDPIAware();                                               // sets process as DPI aware
+        [DllImport("dwmapi.dll")]
+        private static extern int DwmGetWindowAttribute(IntPtr hwnd, int dwAttribute, out RECT pvAttribute, int cbAttribute); // gets window attributes for DPI scaling
+        private const int DWMWA_EXTENDED_FRAME_BOUNDS = 9; // attribute for extended frame bounds
+
+
+        // == RECT struct for window dimensions == //
         private struct RECT                                                                      // struct to hold window dimensions
         {
             public int Left;
@@ -46,17 +57,17 @@ namespace ScreenGrab
 
         // == Hotkey varibale registration == //
         // Hotkey IDs //
-        private const int    WM_HOTKEY = 0x0312;            // Windows message ID for hotkey
-        private readonly int _ActiveWindowHotkeyId;         // instance variable for active window hotkey ID
-        private readonly int _RegionSelectHotkeyId;         // instance variable for region select hotkey ID
-        private readonly int _FreeformSelectHotkeyId;       // instance variable for freeform select hotkey ID
-        private readonly int _ActiveWindowDelayHotkeyId;    // ID for active window delayed screenshot hotkey
-        private readonly int _RegionSelectDelayHotkeyId;    // ID for region select delayed screenshot hotkey
-        private readonly int _OpenClipboardInPaintHotkeyId; // ID for open clipboard image in paint hotkey
-        private readonly int _OpenEditorHotkeyId;           // ID for open editor hotkey
-        public event Action<string>? OnScreenshotTaken;     // event to notify when a screenshot is taken
-        public event Action<Bitmap>? OnScreenshotCaptured; // event to notify when a screenshot is captured
-        public event Action? OnOpenEditor;                  // event to notify when editor is opened
+        private const int    WM_HOTKEY = 0x0312;             // Windows message ID for hotkey
+        private readonly int _ActiveWindowHotkeyId;          // instance variable for active window hotkey ID
+        private readonly int _RegionSelectHotkeyId;          // instance variable for region select hotkey ID
+        private readonly int _FreeformSelectHotkeyId;        // instance variable for freeform select hotkey ID
+        private readonly int _ActiveWindowDelayHotkeyId;     // ID for active window delayed screenshot hotkey
+        private readonly int _RegionSelectDelayHotkeyId;     // ID for region select delayed screenshot hotkey
+        private readonly int _OpenClipboardInPaintHotkeyId;  // ID for open clipboard image in paint hotkey
+        private readonly int _OpenEditorHotkeyId;            // ID for open editor hotkey
+        public event Action<string>? OnScreenshotTaken;      // event to notify when a screenshot is taken
+        public event Action<Bitmap>? OnScreenshotCaptured;   // event to notify when a screenshot is captured
+        public event Action? OnOpenEditor;                   // event to notify when editor is opened
 
         // == Register hotkeys == //
         // attach hotkey configruation to handle
@@ -153,6 +164,7 @@ namespace ScreenGrab
             _config.SaveToFileLocation         = newConfig.SaveToFileLocation;
             _config.AutoCopyToClipboard        = newConfig.AutoCopyToClipboard;
             _config.AutoOpenEditorOnCapture    = newConfig.AutoOpenEditorOnCapture;
+            _config.SystemCaptureMode          = newConfig.SystemCaptureMode;
             RegisterAllHotkeys(); // re-register hotkeys with new configuration
         }
 
@@ -208,28 +220,100 @@ namespace ScreenGrab
                     4000);
                 return;
             }
-            if (!GetWindowRect(hWnd, out RECT rect))           // validate getting window dimensions
+
+            // try DWM method first for accurate window dimensions with DPI scaling
+            RECT rect;
+            int dwmResult = DwmGetWindowAttribute(hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, out rect, Marshal.SizeOf(typeof(RECT)));
+
+            // Fall back to GetWindowRect if DWM fails
+            if (dwmResult != 0)
             {
-                ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: Invalid Region dimnesion aquisition.",
-                    $"ScreenGrab",
-                    4000);
-                return;
+                if (!GetWindowRect(hWnd, out rect))
+                {
+                    ScreenshotMessageBox.ShowMessage(
+                        $"ScreenGrab: Invalid Region dimension acquisition.",
+                        $"ScreenGrab",
+                        4000);
+                    return;
+                }
             }
+
             int width = rect.Right - rect.Left;               // calculate width
             int height = rect.Bottom - rect.Top;              // calculate height
             if (width <= 0 || height <= 0)                    // validate dimensions
             {
-                ScreenshotMessageBox.ShowMessage(             // show message box on screenshot taken
-                    $"ScreenGrab: Invalid Region selection.", // message
-                    $"ScreenGrab",                            // title //not displaying in current config
-                    4000);                                    // duration in ms
+                ScreenshotMessageBox.ShowMessage(
+                    $"ScreenGrab: Invalid Region selection.",
+                    $"ScreenGrab",
+                    4000);
                 return;
             }
-            Rectangle area = new Rectangle(rect.Left, rect.Top, width, height); // define capture area
-            CaptureAndSave(area, "Active Window");                              // capture and save screenshot
 
+            Rectangle area = new Rectangle(rect.Left, rect.Top, width, height); // define capture area
+
+            // check if system capture mode is enabled before capturing
+            if (_config.SystemCaptureMode)
+            {
+                CaptureAndSaveWithSystemInfo(hWnd, area);
+            }
+            else
+            {
+                CaptureAndSave(area, "Active Window");       // capture and save screenshot
+            }
         }
+
+        // == Capture active window with system info (largely handled in SystemInfoCapture class, this takes care of the screenshot portion and wiring it into this class == //
+        private void CaptureAndSaveWithSystemInfo(IntPtr hWnd, Rectangle area)
+        {
+           //capture screenshot of active window area
+            using Bitmap bitmap = new Bitmap(area.Width, area.Height);     // create bitmap to hold screenshot
+            using Graphics g = Graphics.FromImage(bitmap);                 // create graphics object from bitmap
+            {
+                g.CopyFromScreen(area.Location, Point.Empty, area.Size);   // capture screenshot from specified area
+            }
+
+            // copy to clipboard if enabled
+            if (_config.AutoCopyToClipboard)
+            {
+                Clipboard.SetImage(bitmap);
+            }
+
+            // save to file location if enabled
+            if (_config.SaveToFileLocation)
+            {
+                //save to OneDrive folder
+                string basePath = _config.ScreenshotSaveLocation;
+                if (!Directory.Exists(basePath))
+                {
+                    Directory.CreateDirectory(basePath);
+                }
+                string fileName = $"ActiveWindow_{DateTime.Now:yyyyMMdd_HHmmss}.png";
+                string filePath = Path.Combine(basePath, fileName);
+                //save bitmap as png
+                try
+                {
+                    bitmap.Save(filePath, ImageFormat.Png);
+                    OnScreenshotTaken?.Invoke(filePath);
+                }
+                catch (Exception ex)
+                {
+                    ScreenshotMessageBox.ShowMessage(
+                        $"ScreenGrab: Failed to save screenshot: {ex.Message}.",
+                        $"ScreenGrab:",
+                        4000);
+                    System.Diagnostics.Debug.WriteLine($"Failed to take screenshot: {ex.Message}");
+                    throw new InvalidOperationException($"Failed to take screenshot: {ex.Message}.");
+                }
+            }
+
+            // Create a copy of the bitmap for passing to the system info form
+            Bitmap bitmapForForm = new Bitmap(bitmap);
+
+            // trigger system info capture with screenshot bitmap
+            var systemInfoForm = new SystemInfoCapture(hWnd, bitmapForForm);
+            systemInfoForm.Show();
+        }
+
         // == Capture selected region and save to clipboard and onedrive == //
         public void CaptureRegion()
         {

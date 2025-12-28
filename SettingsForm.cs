@@ -37,6 +37,7 @@ namespace ScreenGrab
             chkAutoCopyToClipboard.Checked          = _config.AutoCopyToClipboard;
             chkAutoOpenEditorOnCapture.Checked      = _config.AutoOpenEditorOnCapture;
             chkSaveToFileLocation.Checked           = _config.SaveToFileLocation;
+            chkEnableSystemCapture.Checked          = _config.SystemCaptureMode;
 
             //make text boxes read-only to prevent manual editing
             txtActive.ReadOnly                           = true;
@@ -58,9 +59,13 @@ namespace ScreenGrab
             txtGeneralSettingsHeader.ReadOnly            = true;
             txtPowerUserHeader.ReadOnly                  = true;
             txtSystemCaptureModeToggleHeader.ReadOnly    = true;
+
             // receive keydown events for text boxes
             this.KeyPreview = true;
-            this.KeyUp += new KeyEventHandler(SettingsForm_KeyDown);               //
+            this.KeyUp += new KeyEventHandler(SettingsForm_KeyDown);
+
+            // wire up checkboox even handlers
+            chkEnableSystemCapture.CheckedChanged += chkEnableSystemCapture_CheckChanged;
         }
 
         // button click handlers to change hotkey being configured // print to label the staus
@@ -140,6 +145,16 @@ namespace ScreenGrab
                 ? "Auto-save to file location enabled."
                 : "Auto-save to file location disabled.";
             SaveFileLocationChanged?.Invoke(_config);
+        }
+        // == system capture mode checkbox change handler == //
+        private void chkEnableSystemCapture_CheckChanged(object sender, EventArgs e)
+        {
+            _config.SystemCaptureMode = chkEnableSystemCapture.Checked;  // update config based on checkbox state
+            lblStatus.Text = _config.SystemCaptureMode
+                ? "System capture mode enabled."
+                : "System capture mode disabled.";
+            SaveFileLocationChanged?.Invoke(_config);
+
         }
 
         // keydown event handler to capture new hotkey

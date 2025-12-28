@@ -275,29 +275,160 @@ namespace ScreenGrab
                 pictureBoxScreenshot.Image = Screenshot;
             }
             // populate text fields
-            txtSystemInfo.Text = $"""
-                Capture Time: {CaptureTime}
-                
-                Process Name: {ProcessName}
-                Process ID: {ProcessId}
-                Executable Path: {ExecutablePath}
-                File Version: {FileVersion}
-                Product Version: {ProductVersion}
-                
-                Window Title: {WindowTitle}
-                
-                Responsiveness: {ResponsivenessStatus}
-                
-                Elevation Status: {ElevationStatus}
-                
-                Window Hierarchy:
-                  Parent Window: {GetWindowTitleForHandle(ParentWindow)}
-                  Owner Window: {GetWindowTitleForHandle(OwnerWindow)}
-                  Root Window: {GetWindowTitleForHandle(RootWindow)}
-                  Root Owner Window: {GetWindowTitleForHandle(RootOwnerWindow)}
-                  Is Top-Level Window: {IsTopLevelWindow}
-                  Is Child Window: {IsChildWindow}
-                """;
+            txtSystemInfo.Text = 
+                $"═══════════════════════════════════════════════════════════════\r\n" +
+                $"                    SYSTEM CAPTURE INFORMATION                  \r\n" +
+                $"═══════════════════════════════════════════════════════════════\r\n" +
+                $"\r\n" +
+                $"  Capture Time     : {CaptureTime:yyyy-MM-dd HH:mm:ss.fff}\r\n" +
+                $"  Window Handle    : 0x{WindowHandle.ToString("X8")}\r\n" +
+                $"\r\n" +
+                $"───────────────────────────────────────────────────────────────\r\n" +
+                $"  PROCESS INFORMATION\r\n" +
+                $"───────────────────────────────────────────────────────────────\r\n" +
+                $"\r\n" +
+                $"  Process Name     : {ProcessName ?? "NULL"}\r\n" +
+                $"  Process ID (PID) : {ProcessId}\r\n" +
+                $"  Window Title     : {WindowTitle ?? "NULL"}\r\n" +
+                $"\r\n" +
+                $"───────────────────────────────────────────────────────────────\r\n" +
+                $"  EXECUTABLE INFORMATION\r\n" +
+                $"───────────────────────────────────────────────────────────────\r\n" +
+                $"\r\n" +
+                $"  Executable Path  : {ExecutablePath ?? "NULL"}\r\n" +
+                $"  File Version     : {FileVersion ?? "NULL"}\r\n" +
+                $"  Product Version  : {ProductVersion ?? "NULL"}\r\n" +
+                $"\r\n" +
+                $"───────────────────────────────────────────────────────────────\r\n" +
+                $"  STATUS & ELEVATION\r\n" +
+                $"───────────────────────────────────────────────────────────────\r\n" +
+                $"\r\n" +
+                $"  Responsiveness   : {ResponsivenessStatus}\r\n" +
+                $"  Elevation        : {ElevationStatus}\r\n" +
+                $"\r\n" +
+                $"───────────────────────────────────────────────────────────────\r\n" +
+                $"  WINDOW HIERARCHY\r\n" +
+                $"───────────────────────────────────────────────────────────────\r\n" +
+                $"\r\n" +
+                $"  Window Type      : {(IsTopLevelWindow ? "Top-Level Window" : "Child Window")}\r\n" +
+                $"  Parent Window    : {FormatHandle(ParentWindow)}\r\n" +
+                $"  Owner Window     : {FormatHandle(OwnerWindow)}\r\n" +
+                $"  Root Window      : {FormatHandle(RootWindow)}\r\n" +
+                $"  Root Owner       : {FormatHandle(RootOwnerWindow)}\r\n" +
+                $"\r\n" +
+                $"═══════════════════════════════════════════════════════════════";
+        }
+
+        // == pull up driver form via button == //
+        private void btnHome_Click(object sender, EventArgs e)
+        {
+            foreach (Form form in Application.OpenForms)
+            {
+                if (form is Driver driverForm)
+                {
+                    driverForm.Show();
+                    driverForm.WindowState = FormWindowState.Normal;
+                    driverForm.ShowInTaskbar = true;
+                    driverForm.Activate();
+                    break;
+                }
+            }
+            this.Close();
+        }
+
+        // == open screenshot in editr form == //
+        private void btnOpenEditor_Click(object sender, EventArgs e)
+        {
+            if (Screenshot == null) return;
+
+            // create copy of screenshot (avoids disposal issues)
+            Bitmap screenshotCopy = new Bitmap(Screenshot);
+
+            // open editor form with screenshot
+            ImageEditorForm editorForm = new ImageEditorForm(screenshotCopy);
+            editorForm.Show();
+            this.Close();
+        }
+        // == save screenshot to file == //
+        private void btnSaveScreenshot_Click(object sender, EventArgs e)
+        {
+            if (Screenshot == null) return;
+            using SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Title = "Save Screenshot",
+                Filter = "PNG Image|*.png|JPEG Image|*.jpg;*.jpeg|Bitmap Image|*.bmp|GIF Image|*.gif",
+                DefaultExt = "png",
+                FileName = $"Screenshot_{CaptureTime:yyyyMMdd_HHmmss}"
+            };
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    // determine image format based on file extension
+                    var extension = System.IO.Path.GetExtension(saveFileDialog.FileName).ToLower();
+                    System.Drawing.Imaging.ImageFormat format = extension switch
+                    {
+                        ".jpg" or ".jpeg" => System.Drawing.Imaging.ImageFormat.Jpeg,
+                        ".bmp"           => System.Drawing.Imaging.ImageFormat.Bmp,
+                        ".gif"           => System.Drawing.Imaging.ImageFormat.Gif,
+                        _                => System.Drawing.Imaging.ImageFormat.Png,
+                    };
+                    // save the screenshot
+                    Screenshot.Save(saveFileDialog.FileName, format);
+                    MessageBox.Show("Screenshot saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to save screenshot. Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+        // == copy screenshot to clipboard == //
+        private void btnCopyScreenshot_Click(object sender, EventArgs e)
+        {
+            if (Screenshot != null)
+            {
+                Clipboard.SetImage(Screenshot);
+            }
+        }
+        // == copy system info text to clipboard == //
+        private void btnCopyInfo_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(txtSystemInfo.Text);
+        }
+
+       // == print system info on to screenshot w/ dynamic height == //
+       private void btnPrintInfoOnImage_Click(object sender, EventArgs e)
+        {
+            if (Screenshot == null) return;
+            using Font font = new Font("Consolas", 10, FontStyle.Regular); // choose font
+            // calculate required height for text
+            int textHeight;
+            using (Graphics g = Graphics.FromImage(Screenshot))
+            {
+                SizeF textSize = g.MeasureString(txtSystemInfo.Text, font, Screenshot.Width - 20);
+                textHeight = (int)Math.Ceiling(textSize.Height) + 20; // add padding
+            }
+
+            // create new bitmap with additional height
+            Bitmap combinedImage = new Bitmap(Screenshot.Width, Screenshot.Height + textHeight);
+
+            using (Graphics g = Graphics.FromImage(combinedImage))
+            {
+                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
+                // draw original screenshot
+                g.DrawImage(Screenshot, 0, 0);
+                // draw system info text
+                using Brush textBrush = new SolidBrush(Color.White);
+                RectangleF textRect = new RectangleF(10, Screenshot.Height + 10, combinedImage.Width - 20, textHeight - 20);
+                g.DrawString(txtSystemInfo.Text, font, textBrush, textRect);
+            }
+            // replace screenshot with combined image
+            Screenshot.Dispose();
+            Screenshot = combinedImage;
+            // update picture box
+            pictureBoxScreenshot.Image = Screenshot;
         }
     }
 }

@@ -100,5 +100,6 @@ namespace ScreenGrab
         public bool AutoCopyToClipboard { get; set; } = true;
         // auto-open editor option // default to false
         public bool AutoOpenEditorOnCapture { get; set; } = false;
+        public bool SystemCaptureMode { get; set; }       = true;
     }
 }
