@@ -28,8 +28,8 @@ namespace ScreenGrab
         public string? WindowTitle { get; set; }
 
         // == responsiveness (hung app status) == // 
-        public bool IsResponing { get; set; }
-        public string ResponsivenessStatus => IsResponing ? "Responding" : "Not Responding";
+        public bool IsResponding { get; set; }
+        public string ResponsivenessStatus => IsResponding ? "Responding" : "Not Responding";
 
         // == elevation status == //
         public bool IsElevated { get; set; }
@@ -166,11 +166,11 @@ namespace ScreenGrab
             try
             {
                 bool isHung = IsHungAppWindow(hwnd);
-                IsResponing = !isHung;
+                IsResponding = !isHung;
             }
             catch
             {
-                IsResponing = true; // assume responding if response cannot be determined
+                IsResponding = true; // assume responding if response cannot be determined
             }
         }
 
@@ -280,41 +280,41 @@ namespace ScreenGrab
                 $"                    SYSTEM CAPTURE INFORMATION                  \r\n" +
                 $"═══════════════════════════════════════════════════════════════\r\n" +
                 $"\r\n" +
-                $"  Capture Time     : {CaptureTime:yyyy-MM-dd HH:mm:ss.fff}\r\n" +
-                $"  Window Handle    : 0x{WindowHandle.ToString("X8")}\r\n" +
+                $"  Capture Time: {CaptureTime:yyyy-MM-dd HH:mm:ss.fff}\r\n" +
+                $"  Window Handle: 0x{WindowHandle.ToString("X8")}\r\n" +
                 $"\r\n" +
                 $"───────────────────────────────────────────────────────────────\r\n" +
                 $"  PROCESS INFORMATION\r\n" +
                 $"───────────────────────────────────────────────────────────────\r\n" +
                 $"\r\n" +
-                $"  Process Name     : {ProcessName ?? "NULL"}\r\n" +
-                $"  Process ID (PID) : {ProcessId}\r\n" +
-                $"  Window Title     : {WindowTitle ?? "NULL"}\r\n" +
+                $"  Process Name: {ProcessName ?? "NULL"}\r\n" +
+                $"  Process ID (PID): {ProcessId}\r\n" +
+                $"  Window Title: {WindowTitle ?? "NULL"}\r\n" +
                 $"\r\n" +
                 $"───────────────────────────────────────────────────────────────\r\n" +
                 $"  EXECUTABLE INFORMATION\r\n" +
                 $"───────────────────────────────────────────────────────────────\r\n" +
                 $"\r\n" +
-                $"  Executable Path  : {ExecutablePath ?? "NULL"}\r\n" +
-                $"  File Version     : {FileVersion ?? "NULL"}\r\n" +
-                $"  Product Version  : {ProductVersion ?? "NULL"}\r\n" +
+                $"  Executable Path: {ExecutablePath ?? "NULL"}\r\n" +
+                $"  File Version: {FileVersion ?? "NULL"}\r\n" +
+                $"  Product Version: {ProductVersion ?? "NULL"}\r\n" +
                 $"\r\n" +
                 $"───────────────────────────────────────────────────────────────\r\n" +
                 $"  STATUS & ELEVATION\r\n" +
                 $"───────────────────────────────────────────────────────────────\r\n" +
                 $"\r\n" +
-                $"  Responsiveness   : {ResponsivenessStatus}\r\n" +
-                $"  Elevation        : {ElevationStatus}\r\n" +
+                $"  Responsiveness: {ResponsivenessStatus}\r\n" +
+                $"  Elevation: {ElevationStatus}\r\n" +
                 $"\r\n" +
                 $"───────────────────────────────────────────────────────────────\r\n" +
                 $"  WINDOW HIERARCHY\r\n" +
                 $"───────────────────────────────────────────────────────────────\r\n" +
                 $"\r\n" +
-                $"  Window Type      : {(IsTopLevelWindow ? "Top-Level Window" : "Child Window")}\r\n" +
-                $"  Parent Window    : {FormatHandle(ParentWindow)}\r\n" +
-                $"  Owner Window     : {FormatHandle(OwnerWindow)}\r\n" +
-                $"  Root Window      : {FormatHandle(RootWindow)}\r\n" +
-                $"  Root Owner       : {FormatHandle(RootOwnerWindow)}\r\n" +
+                $"  Window Type: {(IsTopLevelWindow ? "Top-Level Window" : "Child Window")}\r\n" +
+                $"  Parent Window: {FormatHandle(ParentWindow)}\r\n" +
+                $"  Owner Window: {FormatHandle(OwnerWindow)}\r\n" +
+                $"  Root Window: {FormatHandle(RootWindow)}\r\n" +
+                $"  Root Owner: {FormatHandle(RootOwnerWindow)}\r\n" +
                 $"\r\n" +
                 $"═══════════════════════════════════════════════════════════════";
         }
@@ -397,38 +397,50 @@ namespace ScreenGrab
             Clipboard.SetText(txtSystemInfo.Text);
         }
 
-       // == print system info on to screenshot w/ dynamic height == //
+       // == print system info on to screenshot == //
        private void btnPrintInfoOnImage_Click(object sender, EventArgs e)
         {
-            if (Screenshot == null) return;
-            using Font font = new Font("Consolas", 10, FontStyle.Regular); // choose font
-            // calculate required height for text
-            int textHeight;
-            using (Graphics g = Graphics.FromImage(Screenshot))
-            {
-                SizeF textSize = g.MeasureString(txtSystemInfo.Text, font, Screenshot.Width - 20);
-                textHeight = (int)Math.Ceiling(textSize.Height) + 20; // add padding
-            }
+            if (Screenshot == null) return; // ensure screenshot exists
 
-            // create new bitmap with additional height
-            Bitmap combinedImage = new Bitmap(Screenshot.Width, Screenshot.Height + textHeight);
+            // create a copy of the screenshot to draw on
+            Bitmap annotatedImage = new Bitmap(Screenshot.Width, Screenshot.Height);
 
-            using (Graphics g = Graphics.FromImage(combinedImage))
+            using (Graphics g = Graphics.FromImage(annotatedImage))
             {
                 g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 
-                // draw original screenshot
+                // draw the original screenshot
                 g.DrawImage(Screenshot, 0, 0);
-                // draw system info text
-                using Brush textBrush = new SolidBrush(Color.White);
-                RectangleF textRect = new RectangleF(10, Screenshot.Height + 10, combinedImage.Width - 20, textHeight - 20);
-                g.DrawString(txtSystemInfo.Text, font, textBrush, textRect);
+
+                //use font for overlay text
+                using Font font = new Font("Consolas", 7, FontStyle.Regular);               // iniatlizes overlay text font
+                using Brush textBrush = new SolidBrush(Color.Yellow);                       // initalizes overlay text brush
+                using Brush backgroundBrush = new SolidBrush(Color.FromArgb(180, 0, 0, 0)); // initalizes semi-transparent background
+
+                // measure size of text for proper overlay location
+                SizeF textSize = g.MeasureString(txtSystemInfo.Text, font);
+
+                // calculate position relative to screenshot
+                float padding = 5; //so that text is not on very edge of screenshot
+                float x       = Screenshot.Width - textSize.Width - padding;
+                float y       = padding;
+
+                // draw background
+                RectangleF backgroundRect = new RectangleF(x - padding, y - padding, textSize.Width + (padding * 2), textSize.Height + (padding * 2));
+                g.FillRectangle(backgroundBrush, backgroundRect);
+
+                // draw text
+                g.DrawString(txtSystemInfo.Text, font, textBrush, x, y);
+
+                // dispose of previous image
+                Screenshot.Dispose();
+                Screenshot = annotatedImage;
+
+                // update picture box with new image
+                pictureBoxScreenshot.Image = Screenshot;
             }
-            // replace screenshot with combined image
-            Screenshot.Dispose();
-            Screenshot = combinedImage;
-            // update picture box
-            pictureBoxScreenshot.Image = Screenshot;
+
+
         }
     }
 }
