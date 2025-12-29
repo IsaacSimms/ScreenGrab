@@ -65,6 +65,12 @@ namespace ScreenGrab
             Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
             Key       = Keys.F
         };
+        // OCR region capture
+        public HotkeyDefinition OcrRegionCapture { get; set; } = new HotkeyDefinition
+        {
+            Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
+            Key       = Keys.O
+        };
         // active window delayed capture
         public HotkeyDefinition ActiveWindowDelayedCapture { get; set; } = new HotkeyDefinition
         {

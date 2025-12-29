@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.IO;
 
 namespace ScreenGrab
 {
@@ -30,10 +31,13 @@ namespace ScreenGrab
         // == responsiveness (hung app status) == // 
         public bool IsResponding { get; set; }
         public string ResponsivenessStatus => IsResponding ? "Responding" : "Not Responding";
+        public TimeSpan ProcessUptime { get; set; }
+        public string ProcessUpTimeFormatted => FormatUptime(ProcessUptime);
 
         // == elevation status == //
         public bool IsElevated { get; set; }
         public string ElevationStatus => IsElevated ? "Elevated" : "Not Elevated";
+        public string IntegrityLevel { get; set; } = "unknown"; // default to unknown
 
         // == window hierarchy == //
         public IntPtr ParentWindow { get; set; }
@@ -60,6 +64,10 @@ namespace ScreenGrab
         private static extern bool OpenProcessToken(IntPtr ProcessHandle, uint DesiredAccess, out IntPtr TokenHandle);
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool GetTokenInformation(IntPtr TokenHandle, int TokenInformationClass, IntPtr TokenInformation, int TokenInformationLength, out int ReturnLength);
+        [DllImport("advapi32.dll")]
+        private static extern IntPtr GetSidSubAuthority(IntPtr pSid, uint nSubAuthority);
+        [DllImport("advapi32.dll")]
+        private static extern IntPtr GetSidSubAuthorityCount(IntPtr pSid);
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool CloseHandle(IntPtr hObject);
         [DllImport("kernel32.dll")]
@@ -68,7 +76,17 @@ namespace ScreenGrab
         // constant variables for tokening
         private const uint TOKEN_QUERY = 0x0008;
         private const int TokenElevation = 20;
+        private const int TokenIntegrityLevel = 25;
         private const uint PROCESS_QUERY_INFORMATION = 0x1000;
+
+        // constant variables for integrity level SID
+        private const int SECURITY_MANDATORY_UNTRUSTED_RID = 0x0000;
+        private const int SECURITY_MANDATORY_LOW_RID = 0x1000;
+        private const int SECURITY_MANDATORY_MEDIUM_RID = 0x2000;
+        private const int SECURITY_MANDATORY_MEDIUM_PLUS_RID = 0x2100;
+        private const int SECURITY_MANDATORY_HIGH_RID = 0x3000;
+        private const int SECURITY_MANDATORY_SYSTEM_RID = 0x4000;
+        private const int SECURITY_MANDATORY_PROTECTED_PROCESS_RID = 0x5000;
 
         // ==  WinAPI imports - window hierarchy == //
         [DllImport("user32.dll", SetLastError = true)]
@@ -130,6 +148,15 @@ namespace ScreenGrab
                 using Process process = Process.GetProcessById((int)ProcessId);
                 ProcessName = process.ProcessName;
 
+                // get process uptime
+                try
+                {
+                    ProcessUptime = DateTime.Now - process.StartTime;
+                }
+                catch
+                {
+                    ProcessUptime = TimeSpan.Zero; // unable to get uptime
+                }
                 // get executable path
                 try
                 {
@@ -160,6 +187,18 @@ namespace ScreenGrab
                 ProcessName = "N/A";
             }
         }
+        // == helper: format uptime for display == //
+        private static string FormatUptime(TimeSpan uptime)
+        {
+            if (uptime.TotalDays >= 1)
+                return $"{(int)uptime.TotalDays}d {uptime.Hours}h {uptime.Minutes}m {uptime.Seconds}s";
+            if (uptime.TotalHours >= 1)
+                return $"{(int)uptime.TotalHours}h {uptime.Minutes}m {uptime.Seconds}s";
+            if (uptime.TotalMinutes >= 1)
+                return $"{(int)uptime.TotalMinutes}m {uptime.Seconds}s";
+            return $"{uptime.Seconds}s";
+        }
+
         // == gather responsiveness information == //
         private void GatherResponsivenessInfo(IntPtr hwnd)
         {
@@ -201,10 +240,46 @@ namespace ScreenGrab
                 {
                     Marshal.FreeHGlobal(elevationTypePtr); // free allocated memory
                 }
+
+                // get integrity level
+                GetTokenInformation(tokenHandle, TokenIntegrityLevel, IntPtr.Zero, 0, out int integrityLevelSize);
+                if (integrityLevelSize > 0)
+                {
+                    IntPtr integrityLevelPtr = Marshal.AllocHGlobal(integrityLevelSize);
+                    try
+                    {
+                        if (GetTokenInformation(tokenHandle, TokenIntegrityLevel, integrityLevelPtr, integrityLevelSize, out _))
+                        {
+                            // TOKEN_MANDATORY_LABEL structure: first field is SID_AND_ATTRIBUTES with Sid pointer
+                            IntPtr sidPtr = Marshal.ReadIntPtr(integrityLevelPtr);
+                            IntPtr subAuthCountPtr = GetSidSubAuthorityCount(sidPtr);
+                            int subAuthCount = Marshal.ReadByte(subAuthCountPtr);
+                            IntPtr subAuthPtr = GetSidSubAuthority(sidPtr, (uint)(subAuthCount - 1));
+                            int integrityRid = Marshal.ReadInt32(subAuthPtr);
+
+                            IntegrityLevel = integrityRid switch
+                            {
+                                SECURITY_MANDATORY_UNTRUSTED_RID => "Untrusted",
+                                SECURITY_MANDATORY_LOW_RID => "Low",
+                                SECURITY_MANDATORY_MEDIUM_RID => "Medium",
+                                SECURITY_MANDATORY_MEDIUM_PLUS_RID => "Medium+",
+                                SECURITY_MANDATORY_HIGH_RID => "High",
+                                SECURITY_MANDATORY_SYSTEM_RID => "System",
+                                SECURITY_MANDATORY_PROTECTED_PROCESS_RID => "Protected Process",
+                                _ => $"Unknown (0x{integrityRid:X4})"
+                            };
+                        }
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(integrityLevelPtr); // free allocated memory
+                    }
+                }
             }
             catch
             {
-                IsElevated = false; // assume not elevated on error
+                IsElevated = false;         // assume not elevated on error
+                IntegrityLevel = "unknown"; // default to unknown on error
             }
             finally
             {
@@ -304,7 +379,9 @@ namespace ScreenGrab
                 $"───────────────────────────────────────────────────────────────\r\n" +
                 $"\r\n" +
                 $"  Responsiveness: {ResponsivenessStatus}\r\n" +
+                $"  Process Uptime: {ProcessUpTimeFormatted}\r\n" +
                 $"  Elevation: {ElevationStatus}\r\n" +
+                $"  Integrity Level: {IntegrityLevel}\r\n" +
                 $"\r\n" +
                 $"───────────────────────────────────────────────────────────────\r\n" +
                 $"  WINDOW HIERARCHY\r\n" +
@@ -390,6 +467,101 @@ namespace ScreenGrab
             {
                 Clipboard.SetImage(Screenshot);
             }
+        }
+
+        // == export as markdown to folder == //
+        private void btnExportMarkdown_Click(object sender, EventArgs e)
+        {
+            using FolderBrowserDialog folderDialog = new FolderBrowserDialog
+            {
+                Description = "Select Folder to Save Markdown File",
+                ShowNewFolderButton = true,
+                UseDescriptionForTitle = true
+            };
+            if (folderDialog.ShowDialog() != DialogResult.OK) return;
+
+            try
+            {
+                // == builds markdown content == //
+                // create timestamped subfolder
+                string folderName = $"SystemCapture_{CaptureTime:yyyyMMdd_HHmmss}";
+                string exportPath = Path.Combine(folderDialog.SelectedPath, folderName);
+                Directory.CreateDirectory(exportPath);
+
+                // save screenshot
+                string screenshotFIleName = "screenshot.png";
+                string screenshotFilePath = Path.Combine(exportPath, screenshotFIleName);
+                Screenshot?.Save(screenshotFilePath, System.Drawing.Imaging.ImageFormat.Png);
+
+                // generate markdown
+                string markdownContent = GenerateMarkdownContent(screenshotFIleName);
+                string markdownFilePath = Path.Combine(exportPath, "SystemInfo.md");
+                File.WriteAllText(markdownFilePath, markdownContent);
+
+                MessageBox.Show($"Markdown file and screenshot saved successfully to:\r\n{exportPath}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to export markdown file. Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // == generate markdown content == //
+        private string GenerateMarkdownContent(string screenshotFileName)
+        {
+            return $"""
+            # System Capture Information
+
+            **Capture Time:** {CaptureTime:yyyy-MM-dd HH:mm:ss.fff}  
+            **Window Handle:** `0x{WindowHandle:X8}`
+
+            ## Screenshot
+
+            ![Screenshot]({screenshotFileName})
+
+            ---
+
+            ## Process Information
+
+            | Property         | Value |
+            |------------------|-------|
+            | Process Name     | {ProcessName ?? "N/A"} |
+            | Process ID (PID) | {ProcessId} |
+            | Window Title     | {WindowTitle ?? "N/A"} |
+
+            ---
+
+            ## Executable Information
+
+            | Property         | Value |
+            |------------------|-------|
+            | Executable Path  | `{ExecutablePath ?? "N/A"}` |
+            | File Version     | {FileVersion ?? "N/A"} |
+            | Product Version  | {ProductVersion ?? "N/A"} |
+
+            ---
+
+            ## Status & Elevation
+
+            | Property         | Value |
+            |------------------|-------|
+            | Responsiveness   | {ResponsivenessStatus} |
+            | Process Uptime   | {ProcessUpTimeFormatted} |
+            | Elevation        | {ElevationStatus} |
+            | Integrity Level  | {IntegrityLevel} |
+
+            ---
+
+            ## Window Hierarchy
+
+            | Property         | Value |
+            |------------------|-------|
+            | Window Type      | {(IsTopLevelWindow ? "Top-Level Window" : "Child Window")} |
+            | Parent Window    | `{FormatHandle(ParentWindow)}` |
+            | Owner Window     | `{FormatHandle(OwnerWindow)}` |
+            | Root Window      | `{FormatHandle(RootWindow)}` |
+            | Root Owner       | `{FormatHandle(RootOwnerWindow)}` |
+            """;
         }
         // == copy system info text to clipboard == //
         private void btnCopyInfo_Click(object sender, EventArgs e)

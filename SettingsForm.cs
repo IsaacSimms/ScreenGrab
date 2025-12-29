@@ -57,7 +57,6 @@ namespace ScreenGrab
             txtAutoOpenEditorHeader.ReadOnly             = true;
             txtSaveFileLocationHeader.ReadOnly           = true;
             txtGeneralSettingsHeader.ReadOnly            = true;
-            txtPowerUserHeader.ReadOnly                  = true;
             txtSystemCaptureModeToggleHeader.ReadOnly    = true;
 
             // receive keydown events for text boxes
