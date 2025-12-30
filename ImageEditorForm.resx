@@ -223,7 +223,7 @@
   <data name="toolStripButton2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAACAtSURBVHhe7d1BrmQ1tgXQP5kSdGgiJkGH6VAjYDr0ax40
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAACAtSURBVHhe7d1BrmQ1tgXQP5kSdGgiJkGH6VAjYDq0ayA0
         KaZAo2iQL79cwpLLHN/r64hwRMZZS9riXdsR78tfevtkZlTm/30GANIxAABAQgYAAEjIAAAACRkASO/P
         P//8b7iveq/uFl6TAYD0lNRjGADgtRkAACAhAwAAJGQAYMnot3dn1tu0ZtbbtK6ut0b77WtHZ6qZs+16
         e65d752du7LervUZOTsb7Zf0e7127+zMp0+f/udcSSQ6Nzo7e25k9vXRuZJedKamOtqDFQYAlkU/hEY/
@@ -360,7 +360,7 @@
         tcV8dK7fOztb1eeZs5HR66P16Fxx69lqtA6zDADcbPRDarTeGp0ZrbdGZ1bXW+3ZPq1ov00rWivOzo9S
         9c/F0doovehMm/5Mb7TXrkep+ufq6OworWi/TdU/V+3ZPq1ov00rWitG54vROswyAHCzox9EZz+kdr62
         ro3We+350Zlq5uzZ+tledObKervWZ+Ts7Gi9mN07O9Mbvab9PMjoTDVzbrRetK+7eq6kd7Z+5TUwywAA
-        SSgMoGUAgCQMAEDLAABJGACAlgEAkjAAAC0DAAAkZAAAgIQMAACQzufP/w+jbzDLaAU/hQAAAABJRU5E
+        SSgMoGUAgCQMAEDLAABJGACAlgEAkjAAAC0DAAAkZAAAgIQMAACQzufP/w9EKy8tX+uMAwAAAABJRU5E
         rkJggg==
 </value>
   </data>

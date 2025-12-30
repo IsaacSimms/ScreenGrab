@@ -16,7 +16,7 @@ namespace ScreenGrab
     {
 
         // == required componenets == //
-        public Bitmap Screenshot { get; set; }
+        public Bitmap? Screenshot { get; set; }
         public DateTime CaptureTime { get; set; }
         public IntPtr WindowHandle { get; set; }
 

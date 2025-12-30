@@ -100,7 +100,7 @@
             EditorMenu.BackColor = SystemColors.Desktop;
             EditorMenu.Dock = DockStyle.None;
             EditorMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, copyToClipboardToolStripMenuItem });
-            EditorMenu.Location = new Point(1018, 28);
+            EditorMenu.Location = new Point(1027, 28);
             EditorMenu.Name = "EditorMenu";
             EditorMenu.Size = new Size(233, 24);
             EditorMenu.TabIndex = 25;
@@ -131,7 +131,7 @@
             copyToClipboardToolStripMenuItem.Name = "copyToClipboardToolStripMenuItem";
             copyToClipboardToolStripMenuItem.Size = new Size(116, 20);
             copyToClipboardToolStripMenuItem.Text = "Copy to Clipboard";
-            copyToClipboardToolStripMenuItem.ToolTipText = "Copy Image to Clipboard";
+            copyToClipboardToolStripMenuItem.ToolTipText = "Copy Image";
             copyToClipboardToolStripMenuItem.Click += btnCopyToClipboard_Click;
             // 
             // EditorToolStrip

@@ -16,7 +16,7 @@ namespace ScreenGrab
         //track current hot being configured
         private enum HotkeyBeingConfigured
         {
-            None, Active, Region, ActiveDelayed, RegionDelayed, Paint, Editor
+            None, Active, Region, ActiveDelayed, RegionDelayed, OCR, Paint, Editor
         }
         private HotkeyBeingConfigured _currentHotkeyEditTarget = HotkeyBeingConfigured.None; // initialize to none
         public event Action<HotkeyConfig>? HotkeysChanged;                                   // event to notify main app of hotkey changes
@@ -31,6 +31,7 @@ namespace ScreenGrab
             txtRegion.Text                          = _config.RegionCapture.ToString();
             txtActiveDelayed.Text                   = _config.ActiveWindowDelayedCapture.ToString();
             txtRegionDelayed.Text                   = _config.RegionDelayedCapture.ToString();
+            txtOcr.Text                             = _config.OcrRegionCapture.ToString();
             txtPaint.Text                           = _config.OpenPaint.ToString();
             txtEditor.Text                          = _config.OpenEditor.ToString();
             txtChangeScreenCaptureFileLocation.Text = _config.ScreenshotSaveLocation;
@@ -50,6 +51,7 @@ namespace ScreenGrab
             txtCaptureRegionConfigHeader.ReadOnly        = true;
             txtDelayedActiveWindowConfigHeader.ReadOnly  = true;
             txtDelayedCaptureRegionConfigHeader.ReadOnly = true;
+            txtOpenPNGInPaintConfigHeader.ReadOnly       = true;
             txtOpenPNGInPaintConfigHeader.ReadOnly       = true;
             txtOpenEditorHeader.ReadOnly                 = true;
             txtSaveFileLocationHeader.ReadOnly           = true;
@@ -87,6 +89,11 @@ namespace ScreenGrab
         {
             _currentHotkeyEditTarget = HotkeyBeingConfigured.RegionDelayed;
             lblStatus.Text = "Press new hotkey for delayed region capture...";
+        }
+        private void btnChangeOcrRegionCaptureHotkeyConfig_Click(object sender, EventArgs e)  // ocr region capture
+        {
+            _currentHotkeyEditTarget = HotkeyBeingConfigured.OCR; // not implemented yet
+            lblStatus.Text = "Press new hotkey for OCR region capture...";
         }
         private void btnChangeOpenPaintHotkeyConfig_Click(object sender, EventArgs e)          // open in paint hotkey
         {
@@ -194,6 +201,10 @@ namespace ScreenGrab
                 case HotkeyBeingConfigured.RegionDelayed:
                     _config.RegionDelayedCapture = def;
                     txtRegionDelayed.Text = def.ToString();
+                    break;
+                case HotkeyBeingConfigured.OCR:
+                    _config.OcrRegionCapture = def;
+                    txtOcr.Text = def.ToString();
                     break;
                 case HotkeyBeingConfigured.Paint:
                     _config.OpenPaint = def;

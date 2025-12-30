@@ -63,6 +63,9 @@
             txtGeneralSettingsHeader = new TextBox();
             txtSystemCaptureModeToggleHeader = new TextBox();
             chkEnableSystemCapture = new CheckBox();
+            txtOcrHotkeyHeader = new TextBox();
+            txtOcr = new TextBox();
+            btnOcrHotkeyConfig = new Button();
             ((System.ComponentModel.ISupportInitialize)settingsHeader).BeginInit();
             SuspendLayout();
             // 
@@ -115,7 +118,7 @@
             txtPaint.BackColor = SystemColors.Desktop;
             txtPaint.BorderStyle = BorderStyle.FixedSingle;
             txtPaint.ForeColor = SystemColors.Window;
-            txtPaint.Location = new Point(558, 247);
+            txtPaint.Location = new Point(558, 276);
             txtPaint.Name = "txtPaint";
             txtPaint.Size = new Size(122, 23);
             txtPaint.TabIndex = 4;
@@ -186,7 +189,7 @@
             txtOpenPNGInPaintConfigHeader.BackColor = SystemColors.Desktop;
             txtOpenPNGInPaintConfigHeader.BorderStyle = BorderStyle.FixedSingle;
             txtOpenPNGInPaintConfigHeader.ForeColor = SystemColors.Window;
-            txtOpenPNGInPaintConfigHeader.Location = new Point(399, 247);
+            txtOpenPNGInPaintConfigHeader.Location = new Point(399, 276);
             txtOpenPNGInPaintConfigHeader.Name = "txtOpenPNGInPaintConfigHeader";
             txtOpenPNGInPaintConfigHeader.Size = new Size(153, 23);
             txtOpenPNGInPaintConfigHeader.TabIndex = 10;
@@ -245,7 +248,7 @@
             // 
             btnOpenPNGInPaintHotkeyConfig.BackColor = SystemColors.Desktop;
             btnOpenPNGInPaintHotkeyConfig.ForeColor = SystemColors.Window;
-            btnOpenPNGInPaintHotkeyConfig.Location = new Point(686, 247);
+            btnOpenPNGInPaintHotkeyConfig.Location = new Point(686, 276);
             btnOpenPNGInPaintHotkeyConfig.Name = "btnOpenPNGInPaintHotkeyConfig";
             btnOpenPNGInPaintHotkeyConfig.Size = new Size(75, 23);
             btnOpenPNGInPaintHotkeyConfig.TabIndex = 15;
@@ -324,7 +327,7 @@
             txtOpenEditorHeader.BackColor = SystemColors.Desktop;
             txtOpenEditorHeader.BorderStyle = BorderStyle.FixedSingle;
             txtOpenEditorHeader.ForeColor = SystemColors.Window;
-            txtOpenEditorHeader.Location = new Point(399, 276);
+            txtOpenEditorHeader.Location = new Point(399, 305);
             txtOpenEditorHeader.Name = "txtOpenEditorHeader";
             txtOpenEditorHeader.Size = new Size(153, 23);
             txtOpenEditorHeader.TabIndex = 22;
@@ -336,7 +339,7 @@
             txtEditor.BackColor = SystemColors.Desktop;
             txtEditor.BorderStyle = BorderStyle.FixedSingle;
             txtEditor.ForeColor = SystemColors.Window;
-            txtEditor.Location = new Point(558, 276);
+            txtEditor.Location = new Point(558, 305);
             txtEditor.Name = "txtEditor";
             txtEditor.Size = new Size(122, 23);
             txtEditor.TabIndex = 23;
@@ -346,7 +349,7 @@
             // 
             btnOpenEditorHotkeyConfig.BackColor = SystemColors.Desktop;
             btnOpenEditorHotkeyConfig.ForeColor = SystemColors.Window;
-            btnOpenEditorHotkeyConfig.Location = new Point(686, 276);
+            btnOpenEditorHotkeyConfig.Location = new Point(686, 305);
             btnOpenEditorHotkeyConfig.Name = "btnOpenEditorHotkeyConfig";
             btnOpenEditorHotkeyConfig.Size = new Size(75, 23);
             btnOpenEditorHotkeyConfig.TabIndex = 24;
@@ -460,12 +463,50 @@
             chkEnableSystemCapture.TabIndex = 34;
             chkEnableSystemCapture.UseVisualStyleBackColor = true;
             // 
+            // txtOcrHotkeyHeader
+            // 
+            txtOcrHotkeyHeader.BackColor = SystemColors.Desktop;
+            txtOcrHotkeyHeader.BorderStyle = BorderStyle.FixedSingle;
+            txtOcrHotkeyHeader.ForeColor = SystemColors.Window;
+            txtOcrHotkeyHeader.Location = new Point(399, 247);
+            txtOcrHotkeyHeader.Name = "txtOcrHotkeyHeader";
+            txtOcrHotkeyHeader.Size = new Size(153, 23);
+            txtOcrHotkeyHeader.TabIndex = 35;
+            txtOcrHotkeyHeader.Text = "OCR Capture:";
+            txtOcrHotkeyHeader.TextAlign = HorizontalAlignment.Center;
+            // 
+            // txtOcr
+            // 
+            txtOcr.BackColor = SystemColors.Desktop;
+            txtOcr.BorderStyle = BorderStyle.FixedSingle;
+            txtOcr.ForeColor = SystemColors.Window;
+            txtOcr.Location = new Point(558, 247);
+            txtOcr.Name = "txtOcr";
+            txtOcr.Size = new Size(122, 23);
+            txtOcr.TabIndex = 36;
+            txtOcr.TextAlign = HorizontalAlignment.Center;
+            // 
+            // btnOcrHotkeyConfig
+            // 
+            btnOcrHotkeyConfig.BackColor = SystemColors.Desktop;
+            btnOcrHotkeyConfig.ForeColor = SystemColors.Window;
+            btnOcrHotkeyConfig.Location = new Point(686, 247);
+            btnOcrHotkeyConfig.Name = "btnOcrHotkeyConfig";
+            btnOcrHotkeyConfig.Size = new Size(75, 23);
+            btnOcrHotkeyConfig.TabIndex = 37;
+            btnOcrHotkeyConfig.Text = "Change";
+            btnOcrHotkeyConfig.UseVisualStyleBackColor = false;
+            btnOcrHotkeyConfig.Click += btnChangeOcrRegionCaptureHotkeyConfig_Click;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(852, 406);
+            Controls.Add(btnOcrHotkeyConfig);
+            Controls.Add(txtOcr);
+            Controls.Add(txtOcrHotkeyHeader);
             Controls.Add(chkEnableSystemCapture);
             Controls.Add(txtSystemCaptureModeToggleHeader);
             Controls.Add(txtGeneralSettingsHeader);
@@ -545,5 +586,8 @@
         private TextBox txtGeneralSettingsHeader;
         private TextBox txtSystemCaptureModeToggleHeader;
         private CheckBox chkEnableSystemCapture;
+        private TextBox txtOcrHotkeyHeader;
+        private TextBox txtOcr;
+        private Button btnOcrHotkeyConfig;
     }
 }

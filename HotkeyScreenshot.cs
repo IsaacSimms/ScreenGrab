@@ -63,11 +63,13 @@ namespace ScreenGrab
         private readonly int _FreeformSelectHotkeyId;        // instance variable for freeform select hotkey ID
         private readonly int _ActiveWindowDelayHotkeyId;     // ID for active window delayed screenshot hotkey
         private readonly int _RegionSelectDelayHotkeyId;     // ID for region select delayed screenshot hotkey
+        private readonly int _OcrRegionSelectHotkeyId;       // ID for OCR region select hotkey
         private readonly int _OpenClipboardInPaintHotkeyId;  // ID for open clipboard image in paint hotkey
         private readonly int _OpenEditorHotkeyId;            // ID for open editor hotkey
         public event Action<string>? OnScreenshotTaken;      // event to notify when a screenshot is taken
         public event Action<Bitmap>? OnScreenshotCaptured;   // event to notify when a screenshot is captured
         public event Action? OnOpenEditor;                   // event to notify when editor is opened
+        public event Action? OnOcrCapture;                   // event to notify when OCR form is opened
 
         // == Register hotkeys == //
         // attach hotkey configruation to handle
@@ -91,8 +93,10 @@ namespace ScreenGrab
             _FreeformSelectHotkeyId       = 3;
             _ActiveWindowDelayHotkeyId    = 4;
             _RegionSelectDelayHotkeyId    = 5;
-            _OpenClipboardInPaintHotkeyId = 6;
-            _OpenEditorHotkeyId           = 7;
+            _OcrRegionSelectHotkeyId      = 6;
+            _OpenClipboardInPaintHotkeyId = 7;
+            _OpenEditorHotkeyId           = 8;
+            
             AttachToHandle(owner.Handle);      // register all hotkeys
             //IntPtr hwnd = this.Handle;
         }
@@ -106,6 +110,7 @@ namespace ScreenGrab
             RegisterFromConfig(_FreeformSelectHotkeyId,       _config.FreeformRegionCapture); 
             RegisterFromConfig(_ActiveWindowDelayHotkeyId,    _config.ActiveWindowDelayedCapture);
             RegisterFromConfig(_RegionSelectDelayHotkeyId,    _config.RegionDelayedCapture);
+            RegisterFromConfig(_OcrRegionSelectHotkeyId,      _config.OcrRegionCapture);
             RegisterFromConfig(_OpenClipboardInPaintHotkeyId, _config.OpenPaint);
             RegisterFromConfig(_OpenEditorHotkeyId,           _config.OpenEditor);
         }
@@ -118,6 +123,7 @@ namespace ScreenGrab
             UnregisterHotKey(_handle, _FreeformSelectHotkeyId);
             UnregisterHotKey(_handle, _ActiveWindowDelayHotkeyId);
             UnregisterHotKey(_handle, _RegionSelectDelayHotkeyId);
+            UnregisterHotKey(_handle, _OcrRegionSelectHotkeyId);
             UnregisterHotKey(_handle, _OpenClipboardInPaintHotkeyId);
             UnregisterHotKey(_handle, _OpenEditorHotkeyId);
         }
@@ -158,6 +164,7 @@ namespace ScreenGrab
             _config.FreeformRegionCapture      = newConfig.FreeformRegionCapture;
             _config.ActiveWindowDelayedCapture = newConfig.ActiveWindowDelayedCapture;
             _config.RegionDelayedCapture       = newConfig.RegionDelayedCapture;
+            _config.OcrRegionCapture           = newConfig.OcrRegionCapture;
             _config.OpenPaint                  = newConfig.OpenPaint;
             _config.OpenEditor                 = newConfig.OpenEditor;
             _config.ScreenshotSaveLocation     = newConfig.ScreenshotSaveLocation;
@@ -194,6 +201,10 @@ namespace ScreenGrab
                 else if (id == _RegionSelectDelayHotkeyId)     // check if region select delay hotkey was pressed
                 {
                     CaptureRegionDelayed();
+                }
+                else if (id == _OcrRegionSelectHotkeyId)       // check if OCR region select hotkey was pressed
+                {
+                    CaptureOcrRegion();                     // trigger event to notify OCR form should be opened
                 }
                 else if (id == _OpenClipboardInPaintHotkeyId) // check if open clipboard in paint hotkey was pressed
                 {
@@ -333,6 +344,42 @@ namespace ScreenGrab
                     return;
                 }
                 CaptureAndSave(selectedArea, "Region Select");           // capture and save screenshot
+            }
+        }
+
+        // == Trigger OCR region capture event == //
+        public void CaptureOcrRegion()
+        {
+            using (var selector = new RegionSelectForm())
+            {
+                if (selector.ShowDialog() != DialogResult.OK)             // user cancelled
+                {
+                    return;
+                }
+                Rectangle selectedArea = selector.SelectedRegion;        // get selected region
+                if (selectedArea.Width <= 0 || selectedArea.Height <= 0) // validate selected area
+                {
+                    ScreenshotMessageBox.ShowMessage(                                                      // show message box on screenshot taken
+                        $"ScreenGrab: Invalid Region selection.", // message
+                        $"ScreenGrab",                                                                     // title //not displaying in current config
+                        4000);                                                                             // duration in ms
+                    return;
+                }
+
+                // capture selected region in bitmap
+                using Bitmap bitmap = new Bitmap(selectedArea.Width, selectedArea.Height);     // create bitmap to hold screenshot
+                using Graphics g = Graphics.FromImage(bitmap);                 // create graphics object from bitmap
+                {
+                    g.CopyFromScreen(selectedArea.Location, Point.Empty, selectedArea.Size);   // capture screenshot from specified area
+                }
+
+                // create a copy of the bitmap to pass to the OCR form
+                Bitmap bitmapForOcr = new Bitmap(bitmap);
+
+                // trigger event to notify OCR form should be opened with captured bitmap
+                var ocrForm = new OCRScreenshotForm(bitmapForOcr);
+                ocrForm.Show();
+
             }
         }
 

@@ -37,7 +37,7 @@
             copyImageToolStripMenuItem = new ToolStripMenuItem();
             saveToolStripMenuItem = new ToolStripMenuItem();
             exportAllAsMarkdownToolStripMenuItem = new ToolStripMenuItem();
-            textBox1 = new TextBox();
+            txtOcrResult = new TextBox();
             menuStrip2 = new MenuStrip();
             copyTextToolStripMenuItem = new ToolStripMenuItem();
             btnHome = new Button();
@@ -80,7 +80,7 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { sendImageToEditorToolStripMenuItem, copyImageToolStripMenuItem, saveToolStripMenuItem, exportAllAsMarkdownToolStripMenuItem });
             menuStrip1.Location = new Point(948, 65);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(469, 24);
+            menuStrip1.Size = new Size(470, 24);
             menuStrip1.TabIndex = 3;
             menuStrip1.Text = "menuStripScreenshot";
             // 
@@ -109,20 +109,20 @@
             // 
             exportAllAsMarkdownToolStripMenuItem.ForeColor = SystemColors.Window;
             exportAllAsMarkdownToolStripMenuItem.Name = "exportAllAsMarkdownToolStripMenuItem";
-            exportAllAsMarkdownToolStripMenuItem.Size = new Size(152, 20);
+            exportAllAsMarkdownToolStripMenuItem.Size = new Size(153, 20);
             exportAllAsMarkdownToolStripMenuItem.Text = "Export All as Markdown...";
             // 
-            // textBox1
+            // txtOcrResult
             // 
-            textBox1.BackColor = SystemColors.Desktop;
-            textBox1.BorderStyle = BorderStyle.FixedSingle;
-            textBox1.ForeColor = SystemColors.Window;
-            textBox1.Location = new Point(15, 827);
-            textBox1.Multiline = true;
-            textBox1.Name = "textBox1";
-            textBox1.ScrollBars = ScrollBars.Vertical;
-            textBox1.Size = new Size(1402, 358);
-            textBox1.TabIndex = 4;
+            txtOcrResult.BackColor = SystemColors.Desktop;
+            txtOcrResult.BorderStyle = BorderStyle.FixedSingle;
+            txtOcrResult.ForeColor = SystemColors.Window;
+            txtOcrResult.Location = new Point(15, 827);
+            txtOcrResult.Multiline = true;
+            txtOcrResult.Name = "txtOcrResult";
+            txtOcrResult.ScrollBars = ScrollBars.Vertical;
+            txtOcrResult.Size = new Size(1402, 358);
+            txtOcrResult.TabIndex = 4;
             // 
             // menuStrip2
             // 
@@ -162,7 +162,7 @@
             ClientSize = new Size(1426, 1196);
             Controls.Add(btnHome);
             Controls.Add(pictureBoxScreenshot);
-            Controls.Add(textBox1);
+            Controls.Add(txtOcrResult);
             Controls.Add(panelImageContainerOCR);
             Controls.Add(OCRForm);
             Controls.Add(menuStrip1);
@@ -192,7 +192,7 @@
         private ToolStripMenuItem sendImageToEditorToolStripMenuItem;
         private ToolStripMenuItem copyImageToolStripMenuItem;
         private ToolStripMenuItem exportAllAsMarkdownToolStripMenuItem;
-        private TextBox textBox1;
+        private TextBox txtOcrResult;
         private MenuStrip menuStrip2;
         private ToolStripMenuItem copyTextToolStripMenuItem;
         private Button btnHome;
