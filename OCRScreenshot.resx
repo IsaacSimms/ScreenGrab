@@ -121,7 +121,7 @@
   <data name="OCRForm.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAR4AAABHCAYAAADRPyhdAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        vgAADr4B6kKxwAAAIptJREFUeF7tnQd8nVd5xiHxlGXtvfeWrC1LlqwtW5Yl7z3iEa/YGU5CEpI4TuI4
+        vAAADrwBlbxySQAAIptJREFUeF7tnQd8nVd5xiHxlGXtvfeWrC1LlqwtW5Yl7z3iEa/YGU5CEpI4TuI4
         m2wyCBlOMJkNGQ1ZJBBogdKWUtqSljI6SVso0NKWtrR9e94rX+l873m++x3de2UH8vH7PT+Tz/f5ztWV
         9Pf53vO853xE/Y98+fLl6zQLXvTly5ev6RS86MuXL1/TKXjRly9fvqZT8KIvX758TafgRV++fPmaTsGL
         vnz58jWdghd9+fLlazoFL/ry5cvXdApetFZMbBIlphZQenYV5RQ1U15JG+WVLlRqD/z/jLw6Sk4voXnz
@@ -272,11 +272,11 @@
         UAAAAABJRU5ErkJggg==
 </value>
   </data>
-  <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
   <metadata name="menuStrip2.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>132, 17</value>
+  </metadata>
+  <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
   </metadata>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

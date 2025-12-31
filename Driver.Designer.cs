@@ -52,6 +52,8 @@
             button2 = new Button();
             button1 = new Button();
             button3 = new Button();
+            btnOcrCapture = new Button();
+            oCRCaptureToolStripMenuItem = new ToolStripMenuItem();
             SystemTrayMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)DriverHeader).BeginInit();
             SuspendLayout();
@@ -64,9 +66,9 @@
             // SystemTrayMenu
             // 
             SystemTrayMenu.BackColor = SystemColors.Desktop;
-            SystemTrayMenu.Items.AddRange(new ToolStripItem[] { menuOpen, regionCaptureToolStripMenuItem, activeWindowToolStripMenuItem, delayedRegionToolStripMenuItem, delayedActiveWindowToolStripMenuItem, freeformToolStripMenuItem, openEditorToolStripMenuItem, openMSPaintToolStripMenuItem, settingsToolStripMenuItem, menuExit });
+            SystemTrayMenu.Items.AddRange(new ToolStripItem[] { menuOpen, regionCaptureToolStripMenuItem, activeWindowToolStripMenuItem, oCRCaptureToolStripMenuItem, delayedRegionToolStripMenuItem, delayedActiveWindowToolStripMenuItem, freeformToolStripMenuItem, openEditorToolStripMenuItem, openMSPaintToolStripMenuItem, settingsToolStripMenuItem, menuExit });
             SystemTrayMenu.Name = "SystemTrayMenu";
-            SystemTrayMenu.Size = new Size(200, 224);
+            SystemTrayMenu.Size = new Size(200, 246);
             // 
             // menuOpen
             // 
@@ -254,7 +256,7 @@
             // 
             button1.BackColor = SystemColors.Desktop;
             button1.ForeColor = SystemColors.Window;
-            button1.Location = new Point(52, 211);
+            button1.Location = new Point(12, 211);
             button1.Name = "button1";
             button1.Size = new Size(77, 40);
             button1.TabIndex = 10;
@@ -274,6 +276,27 @@
             button3.UseVisualStyleBackColor = false;
             button3.Click += SendToEditor_Click;
             // 
+            // btnOcrCapture
+            // 
+            btnOcrCapture.BackColor = SystemColors.Desktop;
+            btnOcrCapture.ForeColor = SystemColors.Window;
+            btnOcrCapture.Location = new Point(95, 211);
+            btnOcrCapture.Name = "btnOcrCapture";
+            btnOcrCapture.Size = new Size(77, 40);
+            btnOcrCapture.TabIndex = 12;
+            btnOcrCapture.Text = "OCR Capture";
+            btnOcrCapture.UseVisualStyleBackColor = false;
+            btnOcrCapture.Click += ocrRegionScreenshotButton_Click;
+            // 
+            // oCRCaptureToolStripMenuItem
+            // 
+            oCRCaptureToolStripMenuItem.ForeColor = SystemColors.Window;
+            oCRCaptureToolStripMenuItem.Image = Properties.Resources.ScreenCaptureIcon;
+            oCRCaptureToolStripMenuItem.Name = "oCRCaptureToolStripMenuItem";
+            oCRCaptureToolStripMenuItem.Size = new Size(199, 22);
+            oCRCaptureToolStripMenuItem.Text = "OCR Capture";
+            oCRCaptureToolStripMenuItem.Click += ocrRegionScreenshotButton_Click;
+            // 
             // Driver
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -281,6 +304,7 @@
             BackColor = SystemColors.InfoText;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(537, 269);
+            Controls.Add(btnOcrCapture);
             Controls.Add(button3);
             Controls.Add(button1);
             Controls.Add(button2);
@@ -325,5 +349,7 @@
         private ToolStripMenuItem openMSPaintToolStripMenuItem;
         private Button button3;
         private ToolStripMenuItem openEditorToolStripMenuItem;
+        private Button btnOcrCapture;
+        private ToolStripMenuItem oCRCaptureToolStripMenuItem;
     }
 }

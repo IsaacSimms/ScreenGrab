@@ -116,6 +116,9 @@ namespace ScreenGrab
         }
         // == end methods for opening image editor with bitmap == //
 
+
+
+
         // open image editor with file path
         private void OpenEditorWithFile(string filePath)
         {
@@ -250,6 +253,11 @@ namespace ScreenGrab
         private void regionScreenshotButton_Click(object sender, EventArgs e)
         {
             _hotkeyScreenshot?.CaptureRegion();
+        }
+        // whenn button is clicked, take OCR screenshot of region
+        private void ocrRegionScreenshotButton_Click(object sender, EventArgs e)
+        {
+            _hotkeyScreenshot?.CaptureOcrRegion();
         }
 
         // when button is clicked, take a freeform screenshot

@@ -1,13 +1,14 @@
 ﻿///// OCR ScreenshotForm - captures region and extract text using Windows OCR /////
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using Windows.Media.Ocr;
 using Windows.Graphics.Imaging;
+using Windows.Media.Ocr;
 using Windows.Storage.Streams;
 
 namespace ScreenGrab
@@ -15,7 +16,7 @@ namespace ScreenGrab
     public partial class OCRScreenshotForm : Form
     {
         // == properties == //
-        public Bitmap? Screenshot   { get; set; }
+        public Bitmap? Screenshot { get; set; }
         public DateTime CaptureTime { get; set; }
         public string ExtractedText { get; set; } = string.Empty;
 
@@ -98,12 +99,6 @@ namespace ScreenGrab
                 // extract text with formatting preserved
                 ExtractedText = BuildFormattedText(ocrResult);
                 txtOcrResult.Text = ExtractedText;
-
-                // auto-copy to clipboard for convenience
-                if (!string.IsNullOrWhiteSpace(ExtractedText))
-                {
-                    Clipboard.SetText(ExtractedText);
-                }
             }
             catch (Exception ex)
             {
@@ -131,9 +126,9 @@ namespace ScreenGrab
             using (Graphics g = Graphics.FromImage(processed))
             {
                 // set high quality rendering
-                g.InterpolationMode  = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.SmoothingMode      = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                g.PixelOffsetMode    = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
                 g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
 
                 // draw white background first (helps with transparent images and dark themes)
@@ -186,6 +181,155 @@ namespace ScreenGrab
                 }
             }
             return sb.ToString().TrimEnd();
+        }
+
+        // == copy screenshot to clipboard == //
+        private void btnCopyScreenshot_Click(object sender, EventArgs e)
+        {
+            if (Screenshot != null)
+            {
+                Clipboard.SetImage(Screenshot);
+            }
+        }
+        // == send to driver form button click event == //
+        private void btnGoHome_Click(object sender, EventArgs e)
+        {
+            Form? parentForm = this.Owner ?? this.Tag as Form;
+            if (parentForm != null)
+            {
+                parentForm.Show();
+                parentForm.WindowState = FormWindowState.Normal;
+                parentForm.ShowInTaskbar = true;
+                parentForm.Activate();
+            }
+            this.Close();
+        }
+
+        // == save screenshot to file == //
+        private void btnSaveScreenshot_Click(object sender, EventArgs e)
+        {
+            if (Screenshot == null) return;
+            using SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Title = "Save Screenshot",
+                Filter = "PNG Image|*.png|JPEG Image|*.jpg;*.jpeg|Bitmap Image|*.bmp|GIF Image|*.gif",
+                DefaultExt = "png",
+                FileName = $"Screenshot_{CaptureTime:yyyyMMdd_HHmmss}"
+            };
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    // determine image format based on file extension
+                    var extension = System.IO.Path.GetExtension(saveFileDialog.FileName).ToLower();
+                    System.Drawing.Imaging.ImageFormat format = extension switch
+                    {
+                        ".jpg" or ".jpeg" => System.Drawing.Imaging.ImageFormat.Jpeg,
+                        ".bmp" => System.Drawing.Imaging.ImageFormat.Bmp,
+                        ".gif" => System.Drawing.Imaging.ImageFormat.Gif,
+                        _ => System.Drawing.Imaging.ImageFormat.Png,
+                    };
+                    // save the screenshot
+                    Screenshot.Save(saveFileDialog.FileName, format);
+                    MessageBox.Show("Screenshot saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to save screenshot. Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        // == export as markdown to folder == //
+        private void btnExportMarkdown_Click(object sender, EventArgs e)
+        {
+            using FolderBrowserDialog folderDialog = new FolderBrowserDialog
+            {
+                Description = "Select Folder to Save Markdown File",
+                ShowNewFolderButton = true,
+                UseDescriptionForTitle = true
+            };
+            if (folderDialog.ShowDialog() != DialogResult.OK) return;
+
+            try
+            {
+                // == builds markdown content == //
+                // create timestamped subfolder
+                string folderName = $"OcrCapture_{CaptureTime:yyyyMMdd_HHmmss}";
+                string exportPath = Path.Combine(folderDialog.SelectedPath, folderName);
+                Directory.CreateDirectory(exportPath);
+
+                // save screenshot
+                string screenshotFIleName = "screenshot.png";
+                string screenshotFilePath = Path.Combine(exportPath, screenshotFIleName);
+                Screenshot?.Save(screenshotFilePath, System.Drawing.Imaging.ImageFormat.Png);
+
+                // generate markdown
+                string markdownContent = GenerateMarkdownContent(screenshotFIleName);
+                string markdownFilePath = Path.Combine(exportPath, "OcrInfo.md");
+                File.WriteAllText(markdownFilePath, markdownContent);
+
+                MessageBox.Show($"Markdown file and screenshot saved successfully to:\r\n{exportPath}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to export markdown file. Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // == generate markdown content == //
+        private string GenerateMarkdownContent(string screenshotFileName)
+        {
+            return $"""
+            # OCR Capture Information
+
+            **Capture Time:** {CaptureTime:yyyy-MM-dd HH:mm:ss.fff}  
+           
+
+            ## Screenshot
+
+            ![Screenshot]({screenshotFileName})
+
+            ---
+
+            ## OCR Extracted Text
+            ```text
+            {ExtractedText}
+            ```
+
+            ---
+            ## Statistics
+            
+            | Property              | Value |
+            |-----------------------|-------|
+            | Capture Time          | {CaptureTime:yyyy-MM-dd HH:mm:ss.fff} |
+            | Screenshot Dimensions | {Screenshot?.Width ?? 0} x {Screenshot?.Height ?? 0} pixels |
+            | Characters Detected   | {ExtractedText.Length} |
+            | Lines Detected        | {(string.IsNullOrEmpty(ExtractedText) ? 0 : ExtractedText.Split('\n').Length)} |
+            """;
+        }
+
+        // == open screenshot in editr form == //
+        private void btnOpenEditor_Click(object sender, EventArgs e)
+        {
+            if (Screenshot == null) return;
+
+            // create copy of screenshot (avoids disposal issues)
+            Bitmap screenshotCopy = new Bitmap(Screenshot);
+
+            // open editor form with screenshot
+            ImageEditorForm editorForm = new ImageEditorForm(screenshotCopy);
+            editorForm.Show();
+            this.Close();
+        }
+
+        //== copy text from textbox to clipboard ==//
+        private void btnCopyText_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtOcrResult.Text))
+            {
+                Clipboard.SetText(txtOcrResult.Text);
+            }
         }
     }
 }

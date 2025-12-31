@@ -26,6 +26,7 @@ namespace ScreenGrab
         // variables for hotkey configuration and registration
         private readonly HotkeyConfig _config;  // instance variable for hotkey configuration
         private IntPtr _handle;                 // instance variable for window handle
+        private readonly Form _driverForm;      // instance variable for main driver form (used for passing to other forms, e.g. OCR)
 
         // == WinAPI Imports == //
         [DllImport("user32.dll", SetLastError = true)]
@@ -87,6 +88,7 @@ namespace ScreenGrab
         {
             _config = config;            // assign hotkey configuration from class to local variable
             _handle = owner.Handle;      // assign window handle from owner form
+            _driverForm = owner;         // assign driver form for passing to other forms
             AssignHandle(owner.Handle);  // assign window handle from owner form
             _ActiveWindowHotkeyId         = 1;
             _RegionSelectHotkeyId         = 2;
@@ -377,9 +379,8 @@ namespace ScreenGrab
                 Bitmap bitmapForOcr = new Bitmap(bitmap);
 
                 // trigger event to notify OCR form should be opened with captured bitmap
-                var ocrForm = new OCRScreenshotForm(bitmapForOcr);
+                var ocrForm = new OCRScreenshotForm(bitmapForOcr) { Tag = _driverForm, ShowInTaskbar = true }; // pass driver form for reference
                 ocrForm.Show();
-
             }
         }
 
