@@ -82,7 +82,7 @@
             menuStrip2.BackColor = SystemColors.Desktop;
             menuStrip2.Dock = DockStyle.None;
             menuStrip2.Items.AddRange(new ToolStripItem[] { copyTextToolStripMenuItem });
-            menuStrip2.Location = new Point(1338, 829);
+            menuStrip2.Location = new Point(1338, 800);
             menuStrip2.Name = "menuStrip2";
             menuStrip2.Size = new Size(79, 24);
             menuStrip2.TabIndex = 5;
@@ -102,9 +102,9 @@
             menuStrip1.BackColor = SystemColors.Desktop;
             menuStrip1.Dock = DockStyle.None;
             menuStrip1.Items.AddRange(new ToolStripItem[] { sendImageToEditorToolStripMenuItem, copyImageToolStripMenuItem, saveToolStripMenuItem, exportAllAsMarkdownToolStripMenuItem });
-            menuStrip1.Location = new Point(947, 68);
+            menuStrip1.Location = new Point(948, 68);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(470, 24);
+            menuStrip1.Size = new Size(469, 24);
             menuStrip1.TabIndex = 3;
             menuStrip1.Text = "menuStripScreenshot";
             // 
@@ -136,7 +136,7 @@
             // 
             exportAllAsMarkdownToolStripMenuItem.ForeColor = SystemColors.Window;
             exportAllAsMarkdownToolStripMenuItem.Name = "exportAllAsMarkdownToolStripMenuItem";
-            exportAllAsMarkdownToolStripMenuItem.Size = new Size(153, 20);
+            exportAllAsMarkdownToolStripMenuItem.Size = new Size(152, 20);
             exportAllAsMarkdownToolStripMenuItem.Text = "Export All as Markdown...";
             exportAllAsMarkdownToolStripMenuItem.Click += btnExportMarkdown_Click;
             // 

@@ -33,9 +33,19 @@
             pnlScreenshot = new Panel();
             pictureBoxScreenshot = new PictureBox();
             textBox1 = new TextBox();
+            btnSendHome = new Button();
+            menuStrip1 = new MenuStrip();
+            sendImageToEditorToolStripMenuItem = new ToolStripMenuItem();
+            copyImageToolStripMenuItem = new ToolStripMenuItem();
+            saveImageToolStripMenuItem = new ToolStripMenuItem();
+            exportAllAsMarkdownToolStripMenuItem = new ToolStripMenuItem();
+            menuStrip2 = new MenuStrip();
+            copyTextToolStripMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)pictureBoxUICaptureHeader).BeginInit();
             pnlScreenshot.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxScreenshot).BeginInit();
+            menuStrip1.SuspendLayout();
+            menuStrip2.SuspendLayout();
             SuspendLayout();
             // 
             // pictureBoxUICaptureHeader
@@ -77,20 +87,104 @@
             textBox1.Size = new Size(1402, 358);
             textBox1.TabIndex = 3;
             // 
+            // btnSendHome
+            // 
+            btnSendHome.BackColor = SystemColors.Desktop;
+            btnSendHome.ForeColor = SystemColors.Window;
+            btnSendHome.Location = new Point(1339, 12);
+            btnSendHome.Name = "btnSendHome";
+            btnSendHome.Size = new Size(77, 40);
+            btnSendHome.TabIndex = 4;
+            btnSendHome.Text = "Home";
+            btnSendHome.UseVisualStyleBackColor = false;
+            btnSendHome.Click += BtnSendHome_Click;
+            // 
+            // menuStrip1
+            // 
+            menuStrip1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            menuStrip1.BackColor = SystemColors.Desktop;
+            menuStrip1.Dock = DockStyle.None;
+            menuStrip1.Items.AddRange(new ToolStripItem[] { sendImageToEditorToolStripMenuItem, copyImageToolStripMenuItem, saveImageToolStripMenuItem, exportAllAsMarkdownToolStripMenuItem });
+            menuStrip1.Location = new Point(945, 58);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(469, 24);
+            menuStrip1.TabIndex = 5;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // sendImageToEditorToolStripMenuItem
+            // 
+            sendImageToEditorToolStripMenuItem.BackColor = SystemColors.Desktop;
+            sendImageToEditorToolStripMenuItem.ForeColor = SystemColors.Window;
+            sendImageToEditorToolStripMenuItem.Name = "sendImageToEditorToolStripMenuItem";
+            sendImageToEditorToolStripMenuItem.Size = new Size(138, 20);
+            sendImageToEditorToolStripMenuItem.Text = "Send Image to Editor...";
+            sendImageToEditorToolStripMenuItem.Click += SendImageToEditorToolStripMenuItem_Click;
+            // 
+            // copyImageToolStripMenuItem
+            // 
+            copyImageToolStripMenuItem.ForeColor = SystemColors.Window;
+            copyImageToolStripMenuItem.Name = "copyImageToolStripMenuItem";
+            copyImageToolStripMenuItem.Size = new Size(83, 20);
+            copyImageToolStripMenuItem.Text = "Copy Image";
+            copyImageToolStripMenuItem.Click += CopyTextToolStripMenuItem_Click;
+            // 
+            // saveImageToolStripMenuItem
+            // 
+            saveImageToolStripMenuItem.ForeColor = SystemColors.Window;
+            saveImageToolStripMenuItem.Name = "saveImageToolStripMenuItem";
+            saveImageToolStripMenuItem.Size = new Size(88, 20);
+            saveImageToolStripMenuItem.Text = "Save Image...";
+            saveImageToolStripMenuItem.Click += SaveImageToolStripMenuItem_Click;
+            // 
+            // exportAllAsMarkdownToolStripMenuItem
+            // 
+            exportAllAsMarkdownToolStripMenuItem.ForeColor = SystemColors.Window;
+            exportAllAsMarkdownToolStripMenuItem.Name = "exportAllAsMarkdownToolStripMenuItem";
+            exportAllAsMarkdownToolStripMenuItem.Size = new Size(152, 20);
+            exportAllAsMarkdownToolStripMenuItem.Text = "Export All as Markdown...";
+            exportAllAsMarkdownToolStripMenuItem.Click += ExportAllAsMarkdownToolStripMenuItem_Click;
+            // 
+            // menuStrip2
+            // 
+            menuStrip2.BackColor = SystemColors.Desktop;
+            menuStrip2.Dock = DockStyle.None;
+            menuStrip2.Items.AddRange(new ToolStripItem[] { copyTextToolStripMenuItem });
+            menuStrip2.Location = new Point(1339, 791);
+            menuStrip2.Name = "menuStrip2";
+            menuStrip2.Size = new Size(79, 24);
+            menuStrip2.TabIndex = 6;
+            menuStrip2.Text = "menuStrip2";
+            // 
+            // copyTextToolStripMenuItem
+            // 
+            copyTextToolStripMenuItem.ForeColor = SystemColors.Window;
+            copyTextToolStripMenuItem.Name = "copyTextToolStripMenuItem";
+            copyTextToolStripMenuItem.Size = new Size(71, 20);
+            copyTextToolStripMenuItem.Text = "Copy Text";
+            copyTextToolStripMenuItem.Click += CopyTextToolStripMenuItem_Click;
+            // 
             // UiScreenshot
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Desktop;
             ClientSize = new Size(1426, 1188);
+            Controls.Add(btnSendHome);
             Controls.Add(textBox1);
             Controls.Add(pnlScreenshot);
             Controls.Add(pictureBoxUICaptureHeader);
+            Controls.Add(menuStrip1);
+            Controls.Add(menuStrip2);
+            MainMenuStrip = menuStrip1;
             Name = "UiScreenshot";
             Text = "ScreenGrab";
             ((System.ComponentModel.ISupportInitialize)pictureBoxUICaptureHeader).EndInit();
             pnlScreenshot.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBoxScreenshot).EndInit();
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
+            menuStrip2.ResumeLayout(false);
+            menuStrip2.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -101,5 +195,13 @@
         private Panel pnlScreenshot;
         private PictureBox pictureBoxScreenshot;
         private TextBox textBox1;
+        private Button btnSendHome;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem sendImageToEditorToolStripMenuItem;
+        private ToolStripMenuItem copyImageToolStripMenuItem;
+        private ToolStripMenuItem saveImageToolStripMenuItem;
+        private ToolStripMenuItem exportAllAsMarkdownToolStripMenuItem;
+        private MenuStrip menuStrip2;
+        private ToolStripMenuItem copyTextToolStripMenuItem;
     }
 }

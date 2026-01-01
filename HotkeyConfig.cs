@@ -95,6 +95,13 @@ namespace ScreenGrab
             Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
             Key       = Keys.E
         };
+
+        // UI element capture hotkey
+        public HotkeyDefinition UiElementCapture { get; set; } = new HotkeyDefinition
+        {
+            Modifiers = HotkeyModifiers.Control | HotkeyModifiers.Shift,
+            Key       = Keys.U
+        };
         //  screenshot save location // defaults to oneDrive Pictures folder
         public string ScreenshotSaveLocation { get; set; } = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), 

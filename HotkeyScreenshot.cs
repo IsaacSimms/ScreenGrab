@@ -65,6 +65,7 @@ namespace ScreenGrab
         private readonly int _ActiveWindowDelayHotkeyId;     // ID for active window delayed screenshot hotkey
         private readonly int _RegionSelectDelayHotkeyId;     // ID for region select delayed screenshot hotkey
         private readonly int _OcrRegionSelectHotkeyId;       // ID for OCR region select hotkey
+        private readonly int _UiElementCaptureHotkeyId;      // ID for UI element capture hotkey
         private readonly int _OpenClipboardInPaintHotkeyId;  // ID for open clipboard image in paint hotkey
         private readonly int _OpenEditorHotkeyId;            // ID for open editor hotkey
         public event Action<string>? OnScreenshotTaken;      // event to notify when a screenshot is taken
@@ -96,8 +97,9 @@ namespace ScreenGrab
             _ActiveWindowDelayHotkeyId    = 4;
             _RegionSelectDelayHotkeyId    = 5;
             _OcrRegionSelectHotkeyId      = 6;
-            _OpenClipboardInPaintHotkeyId = 7;
-            _OpenEditorHotkeyId           = 8;
+            _UiElementCaptureHotkeyId     = 7;
+            _OpenClipboardInPaintHotkeyId = 8;
+            _OpenEditorHotkeyId           = 9;
             
             AttachToHandle(owner.Handle);      // register all hotkeys
             //IntPtr hwnd = this.Handle;
@@ -113,6 +115,7 @@ namespace ScreenGrab
             RegisterFromConfig(_ActiveWindowDelayHotkeyId,    _config.ActiveWindowDelayedCapture);
             RegisterFromConfig(_RegionSelectDelayHotkeyId,    _config.RegionDelayedCapture);
             RegisterFromConfig(_OcrRegionSelectHotkeyId,      _config.OcrRegionCapture);
+            RegisterFromConfig(_UiElementCaptureHotkeyId,     _config.UiElementCapture);
             RegisterFromConfig(_OpenClipboardInPaintHotkeyId, _config.OpenPaint);
             RegisterFromConfig(_OpenEditorHotkeyId,           _config.OpenEditor);
         }
@@ -126,6 +129,7 @@ namespace ScreenGrab
             UnregisterHotKey(_handle, _ActiveWindowDelayHotkeyId);
             UnregisterHotKey(_handle, _RegionSelectDelayHotkeyId);
             UnregisterHotKey(_handle, _OcrRegionSelectHotkeyId);
+            UnregisterHotKey(_handle, _UiElementCaptureHotkeyId);
             UnregisterHotKey(_handle, _OpenClipboardInPaintHotkeyId);
             UnregisterHotKey(_handle, _OpenEditorHotkeyId);
         }
@@ -167,6 +171,7 @@ namespace ScreenGrab
             _config.ActiveWindowDelayedCapture = newConfig.ActiveWindowDelayedCapture;
             _config.RegionDelayedCapture       = newConfig.RegionDelayedCapture;
             _config.OcrRegionCapture           = newConfig.OcrRegionCapture;
+            _config.UiElementCapture           = newConfig.UiElementCapture;
             _config.OpenPaint                  = newConfig.OpenPaint;
             _config.OpenEditor                 = newConfig.OpenEditor;
             _config.ScreenshotSaveLocation     = newConfig.ScreenshotSaveLocation;
@@ -207,6 +212,10 @@ namespace ScreenGrab
                 else if (id == _OcrRegionSelectHotkeyId)       // check if OCR region select hotkey was pressed
                 {
                     CaptureOcrRegion();                     // trigger event to notify OCR form should be opened
+                }
+                else if (id == _UiElementCaptureHotkeyId)      // check if UI element capture hotkey was pressed
+                {
+                    CaptureUiElement();
                 }
                 else if (id == _OpenClipboardInPaintHotkeyId) // check if open clipboard in paint hotkey was pressed
                 {
@@ -384,6 +393,25 @@ namespace ScreenGrab
             }
         }
 
+        // == Trigger UI element capture event == //
+        public void CaptureUiElement()
+        {
+            // find UiSecreenshot form if it already exists, create new one if not
+            UiScreenshot? uiScreenshotForm = null;
+            foreach (Form form in Application.OpenForms)
+            {
+                if (form is UiScreenshot existingForm)
+                {
+                    uiScreenshotForm = existingForm;
+                    break;
+                }
+            }
+            if (uiScreenshotForm == null)
+            {
+                uiScreenshotForm = new UiScreenshot();
+            }
+            uiScreenshotForm.StartUiElementCapture();
+        }
         // == Capture freeform region and save to clipboard and onedrive == //
         public void CaptureFreeform()
         {
