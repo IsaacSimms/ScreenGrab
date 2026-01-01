@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.IO;
 using System.Windows.Forms;
 using UIAutomationClient;
 
@@ -20,19 +21,19 @@ namespace ScreenGrab
         public UiScreenshot()
         {
             InitializeComponent();
-            SetupEventHandler();
+            // SetupEventHandler();
         }
 
         // == event handlers == //
-        private void SetupEventHandler()
-        {
-            copyImageToolStripMenuItem.Click += CopyImageToolStripMenuItem_Click;
-            saveImageToolStripMenuItem.Click += SaveImageToolStripMenuItem_Click;
-            copyTextToolStripMenuItem.Click += CopyTextToolStripMenuItem_Click;
-            exportAllAsMarkdownToolStripMenuItem.Click += ExportAllAsMarkdownToolStripMenuItem_Click;
-            sendImageToEditorToolStripMenuItem.Click += SendImageToEditorToolStripMenuItem_Click;
-            btnSendHome.Click += BtnSendHome_Click;
-        }
+        //private void SetupEventHandler()
+        //{
+        //    copyImageToolStripMenuItem.Click += CopyImageToolStripMenuItem_Click;
+        //    saveImageToolStripMenuItem.Click += SaveImageToolStripMenuItem_Click;
+        //    copyTextToolStripMenuItem.Click += CopyTextToolStripMenuItem_Click;
+        //    exportAllAsMarkdownToolStripMenuItem.Click += ExportAllAsMarkdownToolStripMenuItem_Click;
+        //    sendImageToEditorToolStripMenuItem.Click += SendImageToEditorToolStripMenuItem_Click;
+        //    btnSendHome.Click += BtnSendHome_Click;
+        //}
 
         // == initiate UI element capture == //
         public void StartUiElementCapture()

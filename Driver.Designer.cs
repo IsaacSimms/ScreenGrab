@@ -35,6 +35,7 @@
             menuOpen = new ToolStripMenuItem();
             regionCaptureToolStripMenuItem = new ToolStripMenuItem();
             activeWindowToolStripMenuItem = new ToolStripMenuItem();
+            oCRCaptureToolStripMenuItem = new ToolStripMenuItem();
             delayedRegionToolStripMenuItem = new ToolStripMenuItem();
             delayedActiveWindowToolStripMenuItem = new ToolStripMenuItem();
             freeformToolStripMenuItem = new ToolStripMenuItem();
@@ -46,14 +47,14 @@
             btnShutdownScreengrab = new Button();
             activeWindowScreenshotButton = new Button();
             DriverHeader = new PictureBox();
-            regionScreenshotButton = new Button();
             delayedActiveWindowScreenshotButton = new Button();
             delayedRegionScreenshotButton = new Button();
             button2 = new Button();
             button1 = new Button();
             button3 = new Button();
             btnOcrCapture = new Button();
-            oCRCaptureToolStripMenuItem = new ToolStripMenuItem();
+            regionScreenshotButton = new Button();
+            btnUiElementCapture = new Button();
             SystemTrayMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)DriverHeader).BeginInit();
             SuspendLayout();
@@ -95,6 +96,15 @@
             activeWindowToolStripMenuItem.Size = new Size(199, 22);
             activeWindowToolStripMenuItem.Text = "Active Window";
             activeWindowToolStripMenuItem.Click += activeWindowScreenshotButton_Click;
+            // 
+            // oCRCaptureToolStripMenuItem
+            // 
+            oCRCaptureToolStripMenuItem.ForeColor = SystemColors.Window;
+            oCRCaptureToolStripMenuItem.Image = Properties.Resources.ScreenCaptureIcon;
+            oCRCaptureToolStripMenuItem.Name = "oCRCaptureToolStripMenuItem";
+            oCRCaptureToolStripMenuItem.Size = new Size(199, 22);
+            oCRCaptureToolStripMenuItem.Text = "OCR Capture";
+            oCRCaptureToolStripMenuItem.Click += ocrRegionScreenshotButton_Click;
             // 
             // delayedRegionToolStripMenuItem
             // 
@@ -204,18 +214,6 @@
             DriverHeader.TabIndex = 5;
             DriverHeader.TabStop = false;
             // 
-            // regionScreenshotButton
-            // 
-            regionScreenshotButton.BackColor = SystemColors.Desktop;
-            regionScreenshotButton.ForeColor = SystemColors.Window;
-            regionScreenshotButton.Location = new Point(95, 99);
-            regionScreenshotButton.Name = "regionScreenshotButton";
-            regionScreenshotButton.Size = new Size(77, 40);
-            regionScreenshotButton.TabIndex = 6;
-            regionScreenshotButton.Text = "Region Capture";
-            regionScreenshotButton.UseVisualStyleBackColor = false;
-            regionScreenshotButton.Click += regionScreenshotButton_Click;
-            // 
             // delayedActiveWindowScreenshotButton
             // 
             delayedActiveWindowScreenshotButton.BackColor = SystemColors.Desktop;
@@ -288,14 +286,28 @@
             btnOcrCapture.UseVisualStyleBackColor = false;
             btnOcrCapture.Click += ocrRegionScreenshotButton_Click;
             // 
-            // oCRCaptureToolStripMenuItem
+            // regionScreenshotButton
             // 
-            oCRCaptureToolStripMenuItem.ForeColor = SystemColors.Window;
-            oCRCaptureToolStripMenuItem.Image = Properties.Resources.ScreenCaptureIcon;
-            oCRCaptureToolStripMenuItem.Name = "oCRCaptureToolStripMenuItem";
-            oCRCaptureToolStripMenuItem.Size = new Size(199, 22);
-            oCRCaptureToolStripMenuItem.Text = "OCR Capture";
-            oCRCaptureToolStripMenuItem.Click += ocrRegionScreenshotButton_Click;
+            regionScreenshotButton.BackColor = SystemColors.Desktop;
+            regionScreenshotButton.ForeColor = SystemColors.Window;
+            regionScreenshotButton.Location = new Point(95, 99);
+            regionScreenshotButton.Name = "regionScreenshotButton";
+            regionScreenshotButton.Size = new Size(77, 40);
+            regionScreenshotButton.TabIndex = 6;
+            regionScreenshotButton.Text = "Region Capture";
+            regionScreenshotButton.UseVisualStyleBackColor = false;
+            regionScreenshotButton.Click += regionScreenshotButton_Click;
+            // 
+            // btnUiElementCapture
+            // 
+            btnUiElementCapture.BackColor = SystemColors.Desktop;
+            btnUiElementCapture.ForeColor = SystemColors.Window;
+            btnUiElementCapture.Location = new Point(178, 99);
+            btnUiElementCapture.Name = "btnUiElementCapture";
+            btnUiElementCapture.Size = new Size(77, 40);
+            btnUiElementCapture.TabIndex = 13;
+            btnUiElementCapture.Text = "UI Element Capture";
+            btnUiElementCapture.UseVisualStyleBackColor = false;
             // 
             // Driver
             // 
@@ -304,6 +316,7 @@
             BackColor = SystemColors.InfoText;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(537, 269);
+            Controls.Add(btnUiElementCapture);
             Controls.Add(btnOcrCapture);
             Controls.Add(button3);
             Controls.Add(button1);
@@ -336,7 +349,6 @@
         private Button btnShutdownScreengrab;
         private Button activeWindowScreenshotButton;
         private PictureBox DriverHeader;
-        private Button regionScreenshotButton;
         private Button delayedActiveWindowScreenshotButton;
         private Button delayedRegionScreenshotButton;
         private Button button2;
@@ -351,5 +363,8 @@
         private ToolStripMenuItem openEditorToolStripMenuItem;
         private Button btnOcrCapture;
         private ToolStripMenuItem oCRCaptureToolStripMenuItem;
+        private Button regionScreenshotButton;
+        private Button btnUiElementCapture;
+        private Button button4;
     }
 }
