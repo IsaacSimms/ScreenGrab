@@ -11,16 +11,18 @@ namespace ScreenGrab
     public partial class Driver : Form
     {
 
+        // == Class Variables == //
         private HotkeyScreenshot? _hotkeyScreenshot; // wire up HotkeyScreenshot class variable
         private HotkeyConfig _hotkeyConfig;          // wir up hotkey configuration class variable
 
-        // constructor
+        // == constructor == //
         public Driver()
         {
             InitializeComponent();
             _hotkeyConfig = ConfigurationManager.LoadConfiguration(); // load hotkey configuration from json file
         }
-        // ovveride OnHandleCreated to account for hotkey registration after handle is created
+
+        // == ovveride OnHandleCreated to account for hotkey registration after handle is created == //
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
@@ -30,7 +32,8 @@ namespace ScreenGrab
                 _hotkeyScreenshot.AttachToHandle(this.Handle);
             }
         }
-        // override OnLoad to hide the form on startup - initialize
+
+        // == override OnLoad to hide the form on startup - initialize == //
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -47,6 +50,8 @@ namespace ScreenGrab
             SystemTrayIcon.DoubleClick += SystemTrayIcon_DoubleClick;              // wire up double click event
             BuildTrayMenu();                                                       // build tray menu
         }
+
+        // == Methods for system tray menu == //
         private void BuildTrayMenu()
         {
             menuOpen.Click += MenuOpen_Click;
@@ -69,6 +74,9 @@ namespace ScreenGrab
             SystemTrayIcon.Visible = false;                 // hide tray icon
             Application.Exit();
         }
+        // == end methods for system tray menu == //
+
+        // == showing main(driver) window called by other classes == //
         private void ShowMainWindow()
         {
             this.Show();                                   // show the form
@@ -77,7 +85,7 @@ namespace ScreenGrab
             this.Activate();                               // bring to foreground
         }
 
-        // event handler for screenshot taken event
+        // == event handler for screenshot taken event == //
         private void HotkeyScreenshot_OnScreenshotTaken(string filePath)
         {
             ScreenshotMessageBox.ShowMessage(              // show message box on screenshot taken
@@ -85,6 +93,7 @@ namespace ScreenGrab
                 $"ScreenGrab",                             // title //not displaying in current config
                 4000);                                     // duration in ms
         }
+
         // == Methods for opening image editor with bitmap == //
         // event handler for screenshot captured event
         private void HotkeyScreenshot_OnScreenshotCaptured(Bitmap screenshot)
@@ -119,7 +128,7 @@ namespace ScreenGrab
 
 
 
-        // open image editor with file path
+        // == open image editor with file path == //
         private void OpenEditorWithFile(string filePath)
         {
             if (InvokeRequired)
@@ -135,7 +144,7 @@ namespace ScreenGrab
             imageEditorForm.Show();
         }
 
-        // event handler for open image editor event
+        // == event handler for open image editor event == //
         private void OpenImageEditor()
         {
             if (InvokeRequired)
@@ -166,7 +175,8 @@ namespace ScreenGrab
             imageEditorForm.ShowInTaskbar = true;
             imageEditorForm.Show();
         }
-        // overide OnFormClosing to clean up resources on app closing
+
+        // == overide OnFormClosing to clean up resources on app closing == //
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             // if user clicks X on form, minimize to tray instead of closing
@@ -182,7 +192,7 @@ namespace ScreenGrab
             _hotkeyScreenshot = null;                      // set to null
             base.OnFormClosing(e);                         // call base method
         }
-        // when button is clicked open up settings form  //additional logic for registering hotkeys after change
+        // == when button is clicked open up settings form  //additional logic for registering hotkeys after change == //
         private void SendToSettings_Click(object sender, EventArgs e)
         {
             var settingsForm = new SettingsForm(_hotkeyConfig);
@@ -202,7 +212,8 @@ namespace ScreenGrab
             settingsForm.Show();
             this.Hide();                // hide the main form // keep persistent state
             this.ShowInTaskbar = false;
-        }
+        } 
+
         // == FOR SENDING TO SETTIGNS FROM EDITOR == // // required becuase ImageEditorForm cannot access settings instance directly like driver can
         public HotkeyConfig GetHotkeyConfig()
         {
@@ -216,7 +227,7 @@ namespace ScreenGrab
         }
         // == END FOR SENDING TO SETTINGS FROM EDITOR == //
 
-        // when button is clicked, open Image Editor form
+        // == when button is clicked, open Image Editor form == //
         private void SendToEditor_Click(object sender, EventArgs e)
         {
             ImageEditorForm imageEditorForm;
@@ -242,6 +253,8 @@ namespace ScreenGrab
             this.Hide();                // hide the main form // keep persistent state
             this.ShowInTaskbar = false;
         }
+
+        // 
 
         // when button is clicked, take a screenshot of active window
         private void activeWindowScreenshotButton_Click(object sender, EventArgs e)
