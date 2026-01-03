@@ -16,7 +16,7 @@ namespace ScreenGrab
         //track current hot being configured
         private enum HotkeyBeingConfigured
         {
-            None, Active, Region, ActiveDelayed, RegionDelayed, OCR, Paint, Editor
+            None, Active, Region, ActiveDelayed, RegionDelayed, OCR, UiElement, Paint, Editor
         }
         private HotkeyBeingConfigured _currentHotkeyEditTarget = HotkeyBeingConfigured.None; // initialize to none
         public event Action<HotkeyConfig>? HotkeysChanged;                                   // event to notify main app of hotkey changes
@@ -32,13 +32,18 @@ namespace ScreenGrab
             txtActiveDelayed.Text                   = _config.ActiveWindowDelayedCapture.ToString();
             txtRegionDelayed.Text                   = _config.RegionDelayedCapture.ToString();
             txtOcr.Text                             = _config.OcrRegionCapture.ToString();
+            txtUiElementCapture.Text                = _config.UiElementCapture.ToString();
             txtPaint.Text                           = _config.OpenPaint.ToString();
             txtEditor.Text                          = _config.OpenEditor.ToString();
+            txtDelayTimerConfig.Text                = _config.DelayedCaptureTimerSeconds.ToString();
             txtChangeScreenCaptureFileLocation.Text = _config.ScreenshotSaveLocation;
             chkAutoCopyToClipboard.Checked          = _config.AutoCopyToClipboard;
             chkAutoOpenEditorOnCapture.Checked      = _config.AutoOpenEditorOnCapture;
             chkSaveToFileLocation.Checked           = _config.SaveToFileLocation;
             chkEnableSystemCapture.Checked          = _config.SystemCaptureMode;
+
+            // clear status label on form load
+            lblStatus.Text = string.Empty;
 
             //make text boxes read-only to prevent manual editing
             txtActive.ReadOnly                           = true;
@@ -60,6 +65,9 @@ namespace ScreenGrab
             txtSaveFileLocationHeader.ReadOnly           = true;
             txtGeneralSettingsHeader.ReadOnly            = true;
             txtSystemCaptureModeToggleHeader.ReadOnly    = true;
+            txtUiElementHotkeyHeader.ReadOnly            = true;
+            txtChangeDelayTimerHeader.ReadOnly           = true;
+            txtDelayTimerConfig.ReadOnly                 = true;
 
             // receive keydown events for text boxes
             this.KeyPreview = true;
@@ -95,6 +103,12 @@ namespace ScreenGrab
             _currentHotkeyEditTarget = HotkeyBeingConfigured.OCR; // not implemented yet
             lblStatus.Text = "Press new hotkey for OCR region capture...";
         }
+        private void btnChangeUiElementCaptureHotkeyConfig_Click(object sender, EventArgs e) // ui element capture
+        {
+            _currentHotkeyEditTarget = HotkeyBeingConfigured.UiElement;
+            lblStatus.Text = "Press new hotkey for UI element capture...";
+
+        }
         private void btnChangeOpenPaintHotkeyConfig_Click(object sender, EventArgs e)          // open in paint hotkey
         {
             _currentHotkeyEditTarget = HotkeyBeingConfigured.Paint;
@@ -125,6 +139,42 @@ namespace ScreenGrab
                 }
             }
         }
+
+        // == delay timer change handler == //
+        private void btnChangeDelayTimer_Click(object sender, EventArgs e) // delay timer change button click handler
+        {
+            txtDelayTimerConfig.ReadOnly = false; // make text box editable temporarily
+            txtDelayTimerConfig.Focus();          // set focus to text box
+            txtDelayTimerConfig.SelectAll();      // select all text for easy replacement
+            lblStatus.Text = "Enter new delay timer in seconds and press Enter.";
+
+            // call temporary keydown event handler for text box
+            txtDelayTimerConfig.KeyDown += OnDelayTimerKeyDown;
+        }
+
+        // temporary keydown event handler for delay timer text box == //
+        private void OnDelayTimerKeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter) // check if Enter key is pressed
+            {
+                e.SuppressKeyPress = true; // prevent ding sound on Enter key
+                if (int.TryParse(txtDelayTimerConfig.Text, out int newDelay) && newDelay >= 0) // validate input
+                {
+                    _config.DelayedCaptureTimerSeconds = newDelay; // update config with new delay
+                    lblStatus.Text = $"Delay timer updated to {newDelay} seconds.";
+                    SaveFileLocationChanged?.Invoke(_config); // raise event to notify main app of change
+                }
+                else
+                {
+                    lblStatus.Text = "Invalid input. Please enter a non-negative integer for delay timer.";
+                    txtDelayTimerConfig.Text = _config.DelayedCaptureTimerSeconds.ToString(); // revert to previous value
+                }
+                txtDelayTimerConfig.ReadOnly = true; // make text box read-only again
+                txtDelayTimerConfig.KeyDown -= OnDelayTimerKeyDown; // remove temporary event handler
+                e.SuppressKeyPress = true; // prevent ding sound on Enter key
+            }
+        }
+
         // == auto copy to clipboard checkbox change handler == //
         private void chkAutoCopyToClipboard_CheckedChanged(object sender, EventArgs e) // auto copy to clipboard checkbox change handler
         {
@@ -205,6 +255,10 @@ namespace ScreenGrab
                 case HotkeyBeingConfigured.OCR:
                     _config.OcrRegionCapture = def;
                     txtOcr.Text = def.ToString();
+                    break;
+                case HotkeyBeingConfigured.UiElement:
+                    _config.UiElementCapture = def;
+                    txtUiElementCapture.Text = def.ToString();
                     break;
                 case HotkeyBeingConfigured.Paint:
                     _config.OpenPaint = def;

@@ -113,6 +113,10 @@ namespace ScreenGrab
         public bool AutoCopyToClipboard { get; set; } = true;
         // auto-open editor option // default to false
         public bool AutoOpenEditorOnCapture { get; set; } = false;
+        // system capture mode toggle // default to true
         public bool SystemCaptureMode { get; set; }       = true;
+        // delayed capture timer in seconds // default to 5
+        public int DelayedCaptureTimerSeconds { get; set; } = 5;
+
     }
 }

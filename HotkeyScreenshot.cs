@@ -179,6 +179,7 @@ namespace ScreenGrab
             _config.AutoCopyToClipboard        = newConfig.AutoCopyToClipboard;
             _config.AutoOpenEditorOnCapture    = newConfig.AutoOpenEditorOnCapture;
             _config.SystemCaptureMode          = newConfig.SystemCaptureMode;
+            _config.DelayedCaptureTimerSeconds = newConfig.DelayedCaptureTimerSeconds;
             RegisterAllHotkeys(); // re-register hotkeys with new configuration
         }
 
@@ -563,21 +564,23 @@ namespace ScreenGrab
         // == Capture active window after delay == //
         public async void CaptureActiveWindowDelayed()
         {
+            int delaySeconds = _config.DelayedCaptureTimerSeconds; // get delay time from config
             ScreenshotMessageBox.ShowMessage(
                 $"ScreenGrab: Delayed capture in 5 seconds...",
                 $"ScreenGrab",
                 2000);
-            await Task.Delay(5000); // 5 second delay
+            await Task.Delay(delaySeconds * 1000); // 5 second delay
             CaptureActiveWindow();
         }
         // == Capture selected region after delay == //
         public async void CaptureRegionDelayed()
         {
+            int delaySeconds = _config.DelayedCaptureTimerSeconds; // get delay time from config
             ScreenshotMessageBox.ShowMessage(
                 $"ScreenGrab: Delayed capture in 5 seconds...",
                 $"ScreenGrab",
                 2000);
-            await Task.Delay(5000); // 5 second delay
+            await Task.Delay(delaySeconds * 1000); // 5 second delay
             CaptureRegion();
         }
 

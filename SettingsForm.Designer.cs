@@ -66,6 +66,12 @@
             txtOcrHotkeyHeader = new TextBox();
             txtOcr = new TextBox();
             btnOcrHotkeyConfig = new Button();
+            txtUiElementHotkeyHeader = new TextBox();
+            txtUiElementCapture = new TextBox();
+            btnUiElementConfig = new Button();
+            txtChangeDelayTimerHeader = new TextBox();
+            txtDelayTimerConfig = new TextBox();
+            btnChangeDelayTimer = new Button();
             ((System.ComponentModel.ISupportInitialize)settingsHeader).BeginInit();
             SuspendLayout();
             // 
@@ -118,7 +124,7 @@
             txtPaint.BackColor = SystemColors.Desktop;
             txtPaint.BorderStyle = BorderStyle.FixedSingle;
             txtPaint.ForeColor = SystemColors.Window;
-            txtPaint.Location = new Point(558, 276);
+            txtPaint.Location = new Point(558, 305);
             txtPaint.Name = "txtPaint";
             txtPaint.Size = new Size(122, 23);
             txtPaint.TabIndex = 4;
@@ -189,7 +195,7 @@
             txtOpenPNGInPaintConfigHeader.BackColor = SystemColors.Desktop;
             txtOpenPNGInPaintConfigHeader.BorderStyle = BorderStyle.FixedSingle;
             txtOpenPNGInPaintConfigHeader.ForeColor = SystemColors.Window;
-            txtOpenPNGInPaintConfigHeader.Location = new Point(399, 276);
+            txtOpenPNGInPaintConfigHeader.Location = new Point(399, 305);
             txtOpenPNGInPaintConfigHeader.Name = "txtOpenPNGInPaintConfigHeader";
             txtOpenPNGInPaintConfigHeader.Size = new Size(153, 23);
             txtOpenPNGInPaintConfigHeader.TabIndex = 10;
@@ -248,7 +254,7 @@
             // 
             btnOpenPNGInPaintHotkeyConfig.BackColor = SystemColors.Desktop;
             btnOpenPNGInPaintHotkeyConfig.ForeColor = SystemColors.Window;
-            btnOpenPNGInPaintHotkeyConfig.Location = new Point(686, 276);
+            btnOpenPNGInPaintHotkeyConfig.Location = new Point(686, 305);
             btnOpenPNGInPaintHotkeyConfig.Name = "btnOpenPNGInPaintHotkeyConfig";
             btnOpenPNGInPaintHotkeyConfig.Size = new Size(75, 23);
             btnOpenPNGInPaintHotkeyConfig.TabIndex = 15;
@@ -260,10 +266,11 @@
             // 
             lblStatus.AutoSize = true;
             lblStatus.BorderStyle = BorderStyle.FixedSingle;
+            lblStatus.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblStatus.ForeColor = SystemColors.Window;
-            lblStatus.Location = new Point(12, 345);
+            lblStatus.Location = new Point(12, 334);
             lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(2, 17);
+            lblStatus.Size = new Size(2, 23);
             lblStatus.TabIndex = 16;
             // 
             // settingsHeader
@@ -280,7 +287,7 @@
             txtSaveFileLocationHeader.BackColor = SystemColors.Desktop;
             txtSaveFileLocationHeader.BorderStyle = BorderStyle.FixedSingle;
             txtSaveFileLocationHeader.ForeColor = SystemColors.Window;
-            txtSaveFileLocationHeader.Location = new Point(12, 129);
+            txtSaveFileLocationHeader.Location = new Point(12, 158);
             txtSaveFileLocationHeader.Name = "txtSaveFileLocationHeader";
             txtSaveFileLocationHeader.Size = new Size(153, 23);
             txtSaveFileLocationHeader.TabIndex = 18;
@@ -292,7 +299,7 @@
             txtChangeScreenCaptureFileLocation.BackColor = SystemColors.Desktop;
             txtChangeScreenCaptureFileLocation.BorderStyle = BorderStyle.FixedSingle;
             txtChangeScreenCaptureFileLocation.ForeColor = SystemColors.Window;
-            txtChangeScreenCaptureFileLocation.Location = new Point(171, 129);
+            txtChangeScreenCaptureFileLocation.Location = new Point(171, 157);
             txtChangeScreenCaptureFileLocation.Name = "txtChangeScreenCaptureFileLocation";
             txtChangeScreenCaptureFileLocation.Size = new Size(122, 23);
             txtChangeScreenCaptureFileLocation.TabIndex = 19;
@@ -301,7 +308,7 @@
             // 
             btnChangeScreenCaptureFileLocation.BackColor = SystemColors.Desktop;
             btnChangeScreenCaptureFileLocation.ForeColor = SystemColors.Window;
-            btnChangeScreenCaptureFileLocation.Location = new Point(299, 129);
+            btnChangeScreenCaptureFileLocation.Location = new Point(299, 157);
             btnChangeScreenCaptureFileLocation.Name = "btnChangeScreenCaptureFileLocation";
             btnChangeScreenCaptureFileLocation.Size = new Size(75, 23);
             btnChangeScreenCaptureFileLocation.TabIndex = 20;
@@ -327,7 +334,7 @@
             txtOpenEditorHeader.BackColor = SystemColors.Desktop;
             txtOpenEditorHeader.BorderStyle = BorderStyle.FixedSingle;
             txtOpenEditorHeader.ForeColor = SystemColors.Window;
-            txtOpenEditorHeader.Location = new Point(399, 305);
+            txtOpenEditorHeader.Location = new Point(399, 334);
             txtOpenEditorHeader.Name = "txtOpenEditorHeader";
             txtOpenEditorHeader.Size = new Size(153, 23);
             txtOpenEditorHeader.TabIndex = 22;
@@ -339,7 +346,7 @@
             txtEditor.BackColor = SystemColors.Desktop;
             txtEditor.BorderStyle = BorderStyle.FixedSingle;
             txtEditor.ForeColor = SystemColors.Window;
-            txtEditor.Location = new Point(558, 305);
+            txtEditor.Location = new Point(558, 334);
             txtEditor.Name = "txtEditor";
             txtEditor.Size = new Size(122, 23);
             txtEditor.TabIndex = 23;
@@ -349,7 +356,7 @@
             // 
             btnOpenEditorHotkeyConfig.BackColor = SystemColors.Desktop;
             btnOpenEditorHotkeyConfig.ForeColor = SystemColors.Window;
-            btnOpenEditorHotkeyConfig.Location = new Point(686, 305);
+            btnOpenEditorHotkeyConfig.Location = new Point(686, 334);
             btnOpenEditorHotkeyConfig.Name = "btnOpenEditorHotkeyConfig";
             btnOpenEditorHotkeyConfig.Size = new Size(75, 23);
             btnOpenEditorHotkeyConfig.TabIndex = 24;
@@ -362,7 +369,7 @@
             txtAutoCopyHeader.BackColor = SystemColors.Desktop;
             txtAutoCopyHeader.BorderStyle = BorderStyle.FixedSingle;
             txtAutoCopyHeader.ForeColor = SystemColors.Window;
-            txtAutoCopyHeader.Location = new Point(12, 187);
+            txtAutoCopyHeader.Location = new Point(12, 216);
             txtAutoCopyHeader.Name = "txtAutoCopyHeader";
             txtAutoCopyHeader.Size = new Size(153, 23);
             txtAutoCopyHeader.TabIndex = 25;
@@ -374,7 +381,7 @@
             chkAutoCopyToClipboard.CheckAlign = ContentAlignment.MiddleCenter;
             chkAutoCopyToClipboard.Checked = true;
             chkAutoCopyToClipboard.CheckState = CheckState.Checked;
-            chkAutoCopyToClipboard.Location = new Point(206, 186);
+            chkAutoCopyToClipboard.Location = new Point(206, 215);
             chkAutoCopyToClipboard.Name = "chkAutoCopyToClipboard";
             chkAutoCopyToClipboard.Size = new Size(122, 23);
             chkAutoCopyToClipboard.TabIndex = 26;
@@ -386,7 +393,7 @@
             txtAutoOpenEditorHeader.BackColor = SystemColors.Desktop;
             txtAutoOpenEditorHeader.BorderStyle = BorderStyle.FixedSingle;
             txtAutoOpenEditorHeader.ForeColor = SystemColors.Window;
-            txtAutoOpenEditorHeader.Location = new Point(12, 216);
+            txtAutoOpenEditorHeader.Location = new Point(12, 245);
             txtAutoOpenEditorHeader.Name = "txtAutoOpenEditorHeader";
             txtAutoOpenEditorHeader.Size = new Size(153, 23);
             txtAutoOpenEditorHeader.TabIndex = 27;
@@ -396,7 +403,7 @@
             // chkAutoOpenEditorOnCapture
             // 
             chkAutoOpenEditorOnCapture.CheckAlign = ContentAlignment.MiddleCenter;
-            chkAutoOpenEditorOnCapture.Location = new Point(206, 216);
+            chkAutoOpenEditorOnCapture.Location = new Point(206, 243);
             chkAutoOpenEditorOnCapture.Name = "chkAutoOpenEditorOnCapture";
             chkAutoOpenEditorOnCapture.Size = new Size(122, 22);
             chkAutoOpenEditorOnCapture.TabIndex = 28;
@@ -409,7 +416,7 @@
             txtFileSaveToggleHeader.BackColor = SystemColors.Desktop;
             txtFileSaveToggleHeader.BorderStyle = BorderStyle.FixedSingle;
             txtFileSaveToggleHeader.ForeColor = SystemColors.Window;
-            txtFileSaveToggleHeader.Location = new Point(12, 158);
+            txtFileSaveToggleHeader.Location = new Point(12, 187);
             txtFileSaveToggleHeader.Name = "txtFileSaveToggleHeader";
             txtFileSaveToggleHeader.Size = new Size(153, 23);
             txtFileSaveToggleHeader.TabIndex = 29;
@@ -421,7 +428,7 @@
             chkSaveToFileLocation.CheckAlign = ContentAlignment.MiddleCenter;
             chkSaveToFileLocation.Checked = true;
             chkSaveToFileLocation.CheckState = CheckState.Checked;
-            chkSaveToFileLocation.Location = new Point(206, 159);
+            chkSaveToFileLocation.Location = new Point(206, 186);
             chkSaveToFileLocation.Name = "chkSaveToFileLocation";
             chkSaveToFileLocation.Size = new Size(122, 23);
             chkSaveToFileLocation.TabIndex = 30;
@@ -445,7 +452,7 @@
             txtSystemCaptureModeToggleHeader.BackColor = SystemColors.Desktop;
             txtSystemCaptureModeToggleHeader.BorderStyle = BorderStyle.FixedSingle;
             txtSystemCaptureModeToggleHeader.ForeColor = SystemColors.Window;
-            txtSystemCaptureModeToggleHeader.Location = new Point(12, 245);
+            txtSystemCaptureModeToggleHeader.Location = new Point(12, 274);
             txtSystemCaptureModeToggleHeader.Multiline = true;
             txtSystemCaptureModeToggleHeader.Name = "txtSystemCaptureModeToggleHeader";
             txtSystemCaptureModeToggleHeader.Size = new Size(188, 39);
@@ -457,7 +464,7 @@
             chkEnableSystemCapture.CheckAlign = ContentAlignment.MiddleCenter;
             chkEnableSystemCapture.Checked = true;
             chkEnableSystemCapture.CheckState = CheckState.Checked;
-            chkEnableSystemCapture.Location = new Point(206, 244);
+            chkEnableSystemCapture.Location = new Point(206, 271);
             chkEnableSystemCapture.Name = "chkEnableSystemCapture";
             chkEnableSystemCapture.Size = new Size(122, 40);
             chkEnableSystemCapture.TabIndex = 34;
@@ -498,12 +505,88 @@
             btnOcrHotkeyConfig.UseVisualStyleBackColor = false;
             btnOcrHotkeyConfig.Click += btnChangeOcrRegionCaptureHotkeyConfig_Click;
             // 
+            // txtUiElementHotkeyHeader
+            // 
+            txtUiElementHotkeyHeader.BackColor = SystemColors.Desktop;
+            txtUiElementHotkeyHeader.BorderStyle = BorderStyle.FixedSingle;
+            txtUiElementHotkeyHeader.ForeColor = SystemColors.Window;
+            txtUiElementHotkeyHeader.Location = new Point(399, 276);
+            txtUiElementHotkeyHeader.Name = "txtUiElementHotkeyHeader";
+            txtUiElementHotkeyHeader.Size = new Size(153, 23);
+            txtUiElementHotkeyHeader.TabIndex = 38;
+            txtUiElementHotkeyHeader.Text = "Ui Element Capture:";
+            txtUiElementHotkeyHeader.TextAlign = HorizontalAlignment.Center;
+            // 
+            // txtUiElementCapture
+            // 
+            txtUiElementCapture.BackColor = SystemColors.Desktop;
+            txtUiElementCapture.BorderStyle = BorderStyle.FixedSingle;
+            txtUiElementCapture.ForeColor = SystemColors.Window;
+            txtUiElementCapture.Location = new Point(558, 276);
+            txtUiElementCapture.Name = "txtUiElementCapture";
+            txtUiElementCapture.Size = new Size(122, 23);
+            txtUiElementCapture.TabIndex = 39;
+            txtUiElementCapture.TextAlign = HorizontalAlignment.Center;
+            // 
+            // btnUiElementConfig
+            // 
+            btnUiElementConfig.BackColor = SystemColors.Desktop;
+            btnUiElementConfig.ForeColor = SystemColors.Window;
+            btnUiElementConfig.Location = new Point(686, 276);
+            btnUiElementConfig.Name = "btnUiElementConfig";
+            btnUiElementConfig.Size = new Size(75, 23);
+            btnUiElementConfig.TabIndex = 40;
+            btnUiElementConfig.Text = "Change";
+            btnUiElementConfig.UseVisualStyleBackColor = false;
+            btnUiElementConfig.Click += btnChangeUiElementCaptureHotkeyConfig_Click;
+            // 
+            // txtChangeDelayTimerHeader
+            // 
+            txtChangeDelayTimerHeader.BackColor = SystemColors.Desktop;
+            txtChangeDelayTimerHeader.BorderStyle = BorderStyle.FixedSingle;
+            txtChangeDelayTimerHeader.ForeColor = SystemColors.Window;
+            txtChangeDelayTimerHeader.Location = new Point(12, 129);
+            txtChangeDelayTimerHeader.Name = "txtChangeDelayTimerHeader";
+            txtChangeDelayTimerHeader.Size = new Size(153, 23);
+            txtChangeDelayTimerHeader.TabIndex = 41;
+            txtChangeDelayTimerHeader.Text = "Delay Timer:";
+            txtChangeDelayTimerHeader.TextAlign = HorizontalAlignment.Center;
+            // 
+            // txtDelayTimerConfig
+            // 
+            txtDelayTimerConfig.BackColor = SystemColors.Desktop;
+            txtDelayTimerConfig.BorderStyle = BorderStyle.FixedSingle;
+            txtDelayTimerConfig.ForeColor = SystemColors.Window;
+            txtDelayTimerConfig.Location = new Point(171, 129);
+            txtDelayTimerConfig.Name = "txtDelayTimerConfig";
+            txtDelayTimerConfig.Size = new Size(122, 23);
+            txtDelayTimerConfig.TabIndex = 42;
+            txtDelayTimerConfig.TextAlign = HorizontalAlignment.Center;
+            // 
+            // btnChangeDelayTimer
+            // 
+            btnChangeDelayTimer.BackColor = SystemColors.Desktop;
+            btnChangeDelayTimer.ForeColor = SystemColors.Window;
+            btnChangeDelayTimer.Location = new Point(299, 128);
+            btnChangeDelayTimer.Name = "btnChangeDelayTimer";
+            btnChangeDelayTimer.Size = new Size(75, 23);
+            btnChangeDelayTimer.TabIndex = 43;
+            btnChangeDelayTimer.Text = "Change";
+            btnChangeDelayTimer.UseVisualStyleBackColor = false;
+            btnChangeDelayTimer.Click += btnChangeDelayTimer_Click;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
             ClientSize = new Size(852, 406);
+            Controls.Add(btnChangeDelayTimer);
+            Controls.Add(txtDelayTimerConfig);
+            Controls.Add(txtChangeDelayTimerHeader);
+            Controls.Add(btnUiElementConfig);
+            Controls.Add(txtUiElementCapture);
+            Controls.Add(txtUiElementHotkeyHeader);
             Controls.Add(btnOcrHotkeyConfig);
             Controls.Add(txtOcr);
             Controls.Add(txtOcrHotkeyHeader);
@@ -589,5 +672,11 @@
         private TextBox txtOcrHotkeyHeader;
         private TextBox txtOcr;
         private Button btnOcrHotkeyConfig;
+        private TextBox txtUiElementHotkeyHeader;
+        private TextBox txtUiElementCapture;
+        private Button btnUiElementConfig;
+        private TextBox txtChangeDelayTimerHeader;
+        private TextBox txtDelayTimerConfig;
+        private Button btnChangeDelayTimer;
     }
 }

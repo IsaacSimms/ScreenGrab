@@ -254,7 +254,19 @@ namespace ScreenGrab
             this.ShowInTaskbar = false;
         }
 
-        // 
+        // == click button to launch UI element class // create instance each time to avoid reuse problems == //
+        private void btnUiElementCapture_Click(object sender, EventArgs e)
+        {
+            var uiScreenshotForm = new UiScreenshot 
+            {
+                Tag = this,
+                ShowInTaskbar = true
+            };
+            uiScreenshotForm.Show();
+            uiScreenshotForm.StartUiElementCapture();
+            this.Hide();
+            this.ShowInTaskbar = false;
+        }
 
         // when button is clicked, take a screenshot of active window
         private void activeWindowScreenshotButton_Click(object sender, EventArgs e)
@@ -267,7 +279,7 @@ namespace ScreenGrab
         {
             _hotkeyScreenshot?.CaptureRegion();
         }
-        // whenn button is clicked, take OCR screenshot of region
+        // when button is clicked, take OCR screenshot of region
         private void ocrRegionScreenshotButton_Click(object sender, EventArgs e)
         {
             _hotkeyScreenshot?.CaptureOcrRegion();
