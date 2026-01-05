@@ -467,6 +467,10 @@ namespace ScreenGrab
             {
                 Clipboard.SetImage(Screenshot);
             }
+            ScreenshotMessageBox.ShowMessage(
+                $"ScreenGrab: Screenshot copied to clipboard.",
+                $"ScreenGrab:",
+                4000);
         }
 
         // == export as markdown to folder == //
@@ -567,6 +571,10 @@ namespace ScreenGrab
         private void btnCopyInfo_Click(object sender, EventArgs e)
         {
             Clipboard.SetText(txtSystemInfo.Text);
+            ScreenshotMessageBox.ShowMessage(
+                $"ScreenGrab: System information copied to clipboard.",
+                $"ScreenGrab:",
+                4000);
         }
 
        // == print system info on to screenshot == //

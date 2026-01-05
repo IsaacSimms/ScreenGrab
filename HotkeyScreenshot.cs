@@ -644,6 +644,7 @@ namespace ScreenGrab
         {
             private bool _isDrawing;                               // flag to track if drawing is in progress
             private List<Point> _freeformPath = new List<Point>(); // list to hold freeform path points
+            private Rectangle _previousBounds = Rectangle.Empty;   // track previous bounds to minimize redraws
             public List<Point> FreeformPath => _freeformPath;      // public property to access freeform path
 
             // start freeform drawing on left mouse click
@@ -653,6 +654,7 @@ namespace ScreenGrab
                 _isDrawing = true;
                 _freeformPath.Clear();                        // clear existing path //prevents unwanted behavior
                 _freeformPath.Add(PointToScreen(e.Location)); // add starting point
+                _previousBounds = Rectangle.Empty;            // reset previous bounds
                 Invalidate();
             }
 
@@ -664,8 +666,51 @@ namespace ScreenGrab
                 if (_freeformPath.Count == 0 || _freeformPath.Last() != currentPoint) // check if point is different from last point
                 {
                     _freeformPath.Add(currentPoint);           // add point to path
-                    Invalidate();                              // request redraw
+                    InvalidateFreeformArea();                  // invalidate only affected area
                 }
+            }
+
+            // helper method to invalidate only the affected regions
+            private void InvalidateFreeformArea()
+            {
+                if (_freeformPath.Count < 2) 
+                {
+                    Invalidate();
+                    return;
+                }
+
+                // calculate bounding rectangle for the freeform path
+                int minX = _freeformPath.Min(p => p.X);
+                int minY = _freeformPath.Min(p => p.Y);
+                int maxX = _freeformPath.Max(p => p.X);
+                int maxY = _freeformPath.Max(p => p.Y);
+
+                Rectangle currentBounds = new Rectangle(minX, minY, maxX - minX, maxY - minY);
+
+                // invalidate previous bounds if exists
+                if (_previousBounds != Rectangle.Empty)
+                {
+                    Rectangle prevClient = new Rectangle(
+                        _previousBounds.X - this.Bounds.X,
+                        _previousBounds.Y - this.Bounds.Y,
+                        _previousBounds.Width,
+                        _previousBounds.Height);
+                    // add padding for pen width
+                    prevClient.Inflate(10, 10);
+                    Invalidate(prevClient);
+                }
+
+                // invalidate current bounds
+                Rectangle currClient = new Rectangle(
+                    currentBounds.X - this.Bounds.X,
+                    currentBounds.Y - this.Bounds.Y,
+                    currentBounds.Width,
+                    currentBounds.Height);
+                // add padding for pen width
+                currClient.Inflate(10, 10);
+                Invalidate(currClient);
+
+                _previousBounds = currentBounds;
             }
 
             // finalize freeform drawing on mouse up
@@ -704,6 +749,11 @@ namespace ScreenGrab
             protected override void OnPaint(PaintEventArgs e)
             {
                 base.OnPaint(e);
+
+                // optimize rendering settings
+                e.Graphics.CompositingMode = CompositingMode.SourceOver;
+                e.Graphics.CompositingQuality = CompositingQuality.HighSpeed;
+
                 using (var overlayBrush = new SolidBrush(Color.FromArgb(38, Color.Black))) // semi-transparent overlay brush
                 {
                     // draw freeform path if it has points
@@ -776,11 +826,18 @@ namespace ScreenGrab
                 this.TopMost         = true;                                   // always on top
                 this.DoubleBuffered  = true;                                   // reduce flicker
 
+                // optimize rendering
+                this.SetStyle(ControlStyles.OptimizedDoubleBuffer | 
+                              ControlStyles.AllPaintingInWmPaint | 
+                              ControlStyles.UserPaint, true);
+                this.UpdateStyles();
+
                 // event handlers
                 this.MouseDown += new MouseEventHandler(OnMouseDown);
                 this.MouseMove += new MouseEventHandler(OnMouseMove);
                 this.MouseUp   += new MouseEventHandler(OnMouseUp);
                 this.KeyDown   += new KeyEventHandler(EscKeyDown);
+                this.KeyPreview = true; // enable key preview for escape key
             }
         }
 

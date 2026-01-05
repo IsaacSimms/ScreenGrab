@@ -131,7 +131,7 @@ namespace ScreenGrab
                 g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
                 g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
 
-                // draw white background first (helps with transparent images and dark themes)
+                // draw white background first
                 g.Clear(Color.White);
 
                 // draw the original image scaled up
@@ -190,6 +190,10 @@ namespace ScreenGrab
             {
                 Clipboard.SetImage(Screenshot);
             }
+            ScreenshotMessageBox.ShowMessage(
+                $"ScreenGrab: Screenshot copied to clipboard.",
+                $"ScreenGrab:",
+                4000);
         }
         // == send to driver form button click event == //
         private void btnGoHome_Click(object sender, EventArgs e)
@@ -329,6 +333,10 @@ namespace ScreenGrab
             if (!string.IsNullOrEmpty(txtOcrResult.Text))
             {
                 Clipboard.SetText(txtOcrResult.Text);
+                ScreenshotMessageBox.ShowMessage(
+                    $"ScreenGrab: OCR text copied to clipboard.",
+                    $"ScreenGrab:",
+                    4000);
             }
         }
     }
