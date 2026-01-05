@@ -75,7 +75,7 @@
             // menuOpen
             // 
             menuOpen.ForeColor = Color.Snow;
-            menuOpen.Image = Properties.Resources.S1;
+            menuOpen.Image = (Image)resources.GetObject("menuOpen.Image");
             menuOpen.Name = "menuOpen";
             menuOpen.Size = new Size(199, 22);
             menuOpen.Text = "Home";
@@ -173,7 +173,7 @@
             // menuExit
             // 
             menuExit.ForeColor = Color.Snow;
-            menuExit.Image = Properties.Resources.S1;
+            menuExit.Image = (Image)resources.GetObject("menuExit.Image");
             menuExit.Name = "menuExit";
             menuExit.Size = new Size(199, 22);
             menuExit.Text = "Shutdown";

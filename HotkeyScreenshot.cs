@@ -552,12 +552,13 @@ namespace ScreenGrab
                 this.Opacity         = .15;                                    // semi-transparent
                 this.TopMost         = true;                                   // always on top
                 this.DoubleBuffered  = true;                                   // reduce flicker
+                this.KeyPreview      = true;                                   // enable key preview
                 Cursor = Cursors.Cross;
                 // attach event handlers
+                this.KeyDown   += new KeyEventHandler(EscKeyDown);
                 this.MouseDown += new MouseEventHandler(onMouseDown);
                 this.MouseMove += new MouseEventHandler(OnMouseMove);
                 this.MouseUp   += new MouseEventHandler(OnMouseUp);
-                this.KeyDown   += new KeyEventHandler(EscKeyDown);
             }
         }
 

@@ -195,6 +195,7 @@ namespace ScreenGrab
                 saveFileDialog.Title = "Save Edited Image";
                 saveFileDialog.Filter = "PNG Image|*.png|JPEG Image|*.jpg;*.jpeg|Bitmap Image|*.bmp|GIF Image|*.gif";
                 saveFileDialog.DefaultExt = "png";
+                saveFileDialog.FileName   = $"EditedImage_{DateTime.Now:yyyyMMdd_HHmmss}";
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     try
