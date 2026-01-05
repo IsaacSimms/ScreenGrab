@@ -442,6 +442,7 @@ namespace ScreenGrab
             private bool _isSelecting;                         // flag to track if selection is in progress
             private Point _startPointScreen;                   // starting point of selection
             private Rectangle _selectedArea = Rectangle.Empty; // selected area rectangle
+            private Rectangle _previousArea = Rectangle.Empty; // track previous area to minimize redraws
             public Rectangle SelectedRegion => _selectedArea;  // public property to access selected region
 
             // start region select on left mouse click
@@ -453,6 +454,7 @@ namespace ScreenGrab
                     _isSelecting = true;
                     _startPointScreen = PointToScreen(e.Location);
                     _selectedArea = Rectangle.Empty;       // reset selected area upon new mouse click
+                    _previousArea = Rectangle.Empty;       // reset previous area
                     Invalidate();
                 }
             }
@@ -469,8 +471,47 @@ namespace ScreenGrab
                 int x2 = Math.Max(_startPointScreen.X, currentScreen.X);
                 int y2 = Math.Max(_startPointScreen.Y, currentScreen.Y);
 
-                _selectedArea = new Rectangle(x1, y1, x2 - x1, y2 - y1); // update selected area
-                Invalidate();                                            // request redraw
+                Rectangle newArea = new Rectangle(x1, y1, x2 - x1, y2 - y1);
+                
+                // only invalidate if the area changed significantly (reduces unnecessary redraws)
+                if (newArea != _selectedArea)
+                {
+                    _selectedArea = newArea;
+                    // invalidate only the affected regions instead of entire form
+                    InvalidateSelectionArea();
+                }
+            }
+
+            // helper method to invalidate only the affected regions
+            private void InvalidateSelectionArea()
+            {
+                if (_previousArea != Rectangle.Empty)
+                {
+                    // convert to client coordinates and invalidate previous area
+                    Rectangle prevClient = new Rectangle(
+                        _previousArea.X - this.Bounds.X,
+                        _previousArea.Y - this.Bounds.Y,
+                        _previousArea.Width,
+                        _previousArea.Height);
+                    // add padding for pen width
+                    prevClient.Inflate(10, 10);
+                    Invalidate(prevClient);
+                }
+
+                if (_selectedArea != Rectangle.Empty)
+                {
+                    // convert to client coordinates and invalidate current area
+                    Rectangle currClient = new Rectangle(
+                        _selectedArea.X - this.Bounds.X,
+                        _selectedArea.Y - this.Bounds.Y,
+                        _selectedArea.Width,
+                        _selectedArea.Height);
+                    // add padding for pen width
+                    currClient.Inflate(10, 10);
+                    Invalidate(currClient);
+                }
+
+                _previousArea = _selectedArea;
             }
 
             // finalize selection on mouse up
@@ -504,6 +545,12 @@ namespace ScreenGrab
             protected override void OnPaint(PaintEventArgs e)
             {
                 base.OnPaint(e);
+                
+                // enable high-quality rendering
+                e.Graphics.CompositingMode = CompositingMode.SourceOver;
+                e.Graphics.CompositingQuality = CompositingQuality.HighSpeed;
+                e.Graphics.SmoothingMode = SmoothingMode.None; // disable anti-aliasing for rectangles (faster)
+                
                 using (var overlayBrush = new SolidBrush(Color.FromArgb(38, Color.Black))) // semi-transparent overlay brush
                 {
                     
@@ -554,6 +601,13 @@ namespace ScreenGrab
                 this.DoubleBuffered  = true;                                   // reduce flicker
                 this.KeyPreview      = true;                                   // enable key preview
                 Cursor = Cursors.Cross;
+                
+                // optimize rendering
+                this.SetStyle(ControlStyles.OptimizedDoubleBuffer | 
+                              ControlStyles.AllPaintingInWmPaint | 
+                              ControlStyles.UserPaint, true);
+                this.UpdateStyles();
+                
                 // attach event handlers
                 this.KeyDown   += new KeyEventHandler(EscKeyDown);
                 this.MouseDown += new MouseEventHandler(onMouseDown);
