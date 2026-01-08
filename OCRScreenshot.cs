@@ -7,9 +7,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using Windows.Graphics.Imaging;
-using Windows.Media.Ocr;
-using Windows.Storage.Streams;
 
 namespace ScreenGrab
 {
@@ -20,10 +17,14 @@ namespace ScreenGrab
         public DateTime CaptureTime { get; set; }
         public string ExtractedText { get; set; } = string.Empty;
 
+        // == OCR service instance == //
+        private readonly PaddleOcrService _ocrService;
+
         // == default constructor == //
         public OCRScreenshotForm()
         {
             InitializeComponent();
+            _ocrService = new PaddleOcrService();
         }
 
         // == constructor using screenshot bitmap == //
@@ -48,139 +49,36 @@ namespace ScreenGrab
 
             try
             {
-                txtOcrResult.Text = "Performing OCR...";
+                txtOcrResult.Text = "Performing OCR, please wait...";
+                var ocrResult = await _ocrService.RecognizeAsync(Screenshot);
 
-                // preprocess image for better OCR results
-                using Bitmap processedBitmap = PreprocessImageForOcr(Screenshot);
-
-                // convert Bitmap to SoftwareBitmap for Windows OCR
-                using var stream = new InMemoryRandomAccessStream();
-
-                // save as BMP format for better compatibility (uncompressed)
-                processedBitmap.Save(stream.AsStream(), ImageFormat.Bmp);
-                stream.Seek(0);
-
-                // decode the image
-                var decoder = await BitmapDecoder.CreateAsync(stream);
-
-                // get software bitmap and convert to required format for OCR
-                var softwareBitmap = await decoder.GetSoftwareBitmapAsync(
-                    BitmapPixelFormat.Bgra8,
-                    BitmapAlphaMode.Premultiplied);
-
-                // create OCR engine - try user languages first, then fall back to English
-                var ocrEngine = OcrEngine.TryCreateFromUserProfileLanguages();
-                if (ocrEngine == null)
+                // use PaddleOCR to recognize text
+                if  (!ocrResult.Success) // check for success
                 {
-                    // try English as fallback
-                    var englishLanguage = new Windows.Globalization.Language("en-US");
-                    if (OcrEngine.IsLanguageSupported(englishLanguage))
+                    txtOcrResult.Text = ocrResult.ErrorMessage ?? "OCR failed with unknown error";
+                    if (ocrResult.Exception != null)
                     {
-                        ocrEngine = OcrEngine.TryCreateFromLanguage(englishLanguage);
+                        System.Diagnostics.Debug.WriteLine($"OCR Error: {ocrResult.Exception}");
                     }
-                }
-
-                if (ocrEngine == null)
-                {
-                    txtOcrResult.Text = "OCR engine not available. Please ensure OCR language packs are installed in Windows Settings > Time & Language > Language.";
                     return;
                 }
 
-                // perform OCR
-                var ocrResult = await ocrEngine.RecognizeAsync(softwareBitmap);
-
-                // check if any text was found
-                if (ocrResult == null || ocrResult.Lines.Count == 0)
+                if (string.IsNullOrEmpty(ocrResult.TextBox))
                 {
-                    txtOcrResult.Text = "No text detected in the image.";
+                    txtOcrResult.Text = "No text detected in the screenshot.";
                     return;
                 }
 
-                // extract text with formatting preserved
-                ExtractedText = BuildFormattedText(ocrResult);
+                // display extracted text
+                ExtractedText     = ocrResult.TextBox;
                 txtOcrResult.Text = ExtractedText;
+                Debug.WriteLine($"OCR Success: Detected {ocrResult.RegionCount} text regions.");
             }
             catch (Exception ex)
             {
                 txtOcrResult.Text = $"OCR failed: {ex.Message}\n\nDetails: {ex.GetType().Name}";
                 System.Diagnostics.Debug.WriteLine($"OCR Error: {ex}");
             }
-        }
-
-        // == preprocess image to improve OCR accuracy == //
-        private static Bitmap PreprocessImageForOcr(Bitmap original)
-        {
-            // calculate scale factor - OCR works best at higher resolutions
-            int scaleFactor = 1;
-            if (original.Width < 1000 || original.Height < 200)
-            {
-                scaleFactor = Math.Max(2, Math.Min(4, 1500 / Math.Max(original.Width, 1)));
-            }
-
-            int newWidth = original.Width * scaleFactor;
-            int newHeight = original.Height * scaleFactor;
-
-            // create a new bitmap with 32bpp ARGB format
-            Bitmap processed = new Bitmap(newWidth, newHeight, PixelFormat.Format32bppArgb);
-
-            using (Graphics g = Graphics.FromImage(processed))
-            {
-                // set high quality rendering
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-
-                // draw white background first
-                g.Clear(Color.White);
-
-                // draw the original image scaled up
-                g.DrawImage(original, 0, 0, newWidth, newHeight);
-            }
-
-            return processed;
-        }
-
-        // == build formatted text preserving approximate spacing (for tabular data) == //
-        private static string BuildFormattedText(OcrResult ocrResult)
-        {
-            var sb = new StringBuilder();
-
-            foreach (var line in ocrResult.Lines)
-            {
-                var lineText = new StringBuilder();
-                OcrWord? previousWord = null;
-
-                foreach (var word in line.Words)
-                {
-                    if (string.IsNullOrWhiteSpace(word.Text))
-                        continue;
-
-                    if (previousWord != null)
-                    {
-                        // calculate horizontal gap between words
-                        double gap = word.BoundingRect.X - (previousWord.BoundingRect.X + previousWord.BoundingRect.Width);
-                        double avgCharWidth = previousWord.BoundingRect.Width / Math.Max(1, previousWord.Text.Length);
-
-                        // estimate number of spaces based on gap size
-                        int numSpaces = Math.Max(1, (int)Math.Round(gap / Math.Max(avgCharWidth, 1)));
-
-                        // cap at reasonable maximum to prevent runaway spacing
-                        numSpaces = Math.Min(numSpaces, 8);
-
-                        lineText.Append(new string(' ', numSpaces));
-                    }
-
-                    lineText.Append(word.Text);
-                    previousWord = word;
-                }
-
-                if (lineText.Length > 0)
-                {
-                    sb.AppendLine(lineText.ToString());
-                }
-            }
-            return sb.ToString().TrimEnd();
         }
 
         // == copy screenshot to clipboard == //
@@ -338,6 +236,25 @@ namespace ScreenGrab
                     $"ScreenGrab:",
                     4000);
             }
+        }
+
+        // == dispose OCR service on form close == //
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            //dispose screenshot bitmap
+            if (pictureBoxScreenshot.Image != null)
+            {
+                pictureBoxScreenshot.Image.Dispose();
+                pictureBoxScreenshot.Image = null;
+            }
+
+            // dispose of screenshot property
+            Screenshot?.Dispose();
+            Screenshot = null;
+
+            //  dispose OCR service
+            _ocrService.Dispose();
+            base.OnFormClosed(e);
         }
     }
 }
