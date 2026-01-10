@@ -54,6 +54,9 @@
             btnZoomReset = new ToolStripButton();
             trackBarBrushSize = new TrackBar();
             lblBrushSize = new Label();
+            CropToolStrip = new ToolStrip();
+            toolStripBtnCrop = new ToolStripButton();
+            toolStripBtnResetCrop = new ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)EditorHeader).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
             EditorMenu.SuspendLayout();
@@ -61,6 +64,7 @@
             panelImageContainer.SuspendLayout();
             ZoomToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBarBrushSize).BeginInit();
+            CropToolStrip.SuspendLayout();
             SuspendLayout();
             // 
             // EditorHeader
@@ -329,12 +333,43 @@
             lblBrushSize.TabIndex = 31;
             lblBrushSize.Text = "Brush Size:";
             // 
+            // CropToolStrip
+            // 
+            CropToolStrip.BackColor = SystemColors.Desktop;
+            CropToolStrip.Dock = DockStyle.None;
+            CropToolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnCrop, toolStripBtnResetCrop });
+            CropToolStrip.Location = new Point(442, 78);
+            CropToolStrip.Name = "CropToolStrip";
+            CropToolStrip.RenderMode = ToolStripRenderMode.System;
+            CropToolStrip.Size = new Size(58, 25);
+            CropToolStrip.TabIndex = 32;
+            CropToolStrip.Text = "toolStrip1";
+            // 
+            // toolStripBtnCrop
+            // 
+            toolStripBtnCrop.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnCrop.Image = (Image)resources.GetObject("toolStripBtnCrop.Image");
+            toolStripBtnCrop.ImageTransparentColor = Color.Magenta;
+            toolStripBtnCrop.Name = "toolStripBtnCrop";
+            toolStripBtnCrop.Size = new Size(23, 22);
+            toolStripBtnCrop.Text = "toolStripButton9";
+            // 
+            // toolStripBtnResetCrop
+            // 
+            toolStripBtnResetCrop.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnResetCrop.Image = (Image)resources.GetObject("toolStripBtnResetCrop.Image");
+            toolStripBtnResetCrop.ImageTransparentColor = Color.Magenta;
+            toolStripBtnResetCrop.Name = "toolStripBtnResetCrop";
+            toolStripBtnResetCrop.Size = new Size(23, 22);
+            toolStripBtnResetCrop.Text = "toolStripButton9";
+            // 
             // ImageEditorForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Desktop;
             ClientSize = new Size(1426, 884);
+            Controls.Add(CropToolStrip);
             Controls.Add(ZoomToolStrip);
             Controls.Add(panelImageContainer);
             Controls.Add(btnSendToSettings);
@@ -357,6 +392,8 @@
             ZoomToolStrip.ResumeLayout(false);
             ZoomToolStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)trackBarBrushSize).EndInit();
+            CropToolStrip.ResumeLayout(false);
+            CropToolStrip.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -388,5 +425,8 @@
         private TrackBar trackBarBrushSize;
         private Label lblBrushSize;
         private ToolStripButton toolStripButton8;
+        private ToolStrip CropToolStrip;
+        private ToolStripButton toolStripBtnCrop;
+        private ToolStripButton toolStripBtnResetCrop;
     }
 }
