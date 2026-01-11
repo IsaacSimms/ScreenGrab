@@ -341,7 +341,7 @@
             CropToolStrip.Location = new Point(442, 78);
             CropToolStrip.Name = "CropToolStrip";
             CropToolStrip.RenderMode = ToolStripRenderMode.System;
-            CropToolStrip.Size = new Size(58, 25);
+            CropToolStrip.Size = new Size(89, 25);
             CropToolStrip.TabIndex = 32;
             CropToolStrip.Text = "toolStrip1";
             // 
@@ -353,6 +353,7 @@
             toolStripBtnCrop.Name = "toolStripBtnCrop";
             toolStripBtnCrop.Size = new Size(23, 22);
             toolStripBtnCrop.Text = "toolStripButton9";
+            toolStripBtnCrop.Click += btnCrop_Click;
             // 
             // toolStripBtnResetCrop
             // 
@@ -362,6 +363,7 @@
             toolStripBtnResetCrop.Name = "toolStripBtnResetCrop";
             toolStripBtnResetCrop.Size = new Size(23, 22);
             toolStripBtnResetCrop.Text = "toolStripButton9";
+            toolStripBtnResetCrop.Click += btnResetCrop_Click;
             // 
             // ImageEditorForm
             // 

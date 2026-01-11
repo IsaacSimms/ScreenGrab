@@ -28,7 +28,8 @@ namespace ScreenGrab
             Text,
             Highlight,
             Blur,
-            Line
+            Line,
+            Crop
         }
         // == private variables == //
         private Image?         _currentImage;                                     // local variable for storing loaded iamge
@@ -54,6 +55,10 @@ namespace ScreenGrab
         private const float    ZoomMin  = 0.1f;                                   // minimum zoom level
         private const float    ZoomMax  = 5.0f;                                   // maximum zoom level
         private const float    ZoomStep = 0.1f;                                   // zoom step increment
+        // crop variables
+        private Bitmap?   _originalImageBeforeCrop;                               // store original image before crop operation
+        private Rectangle _cropRectangle;                                         // rectangle for cropping
+        private bool      _isCropping = false;                                    // flag to indicate if cropping is in progress
 
         // == constructor == //
         public ImageEditorForm()
@@ -73,6 +78,10 @@ namespace ScreenGrab
             pictureBoxImage.Paint      += pictureBoxImage_Paint;
             pictureBoxImage.MouseWheel += pictureBoxImage_MouseWheel; // for zooming
 
+            // wire crop tool button events 
+            toolStripBtnCrop.Click      += btnCrop_Click;
+            toolStripBtnResetCrop.Click += btnResetCrop_Click;
+
             // for ctrl + Z for undo shortcut
             this.KeyPreview = true; // allow form to capture key events
             this.KeyDown += ImageEditorForm_KeyDown;
@@ -91,6 +100,27 @@ namespace ScreenGrab
             else if (e.Control && e.KeyCode == Keys.D0)
             {
                 ResetZoom();
+                e.Handled = true; // prevent further processing
+            }
+            // escape key to cancel current selection
+            else if (e.KeyCode == Keys.Escape)
+            {
+                if (_isTextInputActive)
+                {
+                    CancelTextInput();
+                }
+                if (_isDrawing)
+                {
+                    _isDrawing  = false;          // reset drawing flag
+                    _freeformPoints.Clear();      // clear freeform points
+                    pictureBoxImage.Invalidate(); // request redraw to clear preview
+                }
+                if (_isCropping)
+                {
+                    _isCropping = false;
+                    _activeDrawingTool = DrawingTool.None; // deactivate crop tool
+                    pictureBoxImage.Invalidate();          // request redraw to clear crop rectangle
+                }
                 e.Handled = true; // prevent further processing
             }
         }
@@ -127,9 +157,11 @@ namespace ScreenGrab
             {
                 _currentImage?.Dispose();                                              // dispose previous image if any
                 _editableImage?.Dispose();                                             // dispose previous editable image if any
+                _originalImageBeforeCrop?.Dispose();                                   // dispose previous original image before crop if any
+                _originalImageBeforeCrop = null;                                       // reset original image before crop
                 _currentImage = Image.FromFile(imagePath);                             // load image from file
                 _editableImage = new Bitmap(_currentImage);                            // create editable bitmap copy
-                pictureBoxImage.Image = _editableImage;                                 // assign image to picture box
+                pictureBoxImage.Image = _editableImage;                                // assign image to picture box
                 this.Text = $"Image Editor - {System.IO.Path.GetFileName(imagePath)}"; // set form title
             }
             catch (Exception ex)
@@ -341,6 +373,135 @@ namespace ScreenGrab
         }
 
         // == END OF UNDO FUNCTIONALITY == //
+
+        // == CROP TOOL FUNCTIONALITY == //
+        // == button to activate crop tool == //
+        private void btnCrop_Click(object? sender, EventArgs e)
+        {
+            ActivateDrawingTool(DrawingTool.Crop);
+        }
+
+        // button to reset crop
+        private void btnResetCrop_Click(object? sender, EventArgs e)
+        {
+            ResetCrop();
+        }
+
+        // == reset crop operation == //
+        private void ResetCrop()
+        {
+            if (_originalImageBeforeCrop != null && _editableImage != null)
+            {
+                SaveStateForUndo();                                    // save current state for undo
+                _editableImage.Dispose();                              // dispose current editable image
+                _editableImage = new Bitmap(_originalImageBeforeCrop); // restore original image
+                pictureBoxImage.Image = _editableImage;                // update picture box
+                pictureBoxImage.Invalidate();                          // refresh display
+                ResetZoom();                                           // reset zoom
+            }
+            else
+            {
+                ScreenshotMessageBox.ShowMessage(
+                    $"ScreenGrab: No crop to reset",
+                    $"ScreenGrab",
+                    4000);
+            }
+        }
+
+        // == draw crop rectangle preview == //
+        private void DrawCropPreview(Graphics g)
+        {
+            // calculate rectangle dimensions
+            int x      = Math.Min(_drawStartPoint.X, _drawEndPoint.X);
+            int y      = Math.Min(_drawStartPoint.Y, _drawEndPoint.Y);
+            int width  = Math.Abs(_drawEndPoint.X - _drawStartPoint.X);
+            int height = Math.Abs(_drawEndPoint.Y - _drawStartPoint.Y);
+
+            // draw semi-transparent overlay
+            using (Brush dimBrush = new SolidBrush(Color.FromArgb(120, Color.Black)))
+            {
+                // top
+                g.FillRectangle(dimBrush, 0, 0, pictureBoxImage.Width, y);
+                // bottom
+                g.FillRectangle(dimBrush, 0, y + height, pictureBoxImage.Width, pictureBoxImage.Height - (y + height));
+                // left
+                g.FillRectangle(dimBrush, 0, y, x, height);
+                // right
+                g.FillRectangle(dimBrush, x + width, y, pictureBoxImage.Width - (x + width), height);
+            }
+
+            // draw crop rectangle border
+            using (Pen cropPen = new Pen(Color.White, 2))
+            {
+                cropPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+                g.DrawRectangle(cropPen, x, y, width, height);
+            }
+        }
+
+        // == apply crop to image == //
+        private void PerformCrop()
+        {
+            if (_editableImage == null) return; // handle error
+
+            // calculate crop rectangle in image coordinates
+            Point imgStart = ConvertToImageCoordinates(_drawStartPoint);
+            Point imgEnd   = ConvertToImageCoordinates(_drawEndPoint);
+
+            // calculate rectangle dimensions
+            int x      = Math.Min(imgStart.X, imgEnd.X);
+            int y      = Math.Min(imgStart.Y, imgEnd.Y);
+            int width  = Math.Abs(imgEnd.X - imgStart.X);
+            int height = Math.Abs(imgEnd.Y - imgStart.Y);
+
+            // ensure crop rectangle is within image bounds
+            if (width <= 0 || height <= 0)
+            {
+                ScreenshotMessageBox.ShowMessage(
+                    $"ScreenGrab: Invalid crop area selected",
+                    $"ScreenGrab",
+                    4000);
+                return;
+            }
+
+            // clamp to image bounds
+            x      = Math.Max(0, x);
+            y      = Math.Max(0, y);
+            width  = Math.Min(width, _editableImage.Width - x);
+            height = Math.Min(height, _editableImage.Height - y);
+            if (width <= 0 || height <= 0) // recheck for error after clamping
+            {
+                ScreenshotMessageBox.ShowMessage(
+                    $"ScreenGrab: Invalid crop area selected",
+                    $"ScreenGrab",
+                    4000);
+                return;
+            }
+
+            // save current state for undo
+            if (_originalImageBeforeCrop == null)
+            {
+                _originalImageBeforeCrop = new Bitmap(_editableImage); // store original image before first crop
+            }
+            SaveStateForUndo();
+
+            // perform crop
+            Rectangle cropRect  = new Rectangle(x, y, width, height);                         // define crop rectangle
+            Bitmap croppedImage = _editableImage.Clone(cropRect, _editableImage.PixelFormat); // crop image
+
+            // update editable image
+            _editableImage.Dispose();
+            _editableImage        = croppedImage;
+            pictureBoxImage.Image = _editableImage; // update picture box
+
+            // reset zoom
+            ResetZoom();
+            pictureBoxImage.Invalidate(); // refresh display
+
+            // reset cropping state
+            _activeDrawingTool     = DrawingTool.None;
+            pictureBoxImage.Cursor = Cursors.Default;
+        }
+        // == END OF CROP TOOL FUNCTIONALITY == //
 
         // == ZOOM FUNCTIONALITY == //
         // mouse wheel event for zooming
@@ -723,6 +884,12 @@ namespace ScreenGrab
                 _isDrawing = true;                              // set drawing flag
                 _drawStartPoint = e.Location;                   // set starting point
                 _drawEndPoint = e.Location;                     // initialize ending point
+
+                if (_activeDrawingTool == DrawingTool.Crop) // for crop tool
+                {
+                    _isCropping = true;                          // set cropping flag
+                    return;
+                }
                 if (_activeDrawingTool == DrawingTool.Freeform) //for freeform drawing
                 {
                     _freeformPoints.Clear();                    // clear previous points
@@ -754,6 +921,18 @@ namespace ScreenGrab
             if (_isDrawing && _activeDrawingTool != DrawingTool.None && _editableImage != null)
             {
                 _drawEndPoint = e.Location;          // set ending point
+
+                // handle cropping
+                if (_activeDrawingTool == DrawingTool.Crop && _isCropping)
+                {
+                    _isDrawing = false;               // reset drawing flag
+                    _isCropping = false;              // reset cropping flag
+                    PerformCrop();                    // perform crop operation
+                    pictureBoxImage.Invalidate();     // refresh picture box to show cropped image
+                    return;
+                }
+
+                // handle freeform drawing
                 if (_activeDrawingTool == DrawingTool.Freeform)
                 {
                     _freeformPoints.Add(e.Location); // add final point for freeform drawing
@@ -790,6 +969,9 @@ namespace ScreenGrab
                         break;
                     case DrawingTool.Line:
                         DrawLinePreview(e.Graphics);
+                        break;
+                    case DrawingTool.Crop:
+                        DrawCropPreview(e.Graphics);
                         break;
                 }
             }
@@ -1031,6 +1213,8 @@ namespace ScreenGrab
             pictureBoxImage.MouseUp     -= pictureBoxImage_MouseUp; 
             pictureBoxImage.Paint       -= pictureBoxImage_Paint;
             pictureBoxImage.MouseWheel  -= pictureBoxImage_MouseWheel;
+            toolStripBtnCrop.Click      -= btnCrop_Click;
+            toolStripBtnResetCrop.Click -= btnResetCrop_Click;
             this.KeyDown                -= ImageEditorForm_KeyDown;
 
             // dispose of undo stack
@@ -1040,15 +1224,16 @@ namespace ScreenGrab
             }
 
             // dispose of resources
-            btnSelectColor.Image?.Dispose(); // dispose of selected color image
-            _currentImage?.Dispose();        // dispose loaded image
-            _currentPen?.Dispose();          // dispose drawing pen
-            _editableImage?.Dispose();       // dispose editable image
-            _currentImage = null;            // clear reference
-            _editableImage = null;           // clear reference
-            _freeformPoints.Clear();         // clear freeform points
-            base.OnFormClosing(e);           // call base class method
-
+            btnSelectColor.Image?.Dispose();     // dispose of selected color image
+            _currentImage?.Dispose();            // dispose loaded image
+            _currentPen?.Dispose();              // dispose drawing pen
+            _editableImage?.Dispose();           // dispose editable image
+            _originalImageBeforeCrop?.Dispose(); // dispose original image before crop
+            _currentImage = null;                // clear reference
+            _editableImage = null;               // clear reference
+            _originalImageBeforeCrop = null;     // clear reference
+            _freeformPoints.Clear();             // clear freeform points
+            base.OnFormClosing(e);               // call base class method
         }
     }
 }
