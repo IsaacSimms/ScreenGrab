@@ -878,24 +878,31 @@ namespace ScreenGrab
         // start drawing shape on image
         private void pictureBoxImage_MouseDown(object? sender, MouseEventArgs e)
         {
-            if (_activeDrawingTool != DrawingTool.None && e.Button == MouseButtons.Left && _currentPen != null && _editableImage != null)
+            System.Diagnostics.Debug.WriteLine($"MouseDown - Tool: {_activeDrawingTool}, Button: {e.Button}, Location: {e.Location}");
+            if (_activeDrawingTool != DrawingTool.None && e.Button == MouseButtons.Left && _editableImage != null)
             {
+                // handle crop tool
+                if (_activeDrawingTool == DrawingTool.Crop)     // for crop tool
+                {
+                    System.Diagnostics.Debug.WriteLine($"Starting drawing operation for tool: {_activeDrawingTool}");
+                    _isDrawing      = true;                     // set drawing flag
+                    _isCropping     = true;                     // set cropping flag
+                    _drawStartPoint = e.Location;               // set starting point
+                    _drawEndPoint   = e.Location;               // initialize ending point
+                    return;
+                }
 
+                if (_currentPen == null) return;                // safety check
                 _isDrawing = true;                              // set drawing flag
                 _drawStartPoint = e.Location;                   // set starting point
                 _drawEndPoint = e.Location;                     // initialize ending point
 
-                if (_activeDrawingTool == DrawingTool.Crop) // for crop tool
-                {
-                    _isCropping = true;                          // set cropping flag
-                    return;
-                }
                 if (_activeDrawingTool == DrawingTool.Freeform) //for freeform drawing
                 {
                     _freeformPoints.Clear();                    // clear previous points
                     _freeformPoints.Add(e.Location);            // add starting point
                 }
-                if (_activeDrawingTool == DrawingTool.Text)    // for text tool
+                if (_activeDrawingTool == DrawingTool.Text)     // for text tool
                 {
                     ShowTextInputBox(e.Location);               // show text input box
                     return;
@@ -947,7 +954,11 @@ namespace ScreenGrab
         // paint event to show drawing preview
         private void pictureBoxImage_Paint(object? sender, PaintEventArgs e)
         {
-            if (_isDrawing && _activeDrawingTool != DrawingTool.None && _currentPen != null)
+            if (_isDrawing && _activeDrawingTool == DrawingTool.Crop)
+            {
+                DrawCropPreview(e.Graphics); // draw crop preview
+            }
+            else if (_isDrawing && _activeDrawingTool != DrawingTool.None && _currentPen != null)
             {
                 // draw preview shape
                 switch (_activeDrawingTool)
@@ -975,6 +986,7 @@ namespace ScreenGrab
                         break;
                 }
             }
+            
             // draw textbox if active
             if (_isTextInputActive && _textBox != null)
             {

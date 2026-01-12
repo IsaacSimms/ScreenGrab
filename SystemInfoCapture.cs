@@ -619,8 +619,6 @@ namespace ScreenGrab
                 // update picture box with new image
                 pictureBoxScreenshot.Image = Screenshot;
             }
-
-
         }
     }
 }
