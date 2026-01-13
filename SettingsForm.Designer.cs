@@ -403,6 +403,8 @@
             // chkAutoOpenEditorOnCapture
             // 
             chkAutoOpenEditorOnCapture.CheckAlign = ContentAlignment.MiddleCenter;
+            chkAutoOpenEditorOnCapture.Checked = true;
+            chkAutoOpenEditorOnCapture.CheckState = CheckState.Checked;
             chkAutoOpenEditorOnCapture.Location = new Point(206, 243);
             chkAutoOpenEditorOnCapture.Name = "chkAutoOpenEditorOnCapture";
             chkAutoOpenEditorOnCapture.Size = new Size(122, 22);

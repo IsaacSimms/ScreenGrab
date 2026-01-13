@@ -79,7 +79,7 @@ namespace ScreenGrab
             pictureBoxImage.MouseWheel += pictureBoxImage_MouseWheel; // for zooming
 
             // wire crop tool button events 
-            toolStripBtnCrop.Click      += btnCrop_Click;
+            // toolStripBtnCrop.Click      += btnCrop_Click; // this MUST be wired in designer to avoid conflict with other click events. here for mouse even reference
             toolStripBtnResetCrop.Click += btnResetCrop_Click;
 
             // for ctrl + Z for undo shortcut
@@ -378,6 +378,7 @@ namespace ScreenGrab
         // == button to activate crop tool == //
         private void btnCrop_Click(object? sender, EventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine("Crop tool activated"); // debug log
             ActivateDrawingTool(DrawingTool.Crop);
         }
 
@@ -616,16 +617,19 @@ namespace ScreenGrab
         // == method to activate selected drawing tool == //
         private void ActivateDrawingTool(DrawingTool tool)
         {
+            System.Diagnostics.Debug.WriteLine($"Activating tool: {tool}"); // debug log
             // toggle off if same tool is selected
             if (_activeDrawingTool == tool)
             {
                 _activeDrawingTool = DrawingTool.None;    // deactivate tool
                 pictureBoxImage.Cursor = Cursors.Default; // reset cursor
+                System.Diagnostics.Debug.WriteLine($"Deactivating tool: {tool}"); // debug log
             }
             else
             {
                 _activeDrawingTool = tool;              // activate selected tool
                 pictureBoxImage.Cursor = Cursors.Cross; // change cursor to crosshair
+                System.Diagnostics.Debug.WriteLine($"Tool activated: {tool}"); // debug log
             }
         }
         // == button to select rectangle drawing tool == //
@@ -878,13 +882,15 @@ namespace ScreenGrab
         // start drawing shape on image
         private void pictureBoxImage_MouseDown(object? sender, MouseEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine($"MouseDown - Tool: {_activeDrawingTool}, Button: {e.Button}, Location: {e.Location}");
+            
             if (_activeDrawingTool != DrawingTool.None && e.Button == MouseButtons.Left && _editableImage != null)
             {
+                System.Diagnostics.Debug.WriteLine($"MouseDown - Tool: {_activeDrawingTool}, Button: {e.Button}, Location: {e.Location}"); // debug log
                 // handle crop tool
                 if (_activeDrawingTool == DrawingTool.Crop)     // for crop tool
                 {
-                    System.Diagnostics.Debug.WriteLine($"Starting drawing operation for tool: {_activeDrawingTool}");
+
+                    System.Diagnostics.Debug.WriteLine($"Starting drawing operation for tool: {_activeDrawingTool}"); // debug log
                     _isDrawing      = true;                     // set drawing flag
                     _isCropping     = true;                     // set cropping flag
                     _drawStartPoint = e.Location;               // set starting point

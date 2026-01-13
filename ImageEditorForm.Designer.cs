@@ -9,7 +9,7 @@
 
         /// <summary>
         /// Clean up any resources being used.
-        /// </summary>
+        /// </summary>F
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
@@ -291,6 +291,7 @@
             btnZoomPlus.ImageTransparentColor = Color.Magenta;
             btnZoomPlus.Name = "btnZoomPlus";
             btnZoomPlus.Size = new Size(23, 22);
+            btnZoomPlus.ToolTipText = "Zoom In";
             btnZoomPlus.Click += btnZoomIn_Click;
             // 
             // btnZoomMinus
@@ -300,6 +301,7 @@
             btnZoomMinus.ImageTransparentColor = Color.Magenta;
             btnZoomMinus.Name = "btnZoomMinus";
             btnZoomMinus.Size = new Size(23, 22);
+            btnZoomMinus.ToolTipText = "Zoom Out";
             btnZoomMinus.Click += btnZoomOut_Click;
             // 
             // btnZoomReset
@@ -309,6 +311,7 @@
             btnZoomReset.ImageTransparentColor = Color.Magenta;
             btnZoomReset.Name = "btnZoomReset";
             btnZoomReset.Size = new Size(23, 22);
+            btnZoomReset.ToolTipText = "Undo Zoom";
             btnZoomReset.Click += btnResetZoom_Click;
             // 
             // trackBarBrushSize
@@ -341,7 +344,7 @@
             CropToolStrip.Location = new Point(442, 78);
             CropToolStrip.Name = "CropToolStrip";
             CropToolStrip.RenderMode = ToolStripRenderMode.System;
-            CropToolStrip.Size = new Size(89, 25);
+            CropToolStrip.Size = new Size(58, 25);
             CropToolStrip.TabIndex = 32;
             CropToolStrip.Text = "toolStrip1";
             // 
@@ -353,6 +356,7 @@
             toolStripBtnCrop.Name = "toolStripBtnCrop";
             toolStripBtnCrop.Size = new Size(23, 22);
             toolStripBtnCrop.Text = "toolStripButton9";
+            toolStripBtnCrop.ToolTipText = "Crop";
             toolStripBtnCrop.Click += btnCrop_Click;
             // 
             // toolStripBtnResetCrop
@@ -363,6 +367,7 @@
             toolStripBtnResetCrop.Name = "toolStripBtnResetCrop";
             toolStripBtnResetCrop.Size = new Size(23, 22);
             toolStripBtnResetCrop.Text = "toolStripButton9";
+            toolStripBtnResetCrop.ToolTipText = "Undo Crop";
             toolStripBtnResetCrop.Click += btnResetCrop_Click;
             // 
             // ImageEditorForm
