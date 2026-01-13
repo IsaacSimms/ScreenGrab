@@ -379,19 +379,17 @@ namespace ScreenGrab
                 }
 
                 // capture region using bitmap
-                Bitmap bitmapForOcr;
-                using (Bitmap tempBitmap = new Bitmap(selectedArea.Width, selectedArea.Height))
+                Bitmap bitmapForOcr = new Bitmap(selectedArea.Width, selectedArea.Height, PixelFormat.Format32bppArgb);
+
+                // capture screenshot of selected area
+                using (Graphics g = Graphics.FromImage(bitmapForOcr))
                 {
-                    using (Graphics g = Graphics.FromImage(tempBitmap))
-                    {
-                        g.CopyFromScreen(selectedArea.Location, Point.Empty, selectedArea.Size); // capture screenshot from specified area
-                    }
-                    bitmapForOcr = new Bitmap(tempBitmap); // create a copy for OCR processing
+                    g.CopyFromScreen(selectedArea.Location, Point.Empty, selectedArea.Size); // capture screenshot from specified area
                 }
 
-                // trigger OCR capture event with screenshot bitmap
+                // trigger ocr capture with bitmap
                 var ocrForm = new OCRScreenshotForm(bitmapForOcr) 
-                {
+                { 
                     Tag           = _driverForm, // pass driver form for ownership
                     ShowInTaskbar = true
                 };
