@@ -554,7 +554,7 @@ namespace ScreenGrab
                 e.Graphics.CompositingQuality = CompositingQuality.HighSpeed;
                 e.Graphics.SmoothingMode = SmoothingMode.None; // disable anti-aliasing for rectangles (faster)
                 
-                using (var overlayBrush = new SolidBrush(Color.FromArgb(38, Color.Black))) // semi-transparent overlay brush
+                using (var overlayBrush = new SolidBrush(Color.FromArgb(120, Color.Black))) // semi-transparent overlay brush
                 {
                     
                     if (_isSelecting && _selectedArea != Rectangle.Empty)
@@ -571,12 +571,12 @@ namespace ScreenGrab
                             e.Graphics.FillRegion(overlayBrush, formRegion);         // fill remaining area with overlay
                         }
                         // pen for selection rectangle
-                        using (var selectionPen = new Pen(Color.Red, 4))
+                        using (var selectionPen = new Pen(Color.Red, 7))
                         {
                             e.Graphics.DrawRectangle(selectionPen, clientRectangle); // draw selection rectangle
                         }
                         // dashed overlay
-                        using (var dashedPen = new Pen(Color.Black, 2))
+                        using (var dashedPen = new Pen(Color.Black, 3))
                         {
                             dashedPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
                             e.Graphics.DrawRectangle(dashedPen, clientRectangle);
@@ -757,7 +757,7 @@ namespace ScreenGrab
                 e.Graphics.CompositingMode = CompositingMode.SourceOver;
                 e.Graphics.CompositingQuality = CompositingQuality.HighSpeed;
 
-                using (var overlayBrush = new SolidBrush(Color.FromArgb(38, Color.Black))) // semi-transparent overlay brush
+                using (var overlayBrush = new SolidBrush(Color.FromArgb(120, Color.Black))) // semi-transparent overlay brush
                 {
                     // draw freeform path if it has points
                     if (_freeformPath.Count > 1)
@@ -779,12 +779,12 @@ namespace ScreenGrab
                                 }
                                 // anti-aliasing for smoother lines
                                 e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                                using (var PenFreeform = new Pen(Color.Red, 4))               // pen for freeform path
+                                using (var PenFreeform = new Pen(Color.Red, 7))               // pen for freeform path
                                 {
                                     e.Graphics.DrawLines(PenFreeform, clientPoints);          // draw freeform path
                                 }
                                 //dashed overlay
-                                using (var PenDashedFreeform = new Pen(Color.Black, 2))
+                                using (var PenDashedFreeform = new Pen(Color.Black, 3))
                                 {
                                     PenDashedFreeform.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
                                     e.Graphics.DrawLines(PenDashedFreeform, clientPoints);
@@ -796,7 +796,7 @@ namespace ScreenGrab
                         {
                             e.Graphics.FillRectangle(overlayBrush, this.ClientRectangle); // fill entire form with overlay
                             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                            using (var PenFreeform = new Pen(Color.Red, 4))               // pen for freeform path
+                            using (var PenFreeform = new Pen(Color.Red, 7))               // pen for freeform path
                             {
                                 if (clientPoints.Length == 2)
                                 {
