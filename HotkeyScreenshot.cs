@@ -335,6 +335,7 @@ namespace ScreenGrab
             // trigger system info capture with screenshot bitmap
             var systemInfoForm = new SystemInfoCapture(hWnd, bitmapForForm);
             systemInfoForm.Show();
+            systemInfoForm.Activate();
         }
 
         // == Capture selected region and save to clipboard and onedrive == //
@@ -554,7 +555,7 @@ namespace ScreenGrab
                 e.Graphics.CompositingQuality = CompositingQuality.HighSpeed;
                 e.Graphics.SmoothingMode = SmoothingMode.None; // disable anti-aliasing for rectangles (faster)
                 
-                using (var overlayBrush = new SolidBrush(Color.FromArgb(120, Color.Black))) // semi-transparent overlay brush
+                using (var overlayBrush = new SolidBrush(Color.FromArgb(255, Color.DarkGray))) // semi-transparent overlay brush
                 {
                     
                     if (_isSelecting && _selectedArea != Rectangle.Empty)
@@ -571,12 +572,13 @@ namespace ScreenGrab
                             e.Graphics.FillRegion(overlayBrush, formRegion);         // fill remaining area with overlay
                         }
                         // pen for selection rectangle
-                        using (var selectionPen = new Pen(Color.Red, 7))
+                        using (var selectionPen = new Pen(Color.White, 3))
                         {
+                            selectionPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Solid;
                             e.Graphics.DrawRectangle(selectionPen, clientRectangle); // draw selection rectangle
                         }
                         // dashed overlay
-                        using (var dashedPen = new Pen(Color.Black, 3))
+                        using (var dashedPen = new Pen(Color.Red, 3))
                         {
                             dashedPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
                             e.Graphics.DrawRectangle(dashedPen, clientRectangle);

@@ -41,7 +41,7 @@ namespace ScreenGrab
         private Color          _SelectedColor = Color.Red;                        // default color (red) for drawing
         private Pen?           _currentPen;                                       // pen for drawing shapes
         private List<Point>    _freeformPoints = new List<Point>();               // points for freeform drawing
-        private int            _brushSize = 5;                                    // varaible brush size for drawing including default
+        private int            _brushSize = 5;                                    // variable brush size for drawing including default
         // text tool variables
         private RichTextBox?   _textBox;
         private Point          _textStartPoint;

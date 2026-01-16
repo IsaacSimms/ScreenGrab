@@ -6,6 +6,8 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Runtime.CompilerServices;
+using Windows.Devices.AllJoyn;
+using System.Threading.Tasks;
 namespace ScreenGrab
 {
     public partial class Driver : Form
@@ -269,43 +271,69 @@ namespace ScreenGrab
         }
 
         // when button is clicked, take a screenshot of active window
-        private void activeWindowScreenshotButton_Click(object sender, EventArgs e)
+        private async void activeWindowScreenshotButton_Click(object sender, EventArgs e)
         {
+            this.Hide();
+            this.ShowInTaskbar = false;
+            await Task.Delay(150); // slight delay to ensure screenshot process starts before hiding the main window
             _hotkeyScreenshot?.CaptureActiveWindow();
+
         }
 
         // when button is clicked, take a screenshot of region
-        private void regionScreenshotButton_Click(object sender, EventArgs e)
+        private async void regionScreenshotButton_Click(object sender, EventArgs e)
         {
+            this.Hide();
+            this.ShowInTaskbar = false;
+            await Task.Delay(100); // slight delay to ensure screenshot process starts before hiding the main window
             _hotkeyScreenshot?.CaptureRegion();
+
+
         }
         // when button is clicked, take OCR screenshot of region
-        private void ocrRegionScreenshotButton_Click(object sender, EventArgs e)
+        private async void ocrRegionScreenshotButton_Click(object sender, EventArgs e)
         {
+            this.Hide();
+            this.ShowInTaskbar = false;
+            await Task.Delay(100); // slight delay to ensure screenshot process starts before hiding the main window
             _hotkeyScreenshot?.CaptureOcrRegion();
         }
 
         // when button is clicked, take a freeform screenshot
-        private void freeformScreenshotButton_Click(object sender, EventArgs e)
+        private async void freeformScreenshotButton_Click(object sender, EventArgs e)
         {
+            this.Hide();
+            this.ShowInTaskbar = false;
+            await Task.Delay(100); // slight delay to ensure screenshot process starts before hiding the main window
             _hotkeyScreenshot?.CaptureFreeform();
+
         }
 
         // when button is clicked, take a delayed screenshot of active window
-        private void delayedActiveWindowScreenshotButton_Click(object sender, EventArgs e)
+        private async void delayedActiveWindowScreenshotButton_Click(object sender, EventArgs e)
         {
+            this.Hide();
+            this.ShowInTaskbar = false;
+            await Task.Delay(100); // slight delay to ensure screenshot process starts before hiding the main window
             _hotkeyScreenshot?.CaptureActiveWindowDelayed();
+
         }
 
         // when button is clicked, take a delayed screenshot of region
-        private void delayedRegionScreenshotButton_Click(object sender, EventArgs e)
+        private async void delayedRegionScreenshotButton_Click(object sender, EventArgs e)
         {
+            this.Hide();
+            this.ShowInTaskbar = false;
+            await Task.Delay(100); // slight delay to ensure screenshot process starts before hiding the main window
             _hotkeyScreenshot?.CaptureRegionDelayed();
         }
 
         // when button is clicked, open clipboard image in MS Paint
-        private void openClipboardImageInPaintButton_Click(object sender, EventArgs e)
+        private async void openClipboardImageInPaintButton_Click(object sender, EventArgs e)
         {
+            this.Hide();
+            this.ShowInTaskbar = false;
+            await Task.Delay(100); // slight delay to ensure screenshot process starts before hiding the main window
             OpenClipboardImageInPaint.OpenImageInPaint();
         }
     }

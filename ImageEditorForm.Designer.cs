@@ -317,12 +317,14 @@
             // trackBarBrushSize
             // 
             trackBarBrushSize.Location = new Point(237, 78);
+            trackBarBrushSize.Minimum = 1;
             trackBarBrushSize.Maximum = 20;
+            trackBarBrushSize.Value = 5;
             trackBarBrushSize.Name = "trackBarBrushSize";
             trackBarBrushSize.Size = new Size(202, 45);
             trackBarBrushSize.TabIndex = 30;
             trackBarBrushSize.Tag = "Brush Size";
-            trackBarBrushSize.TickFrequency = 2;
+            trackBarBrushSize.TickFrequency = 1;
             trackBarBrushSize.TickStyle = TickStyle.None;
             trackBarBrushSize.Scroll += trackBarBrushSize_Scroll;
             // 

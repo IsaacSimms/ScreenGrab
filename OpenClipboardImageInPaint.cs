@@ -20,7 +20,7 @@ namespace ScreenGrab
             // let user know there is no image on clipboard
             if (!Clipboard.ContainsImage())
             {
-                ScreenshotMessageBox .ShowMessage(                             // show message box on screenshot taken
+                ScreenshotMessageBox.ShowMessage(                             // show message box on screenshot taken
                        $"ScreenGrab: there is not a .png saved to clipboard", // message
                        $"ScreenGrab",                                         // title //not displaying in current config
                        4000);                                                 // duration in ms
@@ -29,7 +29,7 @@ namespace ScreenGrab
             // == get image from clipboard and save to temp file == //
             Image? clipboardImage = Clipboard.GetImage();                 // get image from clipboard
             // save image to temp file
-            string tempFilePath = Path.Combine(Path.GetTempPath());     
+            string tempFilePath = Path.GetTempPath();
             string fileName = $"ClipboardImage_{Guid.NewGuid()}.png";
             string fullPath = Path.Combine(tempFilePath, fileName);
             clipboardImage?.Save(fullPath, ImageFormat.Png);             // save image as png
@@ -37,12 +37,13 @@ namespace ScreenGrab
             // == opens MS paint with image loaded if there is a .png on clipboard == //
             if (clipboardImage != null)
             {
-                // open image in MS Paint
+                // open image in MS Paint using cmd.exe to ensure proper environment
                 var paintProcess = new ProcessStartInfo
                 {
-                    FileName = "mspaint.exe",
-                    Arguments = $"\"{fullPath}\"",
-                    UseShellExecute = true
+                    FileName = "cmd.exe",
+                    Arguments = $"/c start \"\" mspaint.exe \"{fullPath}\"",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
                 };
                 // starts MS Paint w/ error handle
                 try
@@ -64,8 +65,10 @@ namespace ScreenGrab
             {
                 var paintProcessNoImage = new ProcessStartInfo
                 {
-                    FileName = "mspaint.exe",
-                    UseShellExecute = true
+                    FileName = "cmd.exe",
+                    Arguments = "/c start \"\" mspaint.exe",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
                 };
                 // starts MS Paint w/ error handle
                 try
