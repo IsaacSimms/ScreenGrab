@@ -43,6 +43,7 @@
             openEditorToolStripMenuItem = new ToolStripMenuItem();
             openMSPaintToolStripMenuItem = new ToolStripMenuItem();
             settingsToolStripMenuItem = new ToolStripMenuItem();
+            donateToolStripMenuItem = new ToolStripMenuItem();
             menuExit = new ToolStripMenuItem();
             btnSendToSettings = new Button();
             btnShutdownScreengrab = new Button();
@@ -56,6 +57,7 @@
             btnOcrCapture = new Button();
             regionScreenshotButton = new Button();
             btnUiElementCapture = new Button();
+            btnDonate = new Button();
             SystemTrayMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)DriverHeader).BeginInit();
             SuspendLayout();
@@ -68,9 +70,9 @@
             // SystemTrayMenu
             // 
             SystemTrayMenu.BackColor = SystemColors.Desktop;
-            SystemTrayMenu.Items.AddRange(new ToolStripItem[] { menuOpen, regionCaptureToolStripMenuItem, activeWindowToolStripMenuItem, oCRCaptureToolStripMenuItem, uIElementCaptureToolStripMenuItem, delayedRegionToolStripMenuItem, delayedActiveWindowToolStripMenuItem, freeformToolStripMenuItem, openEditorToolStripMenuItem, openMSPaintToolStripMenuItem, settingsToolStripMenuItem, menuExit });
+            SystemTrayMenu.Items.AddRange(new ToolStripItem[] { menuOpen, regionCaptureToolStripMenuItem, activeWindowToolStripMenuItem, oCRCaptureToolStripMenuItem, uIElementCaptureToolStripMenuItem, delayedRegionToolStripMenuItem, delayedActiveWindowToolStripMenuItem, freeformToolStripMenuItem, openEditorToolStripMenuItem, openMSPaintToolStripMenuItem, settingsToolStripMenuItem, donateToolStripMenuItem, menuExit });
             SystemTrayMenu.Name = "SystemTrayMenu";
-            SystemTrayMenu.Size = new Size(200, 268);
+            SystemTrayMenu.Size = new Size(200, 312);
             // 
             // menuOpen
             // 
@@ -169,6 +171,15 @@
             settingsToolStripMenuItem.Size = new Size(199, 22);
             settingsToolStripMenuItem.Text = "Settings";
             settingsToolStripMenuItem.Click += SendToSettings_Click;
+            // 
+            // donateToolStripMenuItem
+            // 
+            donateToolStripMenuItem.ForeColor = SystemColors.Window;
+            donateToolStripMenuItem.Image = (Image)resources.GetObject("donateToolStripMenuItem.Image");
+            donateToolStripMenuItem.Name = "donateToolStripMenuItem";
+            donateToolStripMenuItem.Size = new Size(199, 22);
+            donateToolStripMenuItem.Text = "Donate";
+            donateToolStripMenuItem.Click += btnDonate_Click;
             // 
             // menuExit
             // 
@@ -320,6 +331,18 @@
             btnUiElementCapture.UseVisualStyleBackColor = false;
             btnUiElementCapture.Click += btnUiElementCapture_Click;
             // 
+            // btnDonate
+            // 
+            btnDonate.BackColor = SystemColors.Desktop;
+            btnDonate.ForeColor = SystemColors.Window;
+            btnDonate.Location = new Point(282, 12);
+            btnDonate.Name = "btnDonate";
+            btnDonate.Size = new Size(77, 40);
+            btnDonate.TabIndex = 14;
+            btnDonate.Text = "Donate";
+            btnDonate.UseVisualStyleBackColor = false;
+            btnDonate.Click += btnDonate_Click;
+            // 
             // Driver
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -327,6 +350,7 @@
             BackColor = SystemColors.InfoText;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(537, 242);
+            Controls.Add(btnDonate);
             Controls.Add(btnUiElementCapture);
             Controls.Add(btnOcrCapture);
             Controls.Add(button3);
@@ -378,5 +402,7 @@
         private Button btnUiElementCapture;
         private Button button4;
         private ToolStripMenuItem uIElementCaptureToolStripMenuItem;
+        private Button btnDonate;
+        private ToolStripMenuItem donateToolStripMenuItem;
     }
 }

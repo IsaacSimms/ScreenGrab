@@ -229,6 +229,24 @@ namespace ScreenGrab
         }
         // == END FOR SENDING TO SETTINGS FROM EDITOR == //
 
+        // == when donate button is clicked, open donate link == //
+        private void btnDonate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string donateUrl = "https://www.paypal.com/ncp/payment/SKWX5HGW44MAY";
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = donateUrl,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unable to open link. Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         // == when button is clicked, open Image Editor form == //
         private void SendToEditor_Click(object sender, EventArgs e)
         {
