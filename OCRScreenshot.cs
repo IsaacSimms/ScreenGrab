@@ -34,14 +34,15 @@ namespace ScreenGrab
             CaptureTime = DateTime.Now;              // assign capture time
             pictureBoxScreenshot.Image = Screenshot; // display screenshot in picture box
 
-            // perform OCR and display extracted text
-            PerformOcrAsync();
+            // perform OCR and display extracted text - preform action on copy to avoid contention issues that block UI thread
+            Bitmap ocrCopy = new Bitmap(Screenshot);
+            PerformOcrAsync(ocrCopy);
         }
 
         // == perform OCR on the screenshot == //
-        private async void PerformOcrAsync()
+        private async void PerformOcrAsync(Bitmap bitmapForOcr)
         {
-            if (Screenshot == null)
+            if (bitmapForOcr == null)
             {
                 txtOcrResult.Text = "No screenshot available.";
                 return;
@@ -50,7 +51,7 @@ namespace ScreenGrab
             try
             {
                 txtOcrResult.Text = "Performing OCR, please wait...";
-                var ocrResult = await _ocrService.RecognizeAsync(Screenshot);
+                var ocrResult = await _ocrService.RecognizeAsync(bitmapForOcr);
 
                 // use PaddleOCR to recognize text
                 if  (!ocrResult.Success) // check for success
@@ -78,6 +79,11 @@ namespace ScreenGrab
             {
                 txtOcrResult.Text = $"OCR failed: {ex.Message}\n\nDetails: {ex.GetType().Name}";
                 System.Diagnostics.Debug.WriteLine($"OCR Error: {ex}");
+            }
+            finally 
+            {
+                // dispose of bitmap used for OCR
+                bitmapForOcr.Dispose();
             }
         }
 
