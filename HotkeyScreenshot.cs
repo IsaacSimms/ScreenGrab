@@ -781,12 +781,12 @@ namespace ScreenGrab
                                 }
                                 // anti-aliasing for smoother lines
                                 e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                                using (var PenFreeform = new Pen(Color.Red, 7))               // pen for freeform path
+                                using (var PenFreeform = new Pen(Color.White, 3))               // pen for freeform path
                                 {
                                     e.Graphics.DrawLines(PenFreeform, clientPoints);          // draw freeform path
                                 }
                                 //dashed overlay
-                                using (var PenDashedFreeform = new Pen(Color.Black, 3))
+                                using (var PenDashedFreeform = new Pen(Color.Red, 3))
                                 {
                                     PenDashedFreeform.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
                                     e.Graphics.DrawLines(PenDashedFreeform, clientPoints);
