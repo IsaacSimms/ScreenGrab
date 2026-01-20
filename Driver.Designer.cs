@@ -72,7 +72,7 @@
             SystemTrayMenu.BackColor = SystemColors.Desktop;
             SystemTrayMenu.Items.AddRange(new ToolStripItem[] { menuOpen, regionCaptureToolStripMenuItem, activeWindowToolStripMenuItem, oCRCaptureToolStripMenuItem, uIElementCaptureToolStripMenuItem, delayedRegionToolStripMenuItem, delayedActiveWindowToolStripMenuItem, freeformToolStripMenuItem, openEditorToolStripMenuItem, openMSPaintToolStripMenuItem, settingsToolStripMenuItem, donateToolStripMenuItem, menuExit });
             SystemTrayMenu.Name = "SystemTrayMenu";
-            SystemTrayMenu.Size = new Size(200, 312);
+            SystemTrayMenu.Size = new Size(200, 290);
             // 
             // menuOpen
             // 
@@ -178,7 +178,7 @@
             donateToolStripMenuItem.Image = (Image)resources.GetObject("donateToolStripMenuItem.Image");
             donateToolStripMenuItem.Name = "donateToolStripMenuItem";
             donateToolStripMenuItem.Size = new Size(199, 22);
-            donateToolStripMenuItem.Text = "Donate";
+            donateToolStripMenuItem.Text = "Support ScreenGrab";
             donateToolStripMenuItem.Click += btnDonate_Click;
             // 
             // menuExit
@@ -339,7 +339,7 @@
             btnDonate.Name = "btnDonate";
             btnDonate.Size = new Size(77, 40);
             btnDonate.TabIndex = 14;
-            btnDonate.Text = "Donate";
+            btnDonate.Text = "Support ScreenGrab";
             btnDonate.UseVisualStyleBackColor = false;
             btnDonate.Click += btnDonate_Click;
             // 
