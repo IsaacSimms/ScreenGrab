@@ -234,7 +234,7 @@ namespace ScreenGrab
         {
             try
             {
-                string donateUrl = "https://www.paypal.com/ncp/payment/SKWX5HGW44MAY";
+                string donateUrl = "https://isaacsimms.github.io/ScreenGrab-Website/Support";
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = donateUrl,
