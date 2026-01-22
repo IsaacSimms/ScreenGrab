@@ -21,19 +21,7 @@ namespace ScreenGrab
         public UiScreenshot()
         {
             InitializeComponent();
-            // SetupEventHandler();
         }
-
-        // == event handlers == //
-        //private void SetupEventHandler()
-        //{
-        //    copyImageToolStripMenuItem.Click += CopyImageToolStripMenuItem_Click;
-        //    saveImageToolStripMenuItem.Click += SaveImageToolStripMenuItem_Click;
-        //    copyTextToolStripMenuItem.Click += CopyTextToolStripMenuItem_Click;
-        //    exportAllAsMarkdownToolStripMenuItem.Click += ExportAllAsMarkdownToolStripMenuItem_Click;
-        //    sendImageToEditorToolStripMenuItem.Click += SendImageToEditorToolStripMenuItem_Click;
-        //    btnSendHome.Click += BtnSendHome_Click;
-        //}
 
         // == initiate UI element capture == //
         public void StartUiElementCapture()
@@ -42,7 +30,7 @@ namespace ScreenGrab
             Application.DoEvents();
 
             // message to indicate capture is starting
-            ScreenshotMessageBox.ShowMessage("Select a UI element by clicking on it. Press ESC to cancel.", "ScreenGrab:", 4000);
+                ScreenshotMessageBox.ShowMessage("Select a UI element by clicking on it. Press ESC to cancel.", "ScreenGrab:", 4000);
 
             using var selector = new UiElementSelectorForm();
             if (selector.ShowDialog() == DialogResult.OK && selector.CapturedImage != null)
@@ -171,10 +159,33 @@ namespace ScreenGrab
         {
             [DllImport("user32.dll")]
             private static extern bool SetProcessDPIAware();
+            [DllImport("user32.dll")]
+            private static extern IntPtr WindowFromPoint(POINT point);
+            [DllImport("user32.dll")]
+            private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+            [DllImport("user32.dll")]
+            private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+            [DllImport("user32.dll")]
+            private static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
+
+            private const int GWL_EXSTYLE = -20;
+            private const int WS_EX_LAYERED = 0x80000;
+            private const int WS_EX_TRANSPARENT = 0x20;
+            private const uint LWA_ALPHA = 0x2;
+
+            [StructLayout(LayoutKind.Sequential)]
+            private struct POINT
+            {
+                public int X;
+                public int Y;
+            }
+
             private readonly IUIAutomation _automation;
             private IUIAutomationElement? _hoveredElement;
             private tagRECT _hoveredRect;
             private readonly System.Windows.Forms.Timer _hoverTimer;
+            private Bitmap? _backgroundImage;
+            private bool _isCapturing = false;
 
             public IUIAutomationElement? SelectedElement { get; private set; }
             public Bitmap? CapturedImage { get; private set; }
@@ -190,27 +201,43 @@ namespace ScreenGrab
                 this.StartPosition = FormStartPosition.Manual;   // Manual positioning
                 this.Bounds = vs;                                // Full screen and all screens
                 this.TopMost = true;                             // Always on top
-                this.Cursor = Cursors.Default;                     // Crosshair cursor
-                this.DoubleBuffered = true;                      // Reduce flicker
+                this.Cursor = Cursors.Cross;                     // Crosshair cursor
                 this.ShowInTaskbar = false;                      // Don't show in taskbar
 
-                // Capture the screen as background, then overlay on top
+                // Capture the screen as background BEFORE showing overlay
                 _backgroundImage = CaptureScreen(vs);
-                this.BackgroundImage = _backgroundImage;
-                this.BackgroundImageLayout = ImageLayout.None;
+
+                // Enable double buffering and optimize painting
+                this.SetStyle(ControlStyles.OptimizedDoubleBuffer |
+                              ControlStyles.AllPaintingInWmPaint |
+                              ControlStyles.UserPaint, true);
+                this.UpdateStyles();
 
                 this.MouseClick += OnMouseClick;                 // Mouse click event
-                this.MouseMove += OnMouseMove;                   // Mouse move event
                 this.KeyDown += OnKeyDown;                       // Key down event
                 this.KeyPreview = true;                          // Capture key events
 
-                // Timer to update hovered element
-                _hoverTimer = new System.Windows.Forms.Timer { Interval = 50 };
+                // Timer to update hovered element - increased interval for stability
+                _hoverTimer = new System.Windows.Forms.Timer { Interval = 100 };
                 _hoverTimer.Tick += HoverTimer_Tick;
-                _hoverTimer.Start();
             }
 
-            private Bitmap? _backgroundImage;
+            // == Make window click-through for element detection == //
+            protected override CreateParams CreateParams
+            {
+                get
+                {
+                    CreateParams cp = base.CreateParams;
+                    cp.ExStyle |= WS_EX_LAYERED;
+                    return cp;
+                }
+            }
+
+            protected override void OnShown(EventArgs e)
+            {
+                base.OnShown(e);
+                _hoverTimer.Start();
+            }
 
             private static Bitmap CaptureScreen(Rectangle bounds)
             {
@@ -220,24 +247,33 @@ namespace ScreenGrab
                 return bmp;
             }
 
-            // == Hover timer tick == //
+            // == Hover timer tick - NO visibility toggling == //
             private void HoverTimer_Tick(object? sender, EventArgs e)
             {
+                if (_isCapturing) return; // prevent re-entry during capture
+
                 try
                 {
                     var screenPoint = Control.MousePosition;
-                    // Temporarily hide to detect elements underneath
-                    this.Visible = false;
-                    Application.DoEvents();
 
-                    var element = _automation.ElementFromPoint(new tagPOINT
+                    // Temporarily make window click-through to detect elements underneath
+                    int exStyle = GetWindowLong(this.Handle, GWL_EXSTYLE);
+                    SetWindowLong(this.Handle, GWL_EXSTYLE, exStyle | WS_EX_TRANSPARENT);
+
+                    IUIAutomationElement? element = null;
+                    try
                     {
-                        x = screenPoint.X,
-                        y = screenPoint.Y
-                    });
-
-                    // Show the overlay again
-                    this.Visible = true;
+                        element = _automation.ElementFromPoint(new tagPOINT
+                        {
+                            x = screenPoint.X,
+                            y = screenPoint.Y
+                        });
+                    }
+                    finally
+                    {
+                        // Restore normal window style immediately
+                        SetWindowLong(this.Handle, GWL_EXSTYLE, exStyle & ~WS_EX_TRANSPARENT);
+                    }
 
                     if (element != null)
                     {
@@ -261,17 +297,12 @@ namespace ScreenGrab
                 }
             }
 
-            // == Paint event to draw hovered rectangle == //
-            private void OnMouseMove(object? sender, MouseEventArgs e)
-            {
-                // Handled by hover timer
-            }
-
             // == Mouse click event to select element == //
             private void OnMouseClick(object? sender, MouseEventArgs e)
             {
                 if (e.Button == MouseButtons.Left && _hoveredElement != null)
                 {
+                    _isCapturing = true;
                     _hoverTimer.Stop();
                     SelectedElement = _hoveredElement;
                     CaptureElementScreenshot();
@@ -291,10 +322,10 @@ namespace ScreenGrab
                 }
             }
 
-            // == Capture screenshot of selected element == //
+            // == Capture screenshot of selected element from cached background == //
             private void CaptureElementScreenshot()
             {
-                if (SelectedElement == null) return;
+                if (SelectedElement == null || _backgroundImage == null) return;
                 try
                 {
                     var rect = SelectedElement.CurrentBoundingRectangle;
@@ -302,14 +333,18 @@ namespace ScreenGrab
                     int height = rect.bottom - rect.top;
                     if (width <= 0 || height <= 0) return;
 
-                    // hide overlay before capture
-                    this.Hide();
-                    Application.DoEvents();
+                    // Calculate position relative to virtual screen
+                    var vs = SystemInformation.VirtualScreen;
+                    int srcX = rect.left - vs.X;
+                    int srcY = rect.top - vs.Y;
 
-                    // capture screen area
+                    // Crop from the cached background image (no flicker!)
                     CapturedImage = new Bitmap(width, height);
                     using var g = Graphics.FromImage(CapturedImage);
-                    g.CopyFromScreen(rect.left, rect.top, 0, 0, new Size(width, height));
+                    g.DrawImage(_backgroundImage,
+                        new Rectangle(0, 0, width, height),
+                        new Rectangle(srcX, srcY, width, height),
+                        GraphicsUnit.Pixel);
                 }
                 catch
                 {
@@ -320,16 +355,22 @@ namespace ScreenGrab
             // == Paint event override to draw rectangle == //
             protected override void OnPaint(PaintEventArgs e)
             {
-                base.OnPaint(e);
+                // Draw the cached background first
+                if (_backgroundImage != null)
+                {
+                    e.Graphics.DrawImage(_backgroundImage, 0, 0);
+                }
+
                 int width = _hoveredRect.right - _hoveredRect.left;
                 int height = _hoveredRect.bottom - _hoveredRect.top;
 
                 if (width <= 0 || height <= 0) return;
 
                 // convert to client coordinates
+                var vs = SystemInformation.VirtualScreen;
                 var clientRect = new Rectangle(
-                    _hoveredRect.left - this.Bounds.X,
-                    _hoveredRect.top - this.Bounds.Y,
+                    _hoveredRect.left - vs.X,
+                    _hoveredRect.top - vs.Y,
                     width,
                     height);
 
@@ -390,6 +431,7 @@ namespace ScreenGrab
                     // Ignore exceptions during tooltip drawing
                 }
             }
+
             // == dispose of timer == //
             protected override void Dispose(bool disposing)
             {

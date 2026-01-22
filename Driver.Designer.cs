@@ -400,7 +400,6 @@
         private ToolStripMenuItem oCRCaptureToolStripMenuItem;
         private Button regionScreenshotButton;
         private Button btnUiElementCapture;
-        private Button button4;
         private ToolStripMenuItem uIElementCaptureToolStripMenuItem;
         private Button btnDonate;
         private ToolStripMenuItem donateToolStripMenuItem;

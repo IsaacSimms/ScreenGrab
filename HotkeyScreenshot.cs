@@ -71,7 +71,6 @@ namespace ScreenGrab
         public event Action<string>? OnScreenshotTaken;      // event to notify when a screenshot is taken
         public event Action<Bitmap>? OnScreenshotCaptured;   // event to notify when a screenshot is captured
         public event Action? OnOpenEditor;                   // event to notify when editor is opened
-        public event Action? OnOcrCapture;                   // event to notify when OCR form is opened
 
         // == Register hotkeys == //
         // attach hotkey configruation to handle

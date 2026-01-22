@@ -57,7 +57,6 @@ namespace ScreenGrab
         private const float    ZoomStep = 0.1f;                                   // zoom step increment
         // crop variables
         private Bitmap?   _originalImageBeforeCrop;                               // store original image before crop operation
-        private Rectangle _cropRectangle;                                         // rectangle for cropping
         private bool      _isCropping = false;                                    // flag to indicate if cropping is in progress
 
         // == constructor == //
