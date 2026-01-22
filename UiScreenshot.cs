@@ -30,7 +30,7 @@ namespace ScreenGrab
             Application.DoEvents();
 
             // message to indicate capture is starting
-                ScreenshotMessageBox.ShowMessage("Select a UI element by clicking on it. Press ESC to cancel.", "ScreenGrab:", 4000);
+            ScreenshotMessageBox.ShowMessage("Select a UI element by clicking on it. Press ESC to cancel.", "ScreenGrab:", 30000);
 
             using var selector = new UiElementSelectorForm();
             if (selector.ShowDialog() == DialogResult.OK && selector.CapturedImage != null)
@@ -157,6 +157,7 @@ namespace ScreenGrab
         // == Overlay for UI element selection == //
         internal class UiElementSelectorForm : Form
         {
+            // == P/Invoke API declarations == //
             [DllImport("user32.dll")]
             private static extern bool SetProcessDPIAware();
             [DllImport("user32.dll")]
@@ -168,6 +169,7 @@ namespace ScreenGrab
             [DllImport("user32.dll")]
             private static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
 
+            // == constants == //
             private const int GWL_EXSTYLE = -20;
             private const int WS_EX_LAYERED = 0x80000;
             private const int WS_EX_TRANSPARENT = 0x20;
@@ -180,6 +182,7 @@ namespace ScreenGrab
                 public int Y;
             }
 
+            // == private variables == //
             private readonly IUIAutomation _automation;
             private IUIAutomationElement? _hoveredElement;
             private tagRECT _hoveredRect;
@@ -256,7 +259,7 @@ namespace ScreenGrab
                 {
                     var screenPoint = Control.MousePosition;
 
-                    // Temporarily make window click-through to detect elements underneath
+                    // tEmporarily make window click-through to detect elements underneath
                     int exStyle = GetWindowLong(this.Handle, GWL_EXSTYLE);
                     SetWindowLong(this.Handle, GWL_EXSTYLE, exStyle | WS_EX_TRANSPARENT);
 
@@ -497,11 +500,23 @@ namespace ScreenGrab
 
             var editorForm = new ImageEditorForm(new Bitmap(_capturedImage));
             editorForm.Show();
+            this.Close();
         }
 
         // == button to return to main form == //
         private void BtnSendHome_Click(object? sender, EventArgs e)
         {
+            foreach (Form form in Application.OpenForms)
+            {
+                if (form is Driver driverForm)
+                {
+                    driverForm.Show();
+                    driverForm.WindowState = FormWindowState.Normal;
+                    driverForm.ShowInTaskbar = true;
+                    driverForm.Activate();
+                    break;
+                }
+            }
             this.Close();
         }
 
