@@ -90,10 +90,10 @@ namespace ScreenGrab
         // == event handler for screenshot taken event == //
         private void HotkeyScreenshot_OnScreenshotTaken(string filePath)
         {
-            ScreenshotMessageBox.ShowMessage(              // show message box on screenshot taken
-                $"ScreenGrab saved to:\n{filePath}",       // message
-                $"ScreenGrab",                             // title //not displaying in current config
-                4000);                                     // duration in ms
+            ScreenshotMessageBox.ShowMessage( // show message
+                $"ScreenGrab saved to:\n{filePath}",
+                $"ScreenGrab",
+                4000);
         }
 
         // == Methods for opening image editor with bitmap == //
@@ -146,7 +146,7 @@ namespace ScreenGrab
             imageEditorForm.Show();
         }
 
-        // == event handler for open image editor event == //
+        // == event handler for open image editor event == // // for opening editor from hotkey
         private void OpenImageEditor()
         {
             if (InvokeRequired)
@@ -166,11 +166,19 @@ namespace ScreenGrab
                 else
                 {
                     imageEditorForm = new ImageEditorForm();
+                    ScreenshotMessageBox.ShowMessage( // show message
+                        $"There is not a .png saved to clipboard",
+                        $"ScreenGrab:",
+                        4000);
                 }
             }
             else
             { 
                 imageEditorForm = new ImageEditorForm();
+                ScreenshotMessageBox.ShowMessage( // show message
+                     $"There is not a .png saved to clipboard",
+                     $"ScreenGrab:",
+                     4000);
             }
 
             imageEditorForm.Tag           = this; // set owner so ImageEditorForm can return to this instance instead of creating a new Driver // This is used in ImageEditorForm.cs for graceful transitions
@@ -247,7 +255,7 @@ namespace ScreenGrab
             }
         }
 
-        // == when button is clicked, open Image Editor form == //
+        // == when button is clicked, open Image Editor form == // // for opening editor from button
         private void SendToEditor_Click(object sender, EventArgs e)
         {
             ImageEditorForm imageEditorForm;
@@ -261,11 +269,19 @@ namespace ScreenGrab
                 else
                 {
                     imageEditorForm = new ImageEditorForm();
+                    ScreenshotMessageBox.ShowMessage(
+                        $"There is not a .png saved to clipboard",
+                        $"ScreenGrab:",
+                        4000);
                 }
             }
             else
             {
                 imageEditorForm = new ImageEditorForm();
+                ScreenshotMessageBox.ShowMessage(
+                    $"There is not a .png saved to clipboard",
+                    $"ScreenGrab:",
+                    4000);
             }
             imageEditorForm.Tag = this; // set owner so ImageEditorForm can return to this instance instead of creating a new Driver // This is used in ImageEditorForm.cs for graceful transitions
             imageEditorForm.ShowInTaskbar = true;

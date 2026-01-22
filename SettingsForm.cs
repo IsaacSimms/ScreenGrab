@@ -98,40 +98,40 @@ namespace ScreenGrab
             _currentHotkeyEditTarget = HotkeyBeingConfigured.RegionDelayed;
             lblStatus.Text = "Press new hotkey for delayed region capture...";
         }
-        private void btnChangeOcrRegionCaptureHotkeyConfig_Click(object sender, EventArgs e)  // ocr region capture
+        private void btnChangeOcrRegionCaptureHotkeyConfig_Click(object sender, EventArgs e)    // ocr region capture
         {
             _currentHotkeyEditTarget = HotkeyBeingConfigured.OCR; // not implemented yet
             lblStatus.Text = "Press new hotkey for OCR region capture...";
         }
-        private void btnChangeUiElementCaptureHotkeyConfig_Click(object sender, EventArgs e) // ui element capture
+        private void btnChangeUiElementCaptureHotkeyConfig_Click(object sender, EventArgs e)    // ui element capture
         {
             _currentHotkeyEditTarget = HotkeyBeingConfigured.UiElement;
             lblStatus.Text = "Press new hotkey for UI element capture...";
 
         }
-        private void btnChangeOpenPaintHotkeyConfig_Click(object sender, EventArgs e)          // open in paint hotkey
+        private void btnChangeOpenPaintHotkeyConfig_Click(object sender, EventArgs e)           // open in paint hotkey
         {
             _currentHotkeyEditTarget = HotkeyBeingConfigured.Paint;
             lblStatus.Text = "Press new hotkey for open MS Paint...";
         }
-        private void btnChangeOpenEditorHotkeyConfig_Click(object sender, EventArgs e)         // open in editor hotkey
+        private void btnChangeOpenEditorHotkeyConfig_Click(object sender, EventArgs e)          // open in editor hotkey
         {
             _currentHotkeyEditTarget = HotkeyBeingConfigured.Editor; // not implemented yet
             lblStatus.Text = "Press new hotkey for open image editor...";
         }
-        private void btnChangeScreenCaptureFileLocation_Click(object sender, EventArgs e)    // change save file location button
+        private void btnChangeScreenCaptureFileLocation_Click(object sender, EventArgs e)      // change save file location button
         {
             using (var folderDialog = new FolderBrowserDialog())
             {
                 folderDialog.Description = "Select folder to save screenshots:";
-                folderDialog.SelectedPath = _config.ScreenshotSaveLocation; // set initial path to current config
+                folderDialog.SelectedPath = _config.ScreenshotSaveLocation;              // set initial path to current config
                 folderDialog.ShowNewFolderButton = true;
                 if (folderDialog.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(folderDialog.SelectedPath))
                 {
-                    _config.ScreenshotSaveLocation = folderDialog.SelectedPath; // update config with new path
+                    _config.ScreenshotSaveLocation = folderDialog.SelectedPath;          // update config with new path
                     txtChangeScreenCaptureFileLocation.Text = folderDialog.SelectedPath; // update text box
                     lblStatus.Text = "Screenshot save location updated successfully.";
-                    SaveFileLocationChanged?.Invoke(_config); // raise event to notify main app of save location change
+                    SaveFileLocationChanged?.Invoke(_config);                            // raise event to notify main app of save location change
                 }
                 else 
                 {
@@ -155,23 +155,23 @@ namespace ScreenGrab
         // temporary keydown event handler for delay timer text box == //
         private void OnDelayTimerKeyDown(object? sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter) // check if Enter key is pressed
+            if (e.KeyCode == Keys.Enter)   // check if Enter key is pressed
             {
                 e.SuppressKeyPress = true; // prevent ding sound on Enter key
                 if (int.TryParse(txtDelayTimerConfig.Text, out int newDelay) && newDelay >= 0) // validate input
                 {
                     _config.DelayedCaptureTimerSeconds = newDelay; // update config with new delay
                     lblStatus.Text = $"Delay timer updated to {newDelay} seconds.";
-                    SaveFileLocationChanged?.Invoke(_config); // raise event to notify main app of change
+                    SaveFileLocationChanged?.Invoke(_config);      // raise event to notify main app of change
                 }
                 else
                 {
                     lblStatus.Text = "Invalid input. Please enter a non-negative integer for delay timer.";
                     txtDelayTimerConfig.Text = _config.DelayedCaptureTimerSeconds.ToString(); // revert to previous value
                 }
-                txtDelayTimerConfig.ReadOnly = true; // make text box read-only again
+                txtDelayTimerConfig.ReadOnly = true;                // make text box read-only again
                 txtDelayTimerConfig.KeyDown -= OnDelayTimerKeyDown; // remove temporary event handler
-                e.SuppressKeyPress = true; // prevent ding sound on Enter key
+                e.SuppressKeyPress = true;                          // prevent ding sound on Enter key
             }
         }
 
@@ -185,9 +185,9 @@ namespace ScreenGrab
             SaveFileLocationChanged?.Invoke(_config);                                  // raise event to notify main app of change
         }
         // == auto open in editor checkbox change handler == //
-        private void chkAutoOpenInEditor_CheckedChanged(object sender, EventArgs e) // auto open in editor checkbox change handler
+        private void chkAutoOpenInEditor_CheckedChanged(object sender, EventArgs e)    // auto open in editor checkbox change handler
         {
-            _config.AutoOpenEditorOnCapture = chkAutoOpenEditorOnCapture.Checked;                    // update config based on checkbox state
+            _config.AutoOpenEditorOnCapture = chkAutoOpenEditorOnCapture.Checked;      // update config based on checkbox state
             lblStatus.Text = _config.AutoOpenEditorOnCapture
                 ? "Auto-open in editor enabled."
                 : "Auto-open in editor disabled.";

@@ -20,10 +20,10 @@ namespace ScreenGrab
             // let user know there is no image on clipboard
             if (!Clipboard.ContainsImage())
             {
-                ScreenshotMessageBox.ShowMessage(                             // show message box on screenshot taken
-                       $"ScreenGrab: there is not a .png saved to clipboard", // message
-                       $"ScreenGrab",                                         // title //not displaying in current config
-                       4000);                                                 // duration in ms
+                ScreenshotMessageBox.ShowMessage( // show message
+                       $"There is not a .png saved to clipboard",
+                       $"ScreenGrab:",
+                       4000);
             }
 
             // == get image from clipboard and save to temp file == //
@@ -52,10 +52,10 @@ namespace ScreenGrab
                 }
                 catch (Exception ex)
                 {
-                    ScreenshotMessageBox.ShowMessage(                                       // show message box on screenshot taken
-                        $"ScreenGrab: Failure to open MS Paint. Error: {ex.Message}",       // message
-                        $"ScreenGrab",                                                      // title //not displaying in current config
-                        4000);                                                              // duration in ms
+                    ScreenshotMessageBox.ShowMessage( // show message box
+                        $"Failure to open MS Paint. Error: {ex.Message}",
+                        $"ScreenGrab:",
+                        4000);
                     System.Diagnostics.Debug.WriteLine($"Opening MsPaint failed {ex.Message}");
                 }
             }
@@ -77,10 +77,10 @@ namespace ScreenGrab
                 }
                 catch (Exception ex)
                 {
-                    ScreenshotMessageBox.ShowMessage(                                       // show message box on screenshot taken
-                        $"ScreenGrab: Failure to open MS Paint. Error: {ex.Message}",       // message
-                        $"ScreenGrab",                                                      // title //not displaying in current config
-                        4000);                                                              // duration in ms
+                    ScreenshotMessageBox.ShowMessage(
+                        $"Failure to open MS Paint. Error: {ex.Message}",
+                        $"ScreenGrab:",
+                        4000);
                     System.Diagnostics.Debug.WriteLine($"Opening MSPaint failed {ex.Message}");
                 }
             }

@@ -12,10 +12,11 @@ namespace ScreenGrab
     {
         // variables 
         private readonly System.Windows.Forms.Timer _timer;
-        private readonly Label _label;
+        private readonly Label _titleLabel;
+        private readonly Label _messageLabel;
 
         // constructor
-  public ScreenshotMessageBox(string message, string title, int durationInMs)
+        public ScreenshotMessageBox(string message, string title, int durationInMs)
         {
             // message box properties
             Text                 = title;                             // set title
@@ -30,17 +31,32 @@ namespace ScreenGrab
             MaximizeBox          = false;                             // disable maximize box
             MinimizeBox          = false;                             // disable minimize box
             TopMost              = true;                              // always on top
-            // label for message w/ styling
-            _label = new Label
+
+            // title label
+            _titleLabel = new Label
+            {
+                Text      = title,                                       // set title text
+                AutoSize  = false,                                       // disable autosize
+                Dock      = DockStyle.Top,                               // dock at top
+                Height    = 30,                                          // fixed height for title
+                TextAlign = ContentAlignment.MiddleCenter,               // center text
+                Font      = new Font("Segoe UI", 14, FontStyle.Bold),    // set font (bold for title)
+                ForeColor = Color.White                                  // set text color
+            };
+            Controls.Add(_titleLabel);
+
+            // message label w/ styling
+            _messageLabel = new Label
             {
                 Text      = message,                                     // set message text
                 AutoSize  = false,                                       // disable autosize
-                Dock      = DockStyle.Fill,                              // fill form
+                Dock      = DockStyle.Fill,                              // fill remaining space
                 TextAlign = ContentAlignment.MiddleCenter,               // center text
                 Font      = new Font("Segoe UI", 12, FontStyle.Regular), // set font 
                 ForeColor = Color.White                                  // set text color
             };
-            Controls.Add(_label);
+            Controls.Add(_messageLabel);
+
             // timer to close message box after duration (duration set in class constructor)
             _timer          = new System.Windows.Forms.Timer();
             _timer.Interval = durationInMs;

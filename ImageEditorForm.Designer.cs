@@ -57,6 +57,7 @@
             CropToolStrip = new ToolStrip();
             toolStripBtnCrop = new ToolStripButton();
             toolStripBtnResetCrop = new ToolStripButton();
+            sendImageToMSPaintToolStripMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)EditorHeader).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
             EditorMenu.SuspendLayout();
@@ -103,10 +104,10 @@
             EditorMenu.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             EditorMenu.BackColor = SystemColors.Desktop;
             EditorMenu.Dock = DockStyle.None;
-            EditorMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, copyToClipboardToolStripMenuItem });
-            EditorMenu.Location = new Point(1027, 28);
+            EditorMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, copyToClipboardToolStripMenuItem, sendImageToMSPaintToolStripMenuItem });
+            EditorMenu.Location = new Point(918, 28);
             EditorMenu.Name = "EditorMenu";
-            EditorMenu.Size = new Size(233, 24);
+            EditorMenu.Size = new Size(342, 24);
             EditorMenu.TabIndex = 25;
             EditorMenu.Text = "menuStrip1";
             // 
@@ -317,15 +318,14 @@
             // trackBarBrushSize
             // 
             trackBarBrushSize.Location = new Point(237, 78);
-            trackBarBrushSize.Minimum = 1;
             trackBarBrushSize.Maximum = 20;
-            trackBarBrushSize.Value = 5;
+            trackBarBrushSize.Minimum = 1;
             trackBarBrushSize.Name = "trackBarBrushSize";
             trackBarBrushSize.Size = new Size(202, 45);
             trackBarBrushSize.TabIndex = 30;
             trackBarBrushSize.Tag = "Brush Size";
-            trackBarBrushSize.TickFrequency = 1;
             trackBarBrushSize.TickStyle = TickStyle.None;
+            trackBarBrushSize.Value = 5;
             trackBarBrushSize.Scroll += trackBarBrushSize_Scroll;
             // 
             // lblBrushSize
@@ -371,6 +371,14 @@
             toolStripBtnResetCrop.Text = "toolStripButton9";
             toolStripBtnResetCrop.ToolTipText = "Undo Crop";
             toolStripBtnResetCrop.Click += btnResetCrop_Click;
+            // 
+            // sendImageToMSPaintToolStripMenuItem
+            // 
+            sendImageToMSPaintToolStripMenuItem.ForeColor = SystemColors.Window;
+            sendImageToMSPaintToolStripMenuItem.Name = "sendImageToMSPaintToolStripMenuItem";
+            sendImageToMSPaintToolStripMenuItem.Size = new Size(109, 20);
+            sendImageToMSPaintToolStripMenuItem.Text = "Send to MS Paint";
+            sendImageToMSPaintToolStripMenuItem.Click += btnOpenInPaint_Click;
             // 
             // ImageEditorForm
             // 
@@ -437,5 +445,6 @@
         private ToolStrip CropToolStrip;
         private ToolStripButton toolStripBtnCrop;
         private ToolStripButton toolStripBtnResetCrop;
+        private ToolStripMenuItem sendImageToMSPaintToolStripMenuItem;
     }
 }

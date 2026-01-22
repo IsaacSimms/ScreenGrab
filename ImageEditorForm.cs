@@ -217,8 +217,8 @@ namespace ScreenGrab
             if (_editableImage == null)
             {
                 ScreenshotMessageBox.ShowMessage(
-                $"ScreenGrab: There is no image in editor to save",
-                $"ScreenGrab",
+                $"There is no image in editor to save",
+                $"ScreenGrab:",
                 4000);
                 return;
             }
@@ -265,17 +265,36 @@ namespace ScreenGrab
             {
                 Clipboard.SetImage(_editableImage); // copy image to clipboard
                 ScreenshotMessageBox.ShowMessage(
-                $"ScreenGrab: Edited image copied to clipboard",
-                $"ScreenGrab",
+                $"Edited image copied to clipboard",
+                $"ScreenGrab:",
                 4000);
             }
             else
             {
                 ScreenshotMessageBox.ShowMessage(
-                $"ScreenGrab: There is no image in editor to copy",
-                $"ScreenGrab",
+                $"There is no image in editor to copy",
+                $"ScreenGrab:",
                 4000);
             }
+        }
+
+        // == MENUSTRIP: CLICK BUTTON == OPEN IMAGE IN MS PAINT - INCLUDE EDITS == //
+        private void btnOpenInPaint_Click(object sender, EventArgs e)
+        {
+            if (_editableImage == null)
+            {
+                ScreenshotMessageBox.ShowMessage(
+                $"There is no image in editor to open in MS Paint",
+                $"ScreenGrab:",
+                4000);
+                return;
+            }
+
+            // save edited image to clipboard
+            Clipboard.SetImage(_editableImage);
+
+            // start MS Paint process
+            OpenClipboardImageInPaint.OpenImageInPaint();
         }
 
 
@@ -285,15 +304,15 @@ namespace ScreenGrab
         {
             using (ColorDialog colorDialog = new ColorDialog())
             {
-                colorDialog.Color = _SelectedColor; // set current selected color
-                colorDialog.FullOpen = true;           // allow full color selection
-                colorDialog.AllowFullOpen = true;
+                colorDialog.Color            = _SelectedColor; // set current selected color
+                colorDialog.FullOpen         = true;           // allow full color selection
+                colorDialog.AllowFullOpen    = true;
                 if (colorDialog.ShowDialog() == DialogResult.OK)
                 {
-                    _SelectedColor = colorDialog.Color;       // update selected color
-                    _currentPen?.Dispose();                   // dispose previous pen
+                    _SelectedColor = colorDialog.Color;                // update selected color
+                    _currentPen?.Dispose();                            // dispose previous pen
                     _currentPen = new Pen(_SelectedColor, _brushSize); // create new pen with selected color
-                    UpdateColorButtonDisplay();               // update button display
+                    UpdateColorButtonDisplay();                        // update button display
                 }
             }
         }
@@ -301,7 +320,7 @@ namespace ScreenGrab
         // == update button display w/ currently selected color == //
         private void UpdateColorButtonDisplay()
         {
-            int _buttonSize = 16;                              // size of color display square
+            int _buttonSize = 16;                                      // size of color display square
             Bitmap colorBitmap = new Bitmap(_buttonSize, _buttonSize); // create bitmap for color display
             using (Graphics g = Graphics.FromImage(colorBitmap))
             {
@@ -403,8 +422,8 @@ namespace ScreenGrab
             else
             {
                 ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: No crop to reset",
-                    $"ScreenGrab",
+                    $"No crop to reset",
+                    $"ScreenGrab:",
                     4000);
             }
         }
@@ -458,8 +477,8 @@ namespace ScreenGrab
             if (width <= 0 || height <= 0)
             {
                 ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: Invalid crop area selected",
-                    $"ScreenGrab",
+                    $"Invalid crop area selected",
+                    $"ScreenGrab:",
                     4000);
                 return;
             }
@@ -472,8 +491,8 @@ namespace ScreenGrab
             if (width <= 0 || height <= 0) // recheck for error after clamping
             {
                 ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: Invalid crop area selected",
-                    $"ScreenGrab",
+                    $"Invalid crop area selected",
+                    $"ScreenGrab:",
                     4000);
                 return;
             }

@@ -67,6 +67,10 @@ namespace ScreenGrab
                 if (string.IsNullOrEmpty(ocrResult.TextBox))
                 {
                     txtOcrResult.Text = "No text detected in the screenshot.";
+                    ScreenshotMessageBox.ShowMessage(
+                        $"Screenshot taken.",
+                        $"ScreenGrab:",
+                        4000);
                     return;
                 }
 
@@ -74,6 +78,12 @@ namespace ScreenGrab
                 ExtractedText     = ocrResult.TextBox;
                 txtOcrResult.Text = ExtractedText;
                 Debug.WriteLine($"OCR Success: Detected {ocrResult.RegionCount} text regions.");
+
+                // notify user of successful capture
+                ScreenshotMessageBox.ShowMessage(
+                    $"Screenshot taken.",
+                    $"ScreenGrab:",
+                    4000);
             }
             catch (Exception ex)
             {
@@ -95,7 +105,7 @@ namespace ScreenGrab
                 Clipboard.SetImage(Screenshot);
             }
             ScreenshotMessageBox.ShowMessage(
-                $"ScreenGrab: Screenshot copied to clipboard.",
+                $"Screenshot copied to clipboard.",
                 $"ScreenGrab:",
                 4000);
         }
@@ -238,7 +248,7 @@ namespace ScreenGrab
             {
                 Clipboard.SetText(txtOcrResult.Text);
                 ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: OCR text copied to clipboard.",
+                    $"OCR text copied to clipboard.",
                     $"ScreenGrab:",
                     4000);
             }

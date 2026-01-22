@@ -42,7 +42,7 @@ namespace ScreenGrab
             Application.DoEvents();
 
             // message to indicate capture is starting
-            ScreenshotMessageBox.ShowMessage("Select a UI element by clicking on it. Press ESC to cancel.", "ScreenGrab", 4000);
+            ScreenshotMessageBox.ShowMessage("Select a UI element by clicking on it. Press ESC to cancel.", "ScreenGrab:", 4000);
 
             using var selector = new UiElementSelectorForm();
             if (selector.ShowDialog() == DialogResult.OK && selector.CapturedImage != null)
@@ -409,7 +409,7 @@ namespace ScreenGrab
             if (_capturedImage != null)
             {
                 Clipboard.SetImage(_capturedImage);
-                ScreenshotMessageBox.ShowMessage("Image copied to clipboard.", "ScreenGrab", 1500);
+                ScreenshotMessageBox.ShowMessage("Image copied to clipboard.", "ScreenGrab:", 1500);
             }
         }
 
@@ -434,7 +434,7 @@ namespace ScreenGrab
                     _ => ImageFormat.Png
                 };
                 _capturedImage.Save(saveDialog.FileName, format);
-                ScreenshotMessageBox.ShowMessage($"Image saved: {saveDialog.FileName}", "ScreenGrab", 2000);
+                ScreenshotMessageBox.ShowMessage($"Image saved: {saveDialog.FileName}", "ScreenGrab:", 2000);
             }
         }
 
@@ -444,7 +444,7 @@ namespace ScreenGrab
             if (!string.IsNullOrEmpty(textBox1.Text))
             {
                 Clipboard.SetText(textBox1.Text);
-                ScreenshotMessageBox.ShowMessage("Element properties copied to clipboard.", "ScreenGrab", 2000);
+                ScreenshotMessageBox.ShowMessage("Element properties copied to clipboard.", "ScreenGrab:", 2000);
             }
         }
 
@@ -482,7 +482,7 @@ namespace ScreenGrab
 
                 var markdown = $"# UI Element Capture\n\n![UI Element]({Path.GetFileName(imagePath)})\n\n```\n{textBox1.Text}\n```";
                 File.WriteAllText(saveDialog.FileName, markdown);
-                ScreenshotMessageBox.ShowMessage($"Exported: {saveDialog.FileName}", "ScreenGrab", 2000);
+                ScreenshotMessageBox.ShowMessage($"Exported: {saveDialog.FileName}", "ScreenGrab:", 2000);
             }
         }
     }

@@ -67,7 +67,7 @@ namespace ScreenGrab
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error saving configuration: {ex.Message}");              // log error to console
-                ScreenshotMessageBox.ShowMessage("Error saving configuration settings.", "ScreenGrab", 4000); // show error message box to user
+                ScreenshotMessageBox.ShowMessage("Error saving configuration settings.", "ScreenGrab:", 4000); // show error message box to user
             }
         }
         // Get the configuration file path (for testing purposes)

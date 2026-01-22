@@ -323,18 +323,6 @@ namespace ScreenGrab
             return sb.ToString();
         }
 
-        // ==  get window title for any HWND (required for hierarchy) == //
-        private static string? GetWindowTitleForHandle(IntPtr hWnd)
-        {
-            if (hWnd == IntPtr.Zero) return "None";                        // handle is null
-
-            int length = GetWindowTextLength(hWnd);                        // get title length
-            if (length == 0) return $"0x{hWnd.ToString("X8")} (No Title)"; // no title
-            var sb = new System.Text.StringBuilder(length + 1);            // create string builder
-            GetWindowText(hWnd, sb, sb.Capacity);                          // get title
-            return $"0x{hWnd.ToString("X8")} \"{sb}\"";                    // return formatted title
-        }
-
         // == formate handle for display == //
         private static string FormatHandle(IntPtr hWnd)
         {
@@ -426,6 +414,7 @@ namespace ScreenGrab
             editorForm.Show();
             this.Close();
         }
+
         // == save screenshot to file == //
         private void btnSaveScreenshot_Click(object sender, EventArgs e)
         {
@@ -460,6 +449,7 @@ namespace ScreenGrab
                 }
             }
         }
+
         // == copy screenshot to clipboard == //
         private void btnCopyScreenshot_Click(object sender, EventArgs e)
         {
@@ -468,7 +458,7 @@ namespace ScreenGrab
                 Clipboard.SetImage(Screenshot);
             }
             ScreenshotMessageBox.ShowMessage(
-                $"ScreenGrab: Screenshot copied to clipboard.",
+                $"Screenshot copied to clipboard.",
                 $"ScreenGrab:",
                 4000);
         }
@@ -572,7 +562,7 @@ namespace ScreenGrab
         {
             Clipboard.SetText(txtSystemInfo.Text);
             ScreenshotMessageBox.ShowMessage(
-                $"ScreenGrab: System information copied to clipboard.",
+                $"System information copied to clipboard.",
                 $"ScreenGrab:",
                 4000);
         }

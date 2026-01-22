@@ -41,14 +41,14 @@ namespace ScreenGrab
 
         // == WinAPI DPI Awareness Context Imports == //
         [DllImport("user32.dll")]
-        private static extern bool SetProcessDPIAware();                                               // sets process as DPI aware
+        private static extern bool SetProcessDPIAware();                                         // sets process as DPI aware
         [DllImport("dwmapi.dll")]
         private static extern int DwmGetWindowAttribute(IntPtr hwnd, int dwAttribute, out RECT pvAttribute, int cbAttribute); // gets window attributes for DPI scaling
         private const int DWMWA_EXTENDED_FRAME_BOUNDS = 9; // attribute for extended frame bounds
 
 
         // == RECT struct for window dimensions == //
-        private struct RECT                                                                      // struct to hold window dimensions
+        private struct RECT // struct to hold window dimensions
         {
             public int Left;
             public int Top;
@@ -91,6 +91,7 @@ namespace ScreenGrab
             _handle = owner.Handle;      // assign window handle from owner form
             _driverForm = owner;         // assign driver form for passing to other forms
             AssignHandle(owner.Handle);  // assign window handle from owner form
+            // assign hotkey IDs
             _ActiveWindowHotkeyId         = 1;
             _RegionSelectHotkeyId         = 2;
             _FreeformSelectHotkeyId       = 3;
@@ -133,11 +134,12 @@ namespace ScreenGrab
             UnregisterHotKey(_handle, _OpenClipboardInPaintHotkeyId);
             UnregisterHotKey(_handle, _OpenEditorHotkeyId);
         }
+        // == Register individual hotkey from configuration == //
         private void RegisterFromConfig(int id, HotkeyDefinition def)
         {
             uint mods = (uint)def.Modifiers;                // get modifier flags
             uint key = (uint)def.Key;                       // get key for keyboard hotkey
-            if (!RegisterHotKey(_handle, id, mods, key))    // error handling for hotkey registration
+            if (!RegisterHotKey(_handle, id, mods, key))    // this entire if statement is error handling for hotkey registration
             {
                 int errorCode = Marshal.GetLastWin32Error();
                 string hotkeyString = def.ToString();
@@ -145,20 +147,19 @@ namespace ScreenGrab
                 {
                     System.Diagnostics.Debug.WriteLine($"Failed to register hotkey {hotkeyString}. Error code: {errorCode}");
                     ScreenshotMessageBox.ShowMessage(
-                        $"ScreenGrab: error registering hotkeys. please relaunch app",
-                        $"ScreenGrab",
+                        $"Error registering hotkeys. please relaunch app",
+                        $"ScreenGrab:",
                         4000);
                     throw new InvalidOperationException("Failed to register one or more hotkeys.");
                 }
                 if (errorCode == 1409) // hotkey already registered
                 {
                     ScreenshotMessageBox.ShowMessage(
-                        $"ScreenGrab: Hotkey {hotkeyString} is already in use by another application. Please choose a different hotkey for ScreenGrab OR close the conflicting application.",
-                        $"ScreenGrab - Hotkey conflict",
+                        $"Hotkey {hotkeyString} is already in use by another application. Please choose a different hotkey for ScreenGrab OR close the conflicting application.",
+                        $"ScreenGrab - Hotkey conflict:",
                         10000);
                 }
                 System.Diagnostics.Debug.WriteLine($"Failed to register hotkeys");
-
             }
         }
         // == UpdateHotkey configuration == //
@@ -212,7 +213,7 @@ namespace ScreenGrab
                 }
                 else if (id == _OcrRegionSelectHotkeyId)       // check if OCR region select hotkey was pressed
                 {
-                    CaptureOcrRegion();                     // trigger event to notify OCR form should be opened
+                    CaptureOcrRegion();                        // trigger event to notify OCR form should be opened
                 }
                 else if (id == _UiElementCaptureHotkeyId)      // check if UI element capture hotkey was pressed
                 {
@@ -224,7 +225,7 @@ namespace ScreenGrab
                 }
                 else if (id == _OpenEditorHotkeyId)           // check if open editor hotkey was pressed
                 {
-                    OnOpenEditor?.Invoke();                    // trigger event to notify editor should be opened
+                    OnOpenEditor?.Invoke();                   // trigger event to notify editor should be opened
                 }
             }
             // pass message to base WndProc
@@ -238,8 +239,8 @@ namespace ScreenGrab
             if (hWnd == IntPtr.Zero)                            // validate handle
             {
                 ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: Invalid Region selection.",
-                    $"ScreenGrab",
+                    $"Invalid Region selection.",
+                    $"ScreenGrab:",
                     4000);
                 return;
             }
@@ -254,8 +255,8 @@ namespace ScreenGrab
                 if (!GetWindowRect(hWnd, out rect))
                 {
                     ScreenshotMessageBox.ShowMessage(
-                        $"ScreenGrab: Invalid Region dimension acquisition.",
-                        $"ScreenGrab",
+                        $"Invalid Region dimension acquisition.",
+                        $"ScreenGrab:",
                         4000);
                     return;
                 }
@@ -266,8 +267,8 @@ namespace ScreenGrab
             if (width <= 0 || height <= 0)                    // validate dimensions
             {
                 ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: Invalid Region selection.",
-                    $"ScreenGrab",
+                    $"Invalid Region selection.",
+                    $"ScreenGrab:",
                     4000);
                 return;
             }
@@ -321,7 +322,7 @@ namespace ScreenGrab
                 catch (Exception ex)
                 {
                     ScreenshotMessageBox.ShowMessage(
-                        $"ScreenGrab: Failed to save screenshot: {ex.Message}.",
+                        $"Failed to save screenshot: {ex.Message}.",
                         $"ScreenGrab:",
                         4000);
                     System.Diagnostics.Debug.WriteLine($"Failed to take screenshot: {ex.Message}");
@@ -336,6 +337,12 @@ namespace ScreenGrab
             var systemInfoForm = new SystemInfoCapture(hWnd, bitmapForForm);
             systemInfoForm.Show();
             systemInfoForm.Activate();
+
+            // notify user of successful capture
+            ScreenshotMessageBox.ShowMessage(
+                $"Screenshot taken.",
+                $"ScreenGrab:",
+                4000);
         }
 
         // == Capture selected region and save to clipboard and onedrive == //
@@ -350,10 +357,10 @@ namespace ScreenGrab
                 Rectangle selectedArea = selector.SelectedRegion;        // get selected region
                 if (selectedArea.Width <= 0 || selectedArea.Height <= 0) // validate selected area
                 {
-                    ScreenshotMessageBox.ShowMessage(                                                      // show message box on screenshot taken
-                        $"ScreenGrab: Invalid Region selection.", // message
-                        $"ScreenGrab",                                                                     // title //not displaying in current config
-                        4000);                                                                             // duration in ms
+                    ScreenshotMessageBox.ShowMessage(                    // show message
+                        $"Invalid Region selection.",
+                        $"ScreenGrab:",
+                        4000);
                     return;
                 }
                 CaptureAndSave(selectedArea, "Region Select");           // capture and save screenshot
@@ -372,10 +379,10 @@ namespace ScreenGrab
                 Rectangle selectedArea = selector.SelectedRegion;        // get selected region
                 if (selectedArea.Width <= 0 || selectedArea.Height <= 0) // validate selected area
                 {
-                    ScreenshotMessageBox.ShowMessage(                                                      // show message box on screenshot taken
-                        $"ScreenGrab: Invalid Region selection.", // message
-                        $"ScreenGrab",                                                                     // title //not displaying in current config
-                        4000);                                                                             // duration in ms
+                    ScreenshotMessageBox.ShowMessage(                    // show message
+                        $"Invalid Region selection.",
+                        $"ScreenGrab:",
+                        4000);
                     return;
                 }
 
@@ -429,10 +436,10 @@ namespace ScreenGrab
                 List<Point> freeformPath = selector.FreeformPath;        // get selected region points
                 if (freeformPath == null || freeformPath.Count < 2)      // validate selected area
                 {
-                    ScreenshotMessageBox.ShowMessage(                    // show message box on screenshot taken
-                        $"ScreenGrab: Invalid Region selection.",        // message
-                        $"ScreenGrab",                                   // title //not displaying in current config
-                        4000);                                           // duration in ms
+                    ScreenshotMessageBox.ShowMessage(                    // show message
+                        $"Invalid Region selection.",
+                        $"ScreenGrab:",
+                        4000);
                     return;
                 }
                 CaptureAndSaveFreeform(freeformPath, "Freeform Select"); // capture and save screenshot
@@ -467,7 +474,7 @@ namespace ScreenGrab
             private void OnMouseMove(object? sender, MouseEventArgs e)
             {
                 if (!_isSelecting) return;                               // do not call function if mouse is not moving
-                Point currentScreen = PointToScreen(e.Location);        // get current mouse position in screen coordinates
+                Point currentScreen = PointToScreen(e.Location);         // get current mouse position in screen coordinates
 
                 // calculate selection rectangle
                 int x1 = Math.Min(_startPointScreen.X, currentScreen.X);
@@ -545,15 +552,15 @@ namespace ScreenGrab
                 }
             }
 
-            // draw selection rectangle
+            // == draw selection rectangle and overlay == //
             protected override void OnPaint(PaintEventArgs e)
             {
                 base.OnPaint(e);
                 
                 // enable high-quality rendering
-                e.Graphics.CompositingMode = CompositingMode.SourceOver;
+                e.Graphics.CompositingMode    = CompositingMode.SourceOver;
                 e.Graphics.CompositingQuality = CompositingQuality.HighSpeed;
-                e.Graphics.SmoothingMode = SmoothingMode.None; // disable anti-aliasing for rectangles (faster)
+                e.Graphics.SmoothingMode      = SmoothingMode.None; // disable anti-aliasing for rectangles (faster)
                 
                 using (var overlayBrush = new SolidBrush(Color.FromArgb(255, Color.DarkGray))) // semi-transparent overlay brush
                 {
@@ -626,10 +633,10 @@ namespace ScreenGrab
         {
             int delaySeconds = _config.DelayedCaptureTimerSeconds; // get delay time from config
             ScreenshotMessageBox.ShowMessage(
-                $"ScreenGrab: Delayed capture in 5 seconds...",
-                $"ScreenGrab",
+                $"Delayed capture in {delaySeconds} seconds...",
+                $"ScreenGrab:",
                 2000);
-            await Task.Delay(delaySeconds * 1000); // 5 second delay
+            await Task.Delay(delaySeconds * 1000); // 5 second delay default
             CaptureActiveWindow();
         }
         // == Capture selected region after delay == //
@@ -637,10 +644,10 @@ namespace ScreenGrab
         {
             int delaySeconds = _config.DelayedCaptureTimerSeconds; // get delay time from config
             ScreenshotMessageBox.ShowMessage(
-                $"ScreenGrab: Delayed capture in 5 seconds...",
-                $"ScreenGrab",
+                $"Delayed capture in {delaySeconds} seconds...",
+                $"ScreenGrab:",
                 2000);
-            await Task.Delay(delaySeconds * 1000); // 5 second delay
+            await Task.Delay(delaySeconds * 1000); // 5 second delay default
             CaptureRegion();
         }
 
@@ -783,7 +790,7 @@ namespace ScreenGrab
                                 e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                                 using (var PenFreeform = new Pen(Color.White, 3))               // pen for freeform path
                                 {
-                                    e.Graphics.DrawLines(PenFreeform, clientPoints);          // draw freeform path
+                                    e.Graphics.DrawLines(PenFreeform, clientPoints);            // draw freeform path
                                 }
                                 //dashed overlay
                                 using (var PenDashedFreeform = new Pen(Color.Red, 3))
@@ -881,7 +888,7 @@ namespace ScreenGrab
                 catch (Exception ex)
                 {
                     ScreenshotMessageBox.ShowMessage(
-                        $"ScreenGrab: Failed to save screenshot: {ex.Message}.",
+                        $"Failed to save screenshot: {ex.Message}.",
                         $"ScreenGrab:",
                         4000);
                     System.Diagnostics.Debug.WriteLine($"Failed to take screenshot: {ex.Message}");
@@ -891,7 +898,7 @@ namespace ScreenGrab
             else
             {
                 ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: Screenshot taken.",
+                    $"Screenshot taken.",
                     $"ScreenGrab:",
                     4000);
             }
@@ -918,10 +925,10 @@ namespace ScreenGrab
             // error handling for invalid dimensions
             if (width <= 0 || height <= 0)
             {
-                ScreenshotMessageBox.ShowMessage(                                                  // show message box on screenshot taken
-                    $"ScreenGrab: Invalid Region selection.",                                      // message
-                    $"ScreenGrab",                                                                 // title //not displaying in current config
-                    4000);                                                                         // duration in ms
+                ScreenshotMessageBox.ShowMessage( // show message
+                    $"Invalid Region selection.",
+                    $"ScreenGrab:",
+                    4000);
                 return;
             }
 
@@ -943,8 +950,8 @@ namespace ScreenGrab
                         .Select(p => new Point(p.X - minX, p.Y - minY))
                         .ToArray();
                     gp.AddPolygon(relativePoints);
-                    gMask.Clear(Color.Transparent);             // clear background to transparent
-                    gMask.SetClip(gp);                          // set clipping region to freeform path
+                    gMask.Clear(Color.Transparent);            // clear background to transparent
+                    gMask.SetClip(gp);                         // set clipping region to freeform path
                     gMask.DrawImage(fullCapture, Point.Empty); // draw captured image onto masked bitmap
                 }
             }
@@ -975,9 +982,9 @@ namespace ScreenGrab
                 catch (Exception ex)
                 {
                     ScreenshotMessageBox.ShowMessage(
-                        $"ScreenGrab: Failed to save screenshot: {ex.Message}.",                           // message
-                        $"ScreenGrab",                                                                     // title //not displaying in current config
-                        4000);                                                                             // duration in ms
+                        $"Failed to save screenshot: {ex.Message}.", // message
+                        $"ScreenGrab:",
+                        4000);
                     System.Diagnostics.Debug.WriteLine($"Failed to take a screenshot: {ex.Message}");
                     throw new InvalidOperationException($"Failed to take a screenshot: {ex.Message}.");
                 }
@@ -985,7 +992,7 @@ namespace ScreenGrab
             else
             {
                 ScreenshotMessageBox.ShowMessage(
-                    $"ScreenGrab: Screenshot taken.",
+                    $"Screenshot taken.",
                     $"ScreenGrab:",
                     4000);
             }
@@ -999,7 +1006,6 @@ namespace ScreenGrab
         // == Cleanup: Unregister hotkeys when done == //
         public void Dispose()
         {
-
             UnregisterHotkeys(); // unregister all hotkeys
             ReleaseHandle();     // release window handle
         }
