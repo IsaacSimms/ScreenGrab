@@ -22,6 +22,8 @@ namespace ScreenGrab
         {
             InitializeComponent();
             _hotkeyConfig = ConfigurationManager.LoadConfiguration(); // load hotkey configuration from json file
+            this.KeyPreview = true;                                   // enable key preview for esc key handling
+            this.KeyDown += Driver_KeyDown;                           // wire up keydown event for esc key handling
         }
 
         // == ovveride OnHandleCreated to account for hotkey registration after handle is created == //
@@ -173,7 +175,7 @@ namespace ScreenGrab
                 }
             }
             else
-            { 
+            {
                 imageEditorForm = new ImageEditorForm();
                 ScreenshotMessageBox.ShowMessage( // show message
                      $"There is not a .png saved to clipboard",
@@ -181,7 +183,7 @@ namespace ScreenGrab
                      4000);
             }
 
-            imageEditorForm.Tag           = this; // set owner so ImageEditorForm can return to this instance instead of creating a new Driver // This is used in ImageEditorForm.cs for graceful transitions
+            imageEditorForm.Tag = this; // set owner so ImageEditorForm can return to this instance instead of creating a new Driver // This is used in ImageEditorForm.cs for graceful transitions
             imageEditorForm.ShowInTaskbar = true;
             imageEditorForm.Show();
         }
@@ -222,7 +224,7 @@ namespace ScreenGrab
             settingsForm.Show();
             this.Hide();                // hide the main form // keep persistent state
             this.ShowInTaskbar = false;
-        } 
+        }
 
         // == FOR SENDING TO SETTIGNS FROM EDITOR == // // required becuase ImageEditorForm cannot access settings instance directly like driver can
         public HotkeyConfig GetHotkeyConfig()
@@ -293,7 +295,7 @@ namespace ScreenGrab
         // == click button to launch UI element class // create instance each time to avoid reuse problems == //
         private void btnUiElementCapture_Click(object sender, EventArgs e)
         {
-            var uiScreenshotForm = new UiScreenshot 
+            var uiScreenshotForm = new UiScreenshot
             {
                 Tag = this,
                 ShowInTaskbar = true
@@ -304,7 +306,7 @@ namespace ScreenGrab
             this.ShowInTaskbar = false;
         }
 
-        // when button is clicked, take a screenshot of active window
+        // == when button is clicked, take a screenshot of active window == //
         private async void activeWindowScreenshotButton_Click(object sender, EventArgs e)
         {
             this.Hide();
@@ -314,7 +316,7 @@ namespace ScreenGrab
 
         }
 
-        // when button is clicked, take a screenshot of region
+        // == when button is clicked, take a screenshot of region == //
         private async void regionScreenshotButton_Click(object sender, EventArgs e)
         {
             this.Hide();
@@ -324,7 +326,7 @@ namespace ScreenGrab
 
 
         }
-        // when button is clicked, take OCR screenshot of region
+        // == when button is clicked, take OCR screenshot of region == //
         private async void ocrRegionScreenshotButton_Click(object sender, EventArgs e)
         {
             this.Hide();
@@ -333,7 +335,7 @@ namespace ScreenGrab
             _hotkeyScreenshot?.CaptureOcrRegion();
         }
 
-        // when button is clicked, take a freeform screenshot
+        // ==when button is clicked, take a freeform screenshot == //
         private async void freeformScreenshotButton_Click(object sender, EventArgs e)
         {
             this.Hide();
@@ -343,7 +345,7 @@ namespace ScreenGrab
 
         }
 
-        // when button is clicked, take a delayed screenshot of active window
+        // == when button is clicked, take a delayed screenshot of active window == //
         private async void delayedActiveWindowScreenshotButton_Click(object sender, EventArgs e)
         {
             this.Hide();
@@ -353,7 +355,7 @@ namespace ScreenGrab
 
         }
 
-        // when button is clicked, take a delayed screenshot of region
+        // == when button is clicked, take a delayed screenshot of region == //
         private async void delayedRegionScreenshotButton_Click(object sender, EventArgs e)
         {
             this.Hide();
@@ -362,13 +364,24 @@ namespace ScreenGrab
             _hotkeyScreenshot?.CaptureRegionDelayed();
         }
 
-        // when button is clicked, open clipboard image in MS Paint
+        // == when button is clicked, open clipboard image in MS Paint == //
         private async void openClipboardImageInPaintButton_Click(object sender, EventArgs e)
         {
             this.Hide();
             this.ShowInTaskbar = false;
             await Task.Delay(100); // slight delay to ensure screenshot process starts before hiding the main window
             OpenClipboardImageInPaint.OpenImageInPaint();
+        }
+
+        // == esc key closes form and minimizes to tray == //
+        private void Driver_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.Hide();
+                this.ShowInTaskbar = false;
+                e.Handled = true;
+            }
         }
     }
 }

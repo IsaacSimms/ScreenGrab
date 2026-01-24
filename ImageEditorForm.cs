@@ -108,19 +108,23 @@ namespace ScreenGrab
                 {
                     CancelTextInput();
                 }
-                if (_isDrawing)
+                else if (_isDrawing)
                 {
                     _isDrawing  = false;          // reset drawing flag
                     _freeformPoints.Clear();      // clear freeform points
                     pictureBoxImage.Invalidate(); // request redraw to clear preview
                 }
-                if (_isCropping)
+                else if (_isCropping)
                 {
                     _isCropping = false;
                     _activeDrawingTool = DrawingTool.None; // deactivate crop tool
                     pictureBoxImage.Invalidate();          // request redraw to clear crop rectangle
                 }
-                e.Handled = true; // prevent further processing
+                else
+                {
+                    e.Handled = true; // prevent further processing
+                    this.Close();     // close the editor
+                }
             }
         }
         // == REPOSITION TOOLSTRIPS ON RESIZE == //
@@ -1094,9 +1098,9 @@ namespace ScreenGrab
 
             using (Graphics g = Graphics.FromImage(_editableImage))
             {
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
-                Point imageStart = ConvertToImageCoordinates(_drawStartPoint); // convert start point
-                Point imageEnd = ConvertToImageCoordinates(_drawEndPoint);   // convert end point
+                g.SmoothingMode  = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
+                Point imageStart = ConvertToImageCoordinates(_drawStartPoint);       // convert start point
+                Point imageEnd   = ConvertToImageCoordinates(_drawEndPoint);         // convert end point
 
                 // draw shape based on selected tool
                 switch (_activeDrawingTool)
@@ -1170,7 +1174,7 @@ namespace ScreenGrab
             {
                 // calculate scaling factors
                 float imageAspect = (float)_editableImage.Width / _editableImage.Height;   // aspect ratio of the image
-                float boxAspect = (float)pictureBoxImage.Width / pictureBoxImage.Height; // aspect ratio of the picture box
+                float boxAspect = (float)pictureBoxImage.Width / pictureBoxImage.Height;   // aspect ratio of the picture box
                 float scaleFactor;                                                         // scaling factor
                 int offsetX = 0; int offsetY = 0;                                          // offsets for centering image
                 // determine scaling and offsets

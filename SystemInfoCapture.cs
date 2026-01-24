@@ -1,7 +1,7 @@
-﻿///// ties into active window capture and has an on/off toggle in settings /////
-///// when true, and an active window capture is taken, open image in this form. Gather system information including:
-///// ProcessName, ProcessId, ExcutablePath, FileVersion, and CaptureTime
-///// all of that information gets printed in copiable text under the active window screenshot. 
+﻿///// ties into active window capture and has an on/off toggle in settings                                            /////
+///// when true, and an active window capture is taken, open image in this form. Gather system information including: /////
+///// ProcessName, ProcessId, ExcutablePath, FileVersion, and CaptureTime                                             /////
+///// all of that information gets printed in copiable text under the active window screenshot.                       /////
 
 using System;
 using System.Diagnostics;
@@ -115,6 +115,8 @@ namespace ScreenGrab
         public SystemInfoCapture()
         {
             InitializeComponent();
+            this.KeyDown += SystemInfoCapture_KeyDown; // add keydown event handler
+            this.KeyPreview = true;                    // enable key preview for form
         }
 
         // == constructor for taking HWND and Bitmap screenshot == //
@@ -608,6 +610,15 @@ namespace ScreenGrab
 
                 // update picture box with new image
                 pictureBoxScreenshot.Image = Screenshot;
+            }
+        }
+
+        // == handle esc key to close form == //
+        private void SystemInfoCapture_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.Close();
             }
         }
     }

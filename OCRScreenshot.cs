@@ -24,7 +24,9 @@ namespace ScreenGrab
         public OCRScreenshotForm()
         {
             InitializeComponent();
-            _ocrService = new PaddleOcrService();
+            _ocrService     = new PaddleOcrService();     // initialize OCR service
+            this.KeyPreview = true;                       // enable key preview for form
+            this.KeyDown    += OCRScreenshotForm_KeyDown; // subscribe to keydown event for esc key
         }
 
         // == constructor using screenshot bitmap == //
@@ -254,9 +256,23 @@ namespace ScreenGrab
             }
         }
 
+        // == handle esc key for form close == // 
+        private void OCRScreenshotForm_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.Close();
+                e.Handled = true;
+            }
+        }
+
+
         // == dispose OCR service on form close == //
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
+            // unsubscribe event handle for esc key
+            this.KeyDown -= OCRScreenshotForm_KeyDown;
+
             //dispose screenshot bitmap
             if (pictureBoxScreenshot.Image != null)
             {

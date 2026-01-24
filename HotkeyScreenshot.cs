@@ -1,5 +1,5 @@
 ﻿///// This class handles screen capture logic, hotkey registration, png save logic, with error handling and messaging /////
-///// using hotkeys defined in HotkeyConfig.cs /////
+///// using hotkeys defined in HotkeyConfig.cs                                                                        /////
 
 
 using Microsoft.VisualBasic.Devices;
@@ -102,7 +102,7 @@ namespace ScreenGrab
             _OpenEditorHotkeyId           = 9;
             
             AttachToHandle(owner.Handle);      // register all hotkeys
-            //IntPtr hwnd = this.Handle;
+            
         }
         // == register hotkeys helper method == //
         private void RegisterAllHotkeys()

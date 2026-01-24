@@ -1,6 +1,6 @@
 ﻿///// This is a helper class which does the heavy lifting of opening an image from the clipboard into MS Paint. /////
 ///// The hotkey for this action is Ctrl+Shift+P. This action is wired into HotkeyScreenshot.cs                 /////
-///// If there is not a .png on the clipboard, it will open MS Paint with no image loaded.                       /////
+///// If there is not a .png on the clipboard, it will open MS Paint with no image loaded.                      /////
 
 // namespaces
 using System;

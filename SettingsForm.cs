@@ -1,5 +1,5 @@
 ﻿///// Code block that controls the setting page of the ScreenGrab application. /////
-/// Give the user ability to configure hotkey settings in the future. ///
+///// Give the user ability to configure hotkey settings in the future.        /////
 
 
 using System;
@@ -13,14 +13,17 @@ namespace ScreenGrab
     {
         private HotkeyConfig _config; // hotkey configuration local variable
 
-        //track current hot being configured
+        // == track current hot being configured == //
         private enum HotkeyBeingConfigured
         {
             None, Active, Region, ActiveDelayed, RegionDelayed, OCR, UiElement, Paint, Editor
         }
+
         private HotkeyBeingConfigured _currentHotkeyEditTarget = HotkeyBeingConfigured.None; // initialize to none
         public event Action<HotkeyConfig>? HotkeysChanged;                                   // event to notify main app of hotkey changes
         public event Action<HotkeyConfig>? SaveFileLocationChanged;                          // event to notify main app of save file location changes
+
+        // == constructor == //
         public SettingsForm(HotkeyConfig config)
         {
             InitializeComponent();   // initialize form components 
@@ -77,7 +80,7 @@ namespace ScreenGrab
             chkEnableSystemCapture.CheckedChanged += chkEnableSystemCapture_CheckChanged;
         }
 
-        // button click handlers to change hotkey being configured // print to label the staus
+        // ==button click handlers to change hotkey being configured == // // print to label the staus
         private void btnChangeActiveWindowHotkeyConfig_Click(object sender, EventArgs e)        // active window capture
         {
             _currentHotkeyEditTarget = HotkeyBeingConfigured.Active;
@@ -152,7 +155,7 @@ namespace ScreenGrab
             txtDelayTimerConfig.KeyDown += OnDelayTimerKeyDown;
         }
 
-        // temporary keydown event handler for delay timer text box == //
+        // == temporary keydown event handler for delay timer text box == //
         private void OnDelayTimerKeyDown(object? sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)   // check if Enter key is pressed
@@ -184,6 +187,7 @@ namespace ScreenGrab
                 : "Auto-copy to clipboard disabled.";
             SaveFileLocationChanged?.Invoke(_config);                                  // raise event to notify main app of change
         }
+
         // == auto open in editor checkbox change handler == //
         private void chkAutoOpenInEditor_CheckedChanged(object sender, EventArgs e)    // auto open in editor checkbox change handler
         {
@@ -193,6 +197,7 @@ namespace ScreenGrab
                 : "Auto-open in editor disabled.";
             SaveFileLocationChanged?.Invoke(_config);                                  // raise event to notify main app of change
         }
+
         // == save to file location checkbox change handler == //
         private void chkSaveToFileLocation_CheckChanged(object sender, EventArgs e)
         {
@@ -202,6 +207,7 @@ namespace ScreenGrab
                 : "Auto-save to file location disabled.";
             SaveFileLocationChanged?.Invoke(_config);
         }
+
         // == system capture mode checkbox change handler == //
         private void chkEnableSystemCapture_CheckChanged(object sender, EventArgs e)
         {
@@ -213,14 +219,35 @@ namespace ScreenGrab
 
         }
 
-        // keydown event handler to capture new hotkey
+        // == keydown event handler to capture new hotkey == //
         private void SettingsForm_KeyDown(object? sender, KeyEventArgs e)
         {
-            // handle if HotkeyBeingConfigured is none
+            // handle Escape key press
+            if (e.KeyCode == Keys.Escape)
+            {
+                if (_currentHotkeyEditTarget != HotkeyBeingConfigured.None)
+                {
+                    // Cancel hotkey configuration mode
+                    _currentHotkeyEditTarget = HotkeyBeingConfigured.None;
+                    lblStatus.Text = "Change canceled.";
+                    e.Handled = true;
+                    return;
+                }
+                else
+                {
+                    // Close form
+                    this.Close();
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            // handle if HotkeyBeingConfigured is none (for non-Escape keys)
             if (_currentHotkeyEditTarget == HotkeyBeingConfigured.None)
             {
                 return; // no hotkey is being configured
             }
+
             //build modifiers
             var mods = HotkeyModifiers.None;
             if (e.Control) mods |= HotkeyModifiers.Control;
@@ -233,6 +260,7 @@ namespace ScreenGrab
                 Modifiers = mods,
                 Key = e.KeyCode
             };
+
             // switch/case to assign new hotkey based on which is being configured
             switch (_currentHotkeyEditTarget)
             {
@@ -268,7 +296,6 @@ namespace ScreenGrab
                     _config.OpenEditor = def;
                     txtEditor.Text = def.ToString();
                     break;
-
             }
             // reset current hotkey being configured and status label
             _currentHotkeyEditTarget = HotkeyBeingConfigured.None;
@@ -276,12 +303,14 @@ namespace ScreenGrab
             e.SuppressKeyPress = true;                     // prevent keystroke from being processed further
             HotkeysChanged?.Invoke(_config);               // raise event //important to notify main app of hotkey change
         }
-        // get configuration method
+
+        // == get configuration method == //
         public HotkeyConfig GetResultConfig()
         {
             return _config;
         }
-        // button to open form named "Driver"
+
+        // == button to open form named "Driver" == //
         private void btnGoHome_Click(object sender, EventArgs e)
         {
             Form? parentForm = this.Owner ?? this.Tag as Form;

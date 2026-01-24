@@ -21,6 +21,8 @@ namespace ScreenGrab
         public UiScreenshot()
         {
             InitializeComponent();
+            this.KeyPreview = true;
+            this.KeyDown    += UiScreenshot_KeyDown;
         }
 
         // == initiate UI element capture == //
@@ -518,6 +520,16 @@ namespace ScreenGrab
                 }
             }
             this.Close();
+        }
+
+        // == esc key to close the form == //
+        private void UiScreenshot_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.Close();
+                e.Handled = true;
+            }
         }
 
         // == export all info as markdown == //
