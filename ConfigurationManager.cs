@@ -58,10 +58,10 @@ namespace ScreenGrab
             {
                 if (!Directory.Exists(ConfigDirectory)) // check if config directory exists
                 {
-                    Directory.CreateDirectory(ConfigDirectory); // create config directory if it doesn't exist
+                    Directory.CreateDirectory(ConfigDirectory);                                                             // create config directory if it doesn't exist
                 }
-                string jsonString = JsonSerializer.Serialize(config, JsonOptions); // serialize HotkeyConfig object to json string
-                File.WriteAllText(ConfigFileLocation, jsonString);                 // write json string to file
+                string jsonString = JsonSerializer.Serialize(config, JsonOptions);                                          // serialize HotkeyConfig object to json string
+                File.WriteAllText(ConfigFileLocation, jsonString);                                                          // write json string to file
                 System.Diagnostics.Debug.Assert(!string.IsNullOrWhiteSpace(jsonString), "json file should never be empty"); // debug assertion for successful save
             }
             catch (Exception ex)

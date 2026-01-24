@@ -186,7 +186,3 @@ namespace ScreenGrab
         }
     }
 }
-
-
-
-
