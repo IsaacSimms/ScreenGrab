@@ -81,10 +81,12 @@
             menuStrip2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             menuStrip2.BackColor = SystemColors.Desktop;
             menuStrip2.Dock = DockStyle.None;
+            menuStrip2.GripStyle = ToolStripGripStyle.Visible;
             menuStrip2.Items.AddRange(new ToolStripItem[] { copyTextToolStripMenuItem });
-            menuStrip2.Location = new Point(1338, 800);
+            menuStrip2.Location = new Point(1334, 800);
             menuStrip2.Name = "menuStrip2";
-            menuStrip2.Size = new Size(79, 24);
+            menuStrip2.RenderMode = ToolStripRenderMode.System;
+            menuStrip2.Size = new Size(83, 24);
             menuStrip2.TabIndex = 5;
             menuStrip2.Text = "menuStripText";
             // 
@@ -101,10 +103,12 @@
             menuStrip1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             menuStrip1.BackColor = SystemColors.Desktop;
             menuStrip1.Dock = DockStyle.None;
+            menuStrip1.GripStyle = ToolStripGripStyle.Visible;
             menuStrip1.Items.AddRange(new ToolStripItem[] { sendImageToEditorToolStripMenuItem, copyImageToolStripMenuItem, saveToolStripMenuItem, exportAllAsMarkdownToolStripMenuItem });
-            menuStrip1.Location = new Point(948, 68);
+            menuStrip1.Location = new Point(941, 68);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(469, 24);
+            menuStrip1.RenderMode = ToolStripRenderMode.System;
+            menuStrip1.Size = new Size(473, 24);
             menuStrip1.TabIndex = 3;
             menuStrip1.Text = "menuStripScreenshot";
             // 

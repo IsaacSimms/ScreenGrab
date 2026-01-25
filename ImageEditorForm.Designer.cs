@@ -33,9 +33,11 @@
             btnGoHome = new Button();
             pictureBoxImage = new PictureBox();
             EditorMenu = new MenuStrip();
+            takeNewRegionCaptureToolStripMenuItem = new ToolStripMenuItem();
             openToolStripMenuItem = new ToolStripMenuItem();
             saveToolStripMenuItem = new ToolStripMenuItem();
             copyToClipboardToolStripMenuItem = new ToolStripMenuItem();
+            sendImageToMSPaintToolStripMenuItem = new ToolStripMenuItem();
             EditorToolStrip = new ToolStrip();
             toolStripButton2 = new ToolStripButton();
             toolStripButton8 = new ToolStripButton();
@@ -57,7 +59,6 @@
             CropToolStrip = new ToolStrip();
             toolStripBtnCrop = new ToolStripButton();
             toolStripBtnResetCrop = new ToolStripButton();
-            sendImageToMSPaintToolStripMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)EditorHeader).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
             EditorMenu.SuspendLayout();
@@ -104,12 +105,22 @@
             EditorMenu.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             EditorMenu.BackColor = SystemColors.Desktop;
             EditorMenu.Dock = DockStyle.None;
-            EditorMenu.Items.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, copyToClipboardToolStripMenuItem, sendImageToMSPaintToolStripMenuItem });
-            EditorMenu.Location = new Point(918, 28);
+            EditorMenu.GripStyle = ToolStripGripStyle.Visible;
+            EditorMenu.Items.AddRange(new ToolStripItem[] { takeNewRegionCaptureToolStripMenuItem, openToolStripMenuItem, saveToolStripMenuItem, copyToClipboardToolStripMenuItem, sendImageToMSPaintToolStripMenuItem });
+            EditorMenu.Location = new Point(639, 28);
             EditorMenu.Name = "EditorMenu";
-            EditorMenu.Size = new Size(342, 24);
+            EditorMenu.RenderMode = ToolStripRenderMode.System;
+            EditorMenu.Size = new Size(621, 24);
             EditorMenu.TabIndex = 25;
             EditorMenu.Text = "menuStrip1";
+            // 
+            // takeNewRegionCaptureToolStripMenuItem
+            // 
+            takeNewRegionCaptureToolStripMenuItem.ForeColor = SystemColors.Window;
+            takeNewRegionCaptureToolStripMenuItem.Name = "takeNewRegionCaptureToolStripMenuItem";
+            takeNewRegionCaptureToolStripMenuItem.Size = new Size(155, 20);
+            takeNewRegionCaptureToolStripMenuItem.Text = "Take New Region Capture";
+            takeNewRegionCaptureToolStripMenuItem.Click += btnNewRegionCapture_Click;
             // 
             // openToolStripMenuItem
             // 
@@ -138,6 +149,14 @@
             copyToClipboardToolStripMenuItem.Text = "Copy to Clipboard";
             copyToClipboardToolStripMenuItem.ToolTipText = "Copy Image";
             copyToClipboardToolStripMenuItem.Click += btnCopyToClipboard_Click;
+            // 
+            // sendImageToMSPaintToolStripMenuItem
+            // 
+            sendImageToMSPaintToolStripMenuItem.ForeColor = SystemColors.Window;
+            sendImageToMSPaintToolStripMenuItem.Name = "sendImageToMSPaintToolStripMenuItem";
+            sendImageToMSPaintToolStripMenuItem.Size = new Size(109, 20);
+            sendImageToMSPaintToolStripMenuItem.Text = "Send to MS Paint";
+            sendImageToMSPaintToolStripMenuItem.Click += btnOpenInPaint_Click;
             // 
             // EditorToolStrip
             // 
@@ -278,7 +297,7 @@
             ZoomToolStrip.BackColor = SystemColors.Desktop;
             ZoomToolStrip.Dock = DockStyle.None;
             ZoomToolStrip.Items.AddRange(new ToolStripItem[] { btnZoomPlus, btnZoomMinus, btnZoomReset });
-            ZoomToolStrip.Location = new Point(1337, 78);
+            ZoomToolStrip.Location = new Point(1333, 78);
             ZoomToolStrip.Name = "ZoomToolStrip";
             ZoomToolStrip.RenderMode = ToolStripRenderMode.System;
             ZoomToolStrip.Size = new Size(81, 25);
@@ -372,14 +391,6 @@
             toolStripBtnResetCrop.ToolTipText = "Undo Crop";
             toolStripBtnResetCrop.Click += btnResetCrop_Click;
             // 
-            // sendImageToMSPaintToolStripMenuItem
-            // 
-            sendImageToMSPaintToolStripMenuItem.ForeColor = SystemColors.Window;
-            sendImageToMSPaintToolStripMenuItem.Name = "sendImageToMSPaintToolStripMenuItem";
-            sendImageToMSPaintToolStripMenuItem.Size = new Size(109, 20);
-            sendImageToMSPaintToolStripMenuItem.Text = "Send to MS Paint";
-            sendImageToMSPaintToolStripMenuItem.Click += btnOpenInPaint_Click;
-            // 
             // ImageEditorForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -446,5 +457,6 @@
         private ToolStripButton toolStripBtnCrop;
         private ToolStripButton toolStripBtnResetCrop;
         private ToolStripMenuItem sendImageToMSPaintToolStripMenuItem;
+        private ToolStripMenuItem takeNewRegionCaptureToolStripMenuItem;
     }
 }

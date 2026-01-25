@@ -105,10 +105,12 @@
             menuStrip1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             menuStrip1.BackColor = SystemColors.Desktop;
             menuStrip1.Dock = DockStyle.None;
+            menuStrip1.GripStyle = ToolStripGripStyle.Visible;
             menuStrip1.Items.AddRange(new ToolStripItem[] { sendImageToEditorToolStripMenuItem, copyImageToolStripMenuItem, saveImageToolStripMenuItem, exportAllAsMarkdownToolStripMenuItem });
-            menuStrip1.Location = new Point(944, 58);
+            menuStrip1.Location = new Point(941, 58);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(470, 24);
+            menuStrip1.RenderMode = ToolStripRenderMode.System;
+            menuStrip1.Size = new Size(473, 24);
             menuStrip1.TabIndex = 5;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -141,7 +143,7 @@
             // 
             exportAllAsMarkdownToolStripMenuItem.ForeColor = SystemColors.Window;
             exportAllAsMarkdownToolStripMenuItem.Name = "exportAllAsMarkdownToolStripMenuItem";
-            exportAllAsMarkdownToolStripMenuItem.Size = new Size(153, 20);
+            exportAllAsMarkdownToolStripMenuItem.Size = new Size(152, 20);
             exportAllAsMarkdownToolStripMenuItem.Text = "Export All as Markdown...";
             exportAllAsMarkdownToolStripMenuItem.Click += ExportAllAsMarkdownToolStripMenuItem_Click;
             // 
@@ -149,10 +151,12 @@
             // 
             menuStrip2.BackColor = SystemColors.Desktop;
             menuStrip2.Dock = DockStyle.None;
+            menuStrip2.GripStyle = ToolStripGripStyle.Visible;
             menuStrip2.Items.AddRange(new ToolStripItem[] { copyTextToolStripMenuItem });
-            menuStrip2.Location = new Point(1339, 791);
+            menuStrip2.Location = new Point(1332, 791);
             menuStrip2.Name = "menuStrip2";
-            menuStrip2.Size = new Size(79, 24);
+            menuStrip2.RenderMode = ToolStripRenderMode.System;
+            menuStrip2.Size = new Size(83, 24);
             menuStrip2.TabIndex = 6;
             menuStrip2.Text = "menuStrip2";
             // 

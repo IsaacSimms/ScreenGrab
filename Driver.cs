@@ -188,6 +188,14 @@ namespace ScreenGrab
             imageEditorForm.Show();
         }
 
+        // == Event Handler for opening new region capture from Image Editor (TriggerRegionCapture() in ImageEditor.cs) == //
+        public async Task TriggerRegionCapture()
+        {
+            this.Hide();
+            this.ShowInTaskbar = false;
+            await Task.Delay(100); // slight delay to ensure screenshot process starts before hiding the main window
+            _hotkeyScreenshot?.CaptureRegion();
+        }
         // == overide OnFormClosing to clean up resources on app closing == //
         protected override void OnFormClosing(FormClosingEventArgs e)
         {

@@ -100,10 +100,12 @@
             menuStripTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             menuStripTextBox.BackColor = SystemColors.Desktop;
             menuStripTextBox.Dock = DockStyle.None;
+            menuStripTextBox.GripStyle = ToolStripGripStyle.Visible;
             menuStripTextBox.Items.AddRange(new ToolStripItem[] { copyTextToolStripMenuItem, printTextOnImageToolStripMenuItem });
-            menuStripTextBox.Location = new Point(1215, 791);
+            menuStripTextBox.Location = new Point(1211, 791);
             menuStripTextBox.Name = "menuStripTextBox";
-            menuStripTextBox.Size = new Size(200, 24);
+            menuStripTextBox.RenderMode = ToolStripRenderMode.System;
+            menuStripTextBox.Size = new Size(204, 24);
             menuStripTextBox.TabIndex = 4;
             menuStripTextBox.Text = "menuStrip1";
             menuStripTextBox.Click += btnCopyInfo_Click;
@@ -137,10 +139,12 @@
             menuStripScreenshot.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             menuStripScreenshot.BackColor = SystemColors.Desktop;
             menuStripScreenshot.Dock = DockStyle.None;
+            menuStripScreenshot.GripStyle = ToolStripGripStyle.Visible;
             menuStripScreenshot.Items.AddRange(new ToolStripItem[] { sendImageToEditorToolStripMenuItem, copyToClipboardToolStripMenuItem, saveToolStripMenuItem, exportAsMarkdownToolStripMenuItem });
-            menuStripScreenshot.Location = new Point(945, 58);
+            menuStripScreenshot.Location = new Point(941, 58);
             menuStripScreenshot.Name = "menuStripScreenshot";
-            menuStripScreenshot.Size = new Size(469, 24);
+            menuStripScreenshot.RenderMode = ToolStripRenderMode.System;
+            menuStripScreenshot.Size = new Size(473, 24);
             menuStripScreenshot.TabIndex = 6;
             menuStripScreenshot.Text = "menuStrip1";
             // 

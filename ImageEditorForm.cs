@@ -42,6 +42,7 @@ namespace ScreenGrab
         private Pen?           _currentPen;                                       // pen for drawing shapes
         private List<Point>    _freeformPoints = new List<Point>();               // points for freeform drawing
         private int            _brushSize = 5;                                    // variable brush size for drawing including default
+
         // text tool variables
         private RichTextBox?   _textBox;
         private Point          _textStartPoint;
@@ -300,6 +301,26 @@ namespace ScreenGrab
             OpenClipboardImageInPaint.OpenImageInPaint();
         }
 
+        // ==  MENUSTRIP: CLICK BUTTON == TAKE NEW REGION CAPTURE == //
+        private void btnNewRegionCapture_Click(object sender, EventArgs e)
+        {
+            Form? parentForm = this.Owner ?? this.Tag as Form; // get parent form from Owner or Tag
+
+            // nest logic in if/else statement for debugging and clarity
+            if (parentForm != null && parentForm is Driver driverForm)
+            {
+                this.Close(); // close editor after starting new capture
+                driverForm.TriggerRegionCapture();
+            }
+            else
+            {
+                ScreenshotMessageBox.ShowMessage(
+                $"Unable to start new region capture",
+                $"ScreenGrab:",
+                4000);
+                System.Diagnostics.Debug.WriteLine("Error: Parent form not found for new region capture.");
+            }
+        }
 
         // == TOOLSTRIP: FUNCTIONALITY FOR SELECTING COLOR FOR DRAWING == //
         // button to select color for drawing
@@ -649,6 +670,14 @@ namespace ScreenGrab
             }
             else
             {
+                // sets default color to yellow if user selects highlight tool
+                if (tool == DrawingTool.Highlight)
+                {
+                    _SelectedColor = Color.Yellow;                     // default highlight color
+                    _currentImage?.Dispose();                          // dispose previous pen
+                    _currentPen = new Pen(_SelectedColor, _brushSize); // create new pen with selected color
+                    UpdateColorButtonDisplay();                        // update button display
+                }
                 _activeDrawingTool = tool;              // activate selected tool
                 pictureBoxImage.Cursor = Cursors.Cross; // change cursor to crosshair
                 System.Diagnostics.Debug.WriteLine($"Tool activated: {tool}"); // debug log
