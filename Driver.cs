@@ -196,6 +196,7 @@ namespace ScreenGrab
             await Task.Delay(100); // slight delay to ensure screenshot process starts before hiding the main window
             _hotkeyScreenshot?.CaptureRegion();
         }
+
         // == overide OnFormClosing to clean up resources on app closing == //
         protected override void OnFormClosing(FormClosingEventArgs e)
         {

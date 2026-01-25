@@ -309,8 +309,8 @@ namespace ScreenGrab
             // nest logic in if/else statement for debugging and clarity
             if (parentForm != null && parentForm is Driver driverForm)
             {
-                this.Close(); // close editor after starting new capture
-                driverForm.TriggerRegionCapture();
+                this.Close();                      // close editor after starting new capture
+                driverForm.TriggerRegionCapture(); // trigger new region capture
             }
             else
             {
