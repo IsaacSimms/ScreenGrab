@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
@@ -42,7 +43,6 @@ namespace ScreenGrab
         private Pen?           _currentPen;                                       // pen for drawing shapes
         private List<Point>    _freeformPoints = new List<Point>();               // points for freeform drawing
         private int            _brushSize = 5;                                    // variable brush size for drawing including default
-
         // text tool variables
         private RichTextBox?   _textBox;
         private Point          _textStartPoint;
@@ -57,8 +57,8 @@ namespace ScreenGrab
         private const float    ZoomMax  = 5.0f;                                   // maximum zoom level
         private const float    ZoomStep = 0.1f;                                   // zoom step increment
         // crop variables
-        private Bitmap?   _originalImageBeforeCrop;                               // store original image before crop operation
-        private bool      _isCropping = false;                                    // flag to indicate if cropping is in progress
+        private Bitmap?        _originalImageBeforeCrop;                          // store original image before crop operation
+        private bool           _isCropping = false;                               // flag to indicate if cropping is in progress
 
         // == constructor == //
         public ImageEditorForm()
@@ -67,9 +67,15 @@ namespace ScreenGrab
             _currentPen = new Pen(_SelectedColor, 5); // initialize pen with default color and width
             UpdateColorButtonDisplay();               // update button display with default color
 
+            // ensure the form is brought to front when activated
+            this.StartPosition = FormStartPosition.CenterScreen; // center form on screen
+            this.Shown         += ImageEditorForm_Shown;         // wire shown event
+
             // wire resize event for repositioning toolstrips
-            this.Resize += ImageEditorForm_Resize;
-            PositionToolStripsRelativeToPanel();
+            this.Resize += ImageEditorForm_Resize; // wire resize event
+            PositionToolStripsRelativeToPanel();   // initial positioning of toolstrips
+
+
 
             // wire up mouse events for drawing
             pictureBoxImage.MouseDown  += pictureBoxImage_MouseDown;
@@ -84,7 +90,15 @@ namespace ScreenGrab
 
             // for ctrl + Z for undo shortcut
             this.KeyPreview = true; // allow form to capture key events
-            this.KeyDown += ImageEditorForm_KeyDown;
+            this.KeyDown    += ImageEditorForm_KeyDown;
+        }
+
+        // == handle form shown event to set focus == //
+        private void ImageEditorForm_Shown(object? sender, EventArgs e)
+        {
+            this.Focus();         // set focus to form for keyboard shortcuts
+            this.BringToFront();  // bring form to front
+            this.Activate();      // activate form
         }
 
         //== KEYBOARD SHORTCUT HANDLING == //
@@ -186,13 +200,13 @@ namespace ScreenGrab
                 // Store a copy of the image to avoid issues with disposed objects
                 var _oldCurrentImage = _currentImage;
                 var _oldEditableImage = _editableImage;
-
-                _currentImage = new Bitmap(image);         // create copy of image
-                _editableImage = new Bitmap(image);        // create editable bitmap copy
-                pictureBoxImage.Image = _editableImage;            // assign image to picture box
-                _oldCurrentImage?.Dispose();                          // dispose previous image if any
-                _oldEditableImage?.Dispose();                         // dispose previous editable image if any
-                this.Text = $"Image Editor - Clipboard Image";     // set form title
+                
+                _currentImage = new Bitmap(image);             // create copy of image
+                _editableImage = new Bitmap(image);            // create editable bitmap copy
+                pictureBoxImage.Image = _editableImage;        // assign image to picture box
+                _oldCurrentImage?.Dispose();                   // dispose previous image if any
+                _oldEditableImage?.Dispose();                  // dispose previous editable image if any
+                this.Text = $"Image Editor - Clipboard Image"; // set form title
             }
             catch (Exception ex)
             {
@@ -754,20 +768,20 @@ namespace ScreenGrab
 
             var textBox = new TransparentTextBox()
             {
-                Location = new Point(-1000, -1000), // temporary box off-screen // transparant textbox will be drawn at correct location in Paint event
-                Multiline = true,
-                Font = _textFont,
-                ForeColor = _SelectedColor,
+                Location    = new Point(-1000, -1000), // temporary box off-screen // transparant textbox will be drawn at correct location in Paint event
+                Multiline   = true,
+                Font        = _textFont,
+                ForeColor   = _SelectedColor,
                 BorderStyle = BorderStyle.None,
                 MinimumSize = new Size(100, 30),
-                Width = 200,
-                ScrollBars = RichTextBoxScrollBars.None,
+                Width       = 200,
+                ScrollBars  = RichTextBoxScrollBars.None,
             };
             _textBox = textBox;
 
             // wire up events
-            _textBox.KeyDown += TextBox_KeyDown;
-            _textBox.LostFocus += TextBox_LostFocus;
+            _textBox.KeyDown     += TextBox_KeyDown;
+            _textBox.LostFocus   += TextBox_LostFocus;
             _textBox.TextChanged += TextBox_TextChanged;
 
             // add textbox to form
@@ -808,9 +822,9 @@ namespace ScreenGrab
                 {
                     using (Graphics g = Graphics.FromImage(_editableImage))
                     {
-                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
+                        g.SmoothingMode     = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
                         g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;          // improve text quality
-                        Point imagePoint = ConvertToImageCoordinates(_textStartPoint);      // convert to image coordinates
+                        Point imagePoint    = ConvertToImageCoordinates(_textStartPoint);      // convert to image coordinates
                         using (Brush textBrush = new SolidBrush(_SelectedColor))
                         {
                             g.DrawString(text, _textFont, textBrush, imagePoint);           // draw text on image
@@ -849,10 +863,10 @@ namespace ScreenGrab
         // == HIGHLIGHTING TOOL FUNCTIONALITY == //
         private void DrawHighlightPreview(Graphics g)
         {
-            int x = Math.Min(_drawStartPoint.X, _drawEndPoint.X);
-            int y = Math.Min(_drawStartPoint.Y, _drawEndPoint.Y);
-            int width = Math.Abs(_drawEndPoint.X - _drawStartPoint.X);
-            int height = Math.Abs(_drawEndPoint.Y - _drawStartPoint.Y);
+            int x       = Math.Min(_drawStartPoint.X, _drawEndPoint.X);
+            int y       = Math.Min(_drawStartPoint.Y, _drawEndPoint.Y);
+            int width   = Math.Abs(_drawEndPoint.X - _drawStartPoint.X);
+            int height  = Math.Abs(_drawEndPoint.Y - _drawStartPoint.Y);
             Color color = Color.FromArgb(80, _SelectedColor); // semi-transparent color
             using (Brush highlightBrush = new SolidBrush(color))
             {
@@ -861,10 +875,10 @@ namespace ScreenGrab
         }
         private void DrawHighlightOnImage(Graphics g, Point start, Point end)
         {
-            int x = Math.Min(start.X, end.X);
-            int y = Math.Min(start.Y, end.Y);
-            int width = Math.Abs(end.X - start.X);
-            int height = Math.Abs(end.Y - start.Y);
+            int x       = Math.Min(start.X, end.X);
+            int y       = Math.Min(start.Y, end.Y);
+            int width   = Math.Abs(end.X - start.X);
+            int height  = Math.Abs(end.Y - start.Y);
             Color color = Color.FromArgb(80, _SelectedColor); // semi-transparent color
             using (Brush highlightBrush = new SolidBrush(color))
             {
@@ -912,6 +926,7 @@ namespace ScreenGrab
                 int smallWidth = Math.Max(1, blurArea.Width / pixelSize);
                 int smallHeight = Math.Max(1, blurArea.Height / pixelSize);
 
+                // scale down the area
                 using (Bitmap smallBitMap = new Bitmap(smallWidth, smallHeight))
                 {
                     using (Graphics gSmall = Graphics.FromImage(smallBitMap))
@@ -954,7 +969,7 @@ namespace ScreenGrab
                 _drawStartPoint = e.Location;                   // set starting point
                 _drawEndPoint = e.Location;                     // initialize ending point
 
-                if (_activeDrawingTool == DrawingTool.Freeform) //for freeform drawing
+                if (_activeDrawingTool == DrawingTool.Freeform) // for freeform drawing
                 {
                     _freeformPoints.Clear();                    // clear previous points
                     _freeformPoints.Add(e.Location);            // add starting point
@@ -1082,9 +1097,9 @@ namespace ScreenGrab
         // == draw rectangle preview == //
         private void DrawRectanglePreview(Graphics g)
         {
-            int x = Math.Min(_drawStartPoint.X, _drawEndPoint.X);
-            int y = Math.Min(_drawStartPoint.Y, _drawEndPoint.Y);
-            int width = Math.Abs(_drawEndPoint.X - _drawStartPoint.X);
+            int x      = Math.Min(_drawStartPoint.X, _drawEndPoint.X);
+            int y      = Math.Min(_drawStartPoint.Y, _drawEndPoint.Y);
+            int width  = Math.Abs(_drawEndPoint.X - _drawStartPoint.X);
             int height = Math.Abs(_drawEndPoint.Y - _drawStartPoint.Y);
             g.DrawRectangle(_currentPen!, x, y, width, height);
         }
@@ -1258,15 +1273,16 @@ namespace ScreenGrab
             Form? parentForm = this.Tag as Form;
             if (parentForm != null && parentForm is Driver driverForm)
             {
+                // open settings form
                 var settingsForm = new SettingsForm(driverForm.GetHotkeyConfig());
                 settingsForm.Tag = parentForm;
                 settingsForm.HotkeysChanged += config =>
                 {
-                    driverForm.UpdateHotkeyConfig(config);
+                    driverForm.UpdateHotkeyConfig(config); // update hotkey config in main form
                 };
-                settingsForm.ShowInTaskbar = true;                 // show in taskbar
-                settingsForm.Show();                               // show settings form
-                this.Close();                                        // close editor form
+                settingsForm.ShowInTaskbar = true; // show in taskbar
+                settingsForm.Show();               // show settings form
+                this.Close();                      // close editor form
             }
             else
             {

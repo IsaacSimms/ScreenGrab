@@ -5,17 +5,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace ScreenGrab
 {
     public class ScreenshotMessageBox : Form
     {
-        // variables 
+        // == private variables == //
         private readonly System.Windows.Forms.Timer _timer;
         private readonly Label _titleLabel;
         private readonly Label _messageLabel;
 
-        // constructor
+        // == Windows APIs for focus management == //
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        // == make sure that the mesasge box does not steal focus from other applications, including other forms of the app == // // not necessarily required but improves defense
+        // override ShowWithoutActivation to prevent stealing focus
+        protected override bool ShowWithoutActivation => true;
+        // override CreateParams to add WS_EX_NOACTIVATE style // works at low level to prevent focus stealing
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                const int WS_EX_NOACTIVATE = 0x08000000;
+                CreateParams param = base.CreateParams;
+                param.ExStyle |= WS_EX_NOACTIVATE;
+                return param;
+            }
+        }
+
+        // == constructor == //
         public ScreenshotMessageBox(string message, string title, int durationInMs)
         {
             // message box properties
@@ -31,6 +53,7 @@ namespace ScreenGrab
             MaximizeBox          = false;                             // disable maximize box
             MinimizeBox          = false;                             // disable minimize box
             TopMost              = true;                              // always on top
+            ShowInTaskbar        = false;                             // do not show in taskbar
 
             // title label
             _titleLabel = new Label
@@ -66,17 +89,27 @@ namespace ScreenGrab
                 Close();
             };
         }
-        // override OnShown to start timer
+        // == override OnShown to start timer == //
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
             _timer.Start();
         }
-        // static method to show message box 
+
+        // == static method to show message box == //
         public static void ShowMessage(string message, string title, int durationInMs)
         {
-            var box = new ScreenshotMessageBox(message, title, durationInMs);
+            // small delay to allow the calling form to fully activate and receive focus first
+            System.Threading.Thread.Sleep(500);
+            IntPtr previousForegroundWindow = GetForegroundWindow();          // get current foreground window
+            var box = new ScreenshotMessageBox(message, title, durationInMs); // create message box instance
             box.Show();
+
+            // restore focus 
+            if (previousForegroundWindow != IntPtr.Zero)
+            {
+                SetForegroundWindow(previousForegroundWindow);
+            }
         }
     }
 }
