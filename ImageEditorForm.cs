@@ -180,7 +180,7 @@ namespace ScreenGrab
                 _currentImage = Image.FromFile(imagePath);                             // load image from file
                 _editableImage = new Bitmap(_currentImage);                            // create editable bitmap copy
                 pictureBoxImage.Image = _editableImage;                                // assign image to picture box
-                this.Text = $"Image Editor - {System.IO.Path.GetFileName(imagePath)}"; // set form title
+                this.Text = $"ScreenGrab";             // set form title
             }
             catch (Exception ex)
             {
@@ -206,7 +206,7 @@ namespace ScreenGrab
                 pictureBoxImage.Image = _editableImage;        // assign image to picture box
                 _oldCurrentImage?.Dispose();                   // dispose previous image if any
                 _oldEditableImage?.Dispose();                  // dispose previous editable image if any
-                this.Text = $"Image Editor - Clipboard Image"; // set form title
+                this.Text = $"ScreenGrab"; // set form title
             }
             catch (Exception ex)
             {

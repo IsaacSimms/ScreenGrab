@@ -32,23 +32,33 @@ namespace ScreenGrab
             Application.DoEvents();
 
             // message to indicate capture is starting
-            ScreenshotMessageBox.ShowMessage("Select a UI element by clicking on it. Press ESC to cancel.", "ScreenGrab:", 30000);
+            ScreenshotMessageBox.ShowMessage("Select a UI element by clicking on it. Press ESC to cancel.", "ScreenGrab:",30000);
 
-            using var selector = new UiElementSelectorForm();
-            if (selector.ShowDialog() == DialogResult.OK && selector.CapturedImage != null)
+            using var selector = new UiElementSelectorForm(); // overlay form for selection
+            var result         = selector.ShowDialog();       // show overlay form
+            ScreenshotMessageBox.CloseActiveMessageBox();     // close message box
+
+            if (result == DialogResult.OK && selector.CapturedImage != null)
             {
-                _capturedImage = selector.CapturedImage;
+                // store captured data
+                _capturedImage   = selector.CapturedImage;
                 _capturedElement = selector.SelectedElement;
 
                 // display captured image
-                pictureBoxScreenshot.Image = _capturedImage;
+                pictureBoxScreenshot.Image    = _capturedImage;
                 pictureBoxScreenshot.SizeMode = PictureBoxSizeMode.Zoom;
 
                 // display captured element info
                 PopulateElementProperties(selector.SelectedElement);
+
+                // show this form
+                this.Show();
+                this.BringToFront();
             }
-            this.Show();
-            this.BringToFront();
+            else 
+            {
+                this.Close(); // close form if capture was cancelled
+            }
         }
 
         // == gather element propertiies == //
@@ -208,6 +218,7 @@ namespace ScreenGrab
                 this.TopMost = true;                             // Always on top
                 this.Cursor = Cursors.Cross;                     // Crosshair cursor
                 this.ShowInTaskbar = false;                      // Don't show in taskbar
+                this.KeyPreview = true;                          // Capture key events
 
                 // Capture the screen as background BEFORE showing overlay
                 _backgroundImage = CaptureScreen(vs);
@@ -220,7 +231,6 @@ namespace ScreenGrab
 
                 this.MouseClick += OnMouseClick;                 // Mouse click event
                 this.KeyDown += OnKeyDown;                       // Key down event
-                this.KeyPreview = true;                          // Capture key events
 
                 // Timer to update hovered element - increased interval for stability
                 _hoverTimer = new System.Windows.Forms.Timer { Interval = 100 };
@@ -241,6 +251,8 @@ namespace ScreenGrab
             protected override void OnShown(EventArgs e)
             {
                 base.OnShown(e);
+                this.Activate();
+                this.Focus();
                 _hoverTimer.Start();
             }
 
@@ -322,8 +334,10 @@ namespace ScreenGrab
                 if (e.KeyCode == Keys.Escape)
                 {
                     _hoverTimer.Stop();
+                    _isCapturing = true;
                     DialogResult = DialogResult.Cancel;
                     Close();
+                    e.Handled    = true;
                 }
             }
 
@@ -456,7 +470,7 @@ namespace ScreenGrab
             if (_capturedImage != null)
             {
                 Clipboard.SetImage(_capturedImage);
-                ScreenshotMessageBox.ShowMessage("Image copied to clipboard.", "ScreenGrab:", 1500);
+                ScreenshotMessageBox.ShowMessage("Image copied to clipboard.", "ScreenGrab:", 2000);
             }
         }
 

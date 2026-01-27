@@ -15,6 +15,7 @@ namespace ScreenGrab
         private readonly System.Windows.Forms.Timer _timer;
         private readonly Label _titleLabel;
         private readonly Label _messageLabel;
+        private static ScreenshotMessageBox? _activeMessageBox; // to track active message box // used in UI element class for more complex closing logic
 
         // == Windows APIs for focus management == //
         [DllImport("user32.dll")]
@@ -54,6 +55,7 @@ namespace ScreenGrab
             MinimizeBox          = false;                             // disable minimize box
             TopMost              = true;                              // always on top
             ShowInTaskbar        = false;                             // do not show in taskbar
+            this.Padding         = new Padding(2);                  // padding around content
 
             // title label
             _titleLabel = new Label
@@ -83,17 +85,29 @@ namespace ScreenGrab
             // timer to close message box after duration (duration set in class constructor)
             _timer          = new System.Windows.Forms.Timer();
             _timer.Interval = durationInMs;
-            _timer.Tick    += (s, e) =>
+            _timer.Tick     += (s, e) =>
             {
                 _timer.Stop();
                 Close();
             };
         }
+
         // == override OnShown to start timer == //
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
             _timer.Start();
+        }
+        // == override OnPaint to draw border == //
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e); // call base method
+
+            // white border pen
+            using (Pen borderPen = new Pen(Color.White, 2))
+            {
+                e.Graphics.DrawRectangle(borderPen, 0, 0, this.ClientSize.Width - 1, this.ClientSize.Height - 1);
+            }
         }
 
         // == static method to show message box == //
@@ -103,12 +117,33 @@ namespace ScreenGrab
             System.Threading.Thread.Sleep(500);
             IntPtr previousForegroundWindow = GetForegroundWindow();          // get current foreground window
             var box = new ScreenshotMessageBox(message, title, durationInMs); // create message box instance
+            _activeMessageBox = box;                                          // track active message box
             box.Show();
 
             // restore focus 
             if (previousForegroundWindow != IntPtr.Zero)
             {
                 SetForegroundWindow(previousForegroundWindow);
+            }
+        }
+
+        // == close active message box when called == // // used in UI element class for more complex closing logic
+        public static void CloseActiveMessageBox()
+        {
+            _activeMessageBox?.Close();
+            _activeMessageBox = null;
+        }
+
+        // == override OnFormClosed to clean up == //
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _timer.Dispose();
+            base.OnFormClosed(e);
+
+            // clear active message box reference if this was the active one
+            if (_activeMessageBox == this)
+            {
+                _activeMessageBox = null;
             }
         }
     }

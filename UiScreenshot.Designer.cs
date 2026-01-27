@@ -180,6 +180,7 @@
             Controls.Add(pictureBoxUICaptureHeader);
             Controls.Add(menuStrip1);
             Controls.Add(menuStrip2);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
             Name = "UiScreenshot";
             Text = "ScreenGrab";

@@ -185,7 +185,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
             Name = "OCRScreenshotForm";
-            Text = " ";
+            Text = " ScreenGrab";
             ((System.ComponentModel.ISupportInitialize)OCRForm).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxScreenshot).EndInit();
             panelImageContainerOCR.ResumeLayout(false);
