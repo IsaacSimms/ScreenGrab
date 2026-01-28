@@ -428,7 +428,7 @@ namespace ScreenGrab
         {
             using (var selector = new FreeformSelectForm())
             {
-                if (selector.ShowDialog() != DialogResult.OK)             // user cancelled
+                if (selector.ShowDialog() != DialogResult.OK)            // user cancelled
                 {
                     return;
                 }

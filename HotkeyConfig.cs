@@ -23,6 +23,7 @@ namespace ScreenGrab
         Shift   = 0x0004,
         Win     = 0x0008
     }
+
     // == define hotkey structure and return hotkeys as string == //
     public class HotkeyDefinition
     {
