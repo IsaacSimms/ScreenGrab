@@ -514,7 +514,19 @@ namespace ScreenGrab
         {
             if (_capturedImage == null) return;
 
+            // find driver form to set as owner
+            Form? driverForm = null;
+            foreach (Form form in Application.OpenForms)
+            {
+                if (form is Driver)
+                {
+                    driverForm = form;
+                    break;
+                }
+            }
+
             var editorForm = new ImageEditorForm(new Bitmap(_capturedImage));
+            editorForm.Tag = driverForm; // set owner
             editorForm.Show();
             this.Close();
         }

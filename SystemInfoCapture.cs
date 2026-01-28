@@ -411,8 +411,20 @@ namespace ScreenGrab
             // create copy of screenshot (avoids disposal issues)
             Bitmap screenshotCopy = new Bitmap(Screenshot);
 
+            // find driver form to set as owner
+            Form? driverForm = null;
+            foreach (Form form in Application.OpenForms)
+            {
+                if (form is Driver)
+                {
+                    driverForm = form;
+                    break;
+                }
+            }
+
             // open editor form with screenshot
             ImageEditorForm editorForm = new ImageEditorForm(screenshotCopy);
+            editorForm.Tag = driverForm; // set driver form as owner
             editorForm.Show();
             this.Close();
         }

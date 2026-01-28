@@ -50,7 +50,7 @@ namespace ScreenGrab
         private bool           _isTextInputActive = false;                        // flag to indicate if text input is active
         // undo tool variables 
         private Stack <Bitmap> _undoStack = new Stack<Bitmap>();                  // stack to store previous image states for undo functionality
-        private const int      MaxUndoSteps = 30;                                 // maximum number of undo steps to store
+        private const int      MaxUndoSteps = 15;                                 // maximum number of undo steps to store
         // zoom variables
         private float          _zoomFactor  = 1.0f;                               // current zoom factor
         private const float    ZoomMin  = 0.1f;                                   // minimum zoom level
@@ -59,6 +59,9 @@ namespace ScreenGrab
         // crop variables
         private Bitmap?        _originalImageBeforeCrop;                          // store original image before crop operation
         private bool           _isCropping = false;                               // flag to indicate if cropping is in progress
+        // form closing event toggle
+        private bool _isClosing = false;                                          // flag to prevent re-entrance in form closing
+
 
         // == constructor == //
         public ImageEditorForm()
@@ -91,6 +94,8 @@ namespace ScreenGrab
             // for ctrl + Z for undo shortcut
             this.KeyPreview = true; // allow form to capture key events
             this.KeyDown    += ImageEditorForm_KeyDown;
+
+            this.FormClosing += ImageEditorForm_FormClosing;
         }
 
         // == handle form shown event to set focus == //
@@ -173,6 +178,7 @@ namespace ScreenGrab
         {
             try
             {
+                pictureBoxImage.Image = null;                                          // clear previous image
                 _currentImage?.Dispose();                                              // dispose previous image if any
                 _editableImage?.Dispose();                                             // dispose previous editable image if any
                 _originalImageBeforeCrop?.Dispose();                                   // dispose previous original image before crop if any
@@ -191,12 +197,16 @@ namespace ScreenGrab
         public ImageEditorForm(Image image) : this()
         {
             LoadImageFromObject(image);
+            image.Dispose();
         }
         // == load image from Image object == //
         private void LoadImageFromObject(Image image)
         {
             try
             {
+
+                pictureBoxImage.Image = null;                  // clear previous image
+
                 // Store a copy of the image to avoid issues with disposed objects
                 var _oldCurrentImage = _currentImage;
                 var _oldEditableImage = _editableImage;
@@ -417,10 +427,11 @@ namespace ScreenGrab
         {
             if (_undoStack.Count > 0 && _editableImage != null)
             {
+                pictureBoxImage.Image = null;           // clear current image
                 _editableImage.Dispose();
-                _editableImage = _undoStack.Pop(); // pop last state
+                _editableImage = _undoStack.Pop();      // pop last state
                 pictureBoxImage.Image = _editableImage; // update picture box
-                pictureBoxImage.Invalidate();          // refresh display
+                pictureBoxImage.Invalidate();           // refresh display
             }
         }
         // button to undo last action
@@ -451,6 +462,7 @@ namespace ScreenGrab
             if (_originalImageBeforeCrop != null && _editableImage != null)
             {
                 SaveStateForUndo();                                    // save current state for undo
+                pictureBoxImage.Image = null;                          // clear current image
                 _editableImage.Dispose();                              // dispose current editable image
                 _editableImage = new Bitmap(_originalImageBeforeCrop); // restore original image
                 pictureBoxImage.Image = _editableImage;                // update picture box
@@ -547,6 +559,7 @@ namespace ScreenGrab
             Bitmap croppedImage = _editableImage.Clone(cropRect, _editableImage.PixelFormat); // crop image
 
             // update editable image
+            pictureBoxImage.Image = null;
             _editableImage.Dispose();
             _editableImage        = croppedImage;
             pictureBoxImage.Image = _editableImage; // update picture box
@@ -688,7 +701,7 @@ namespace ScreenGrab
                 if (tool == DrawingTool.Highlight)
                 {
                     _SelectedColor = Color.Yellow;                     // default highlight color
-                    _currentImage?.Dispose();                          // dispose previous pen
+                    _currentPen?.Dispose();                          // dispose previous pen
                     _currentPen = new Pen(_SelectedColor, _brushSize); // create new pen with selected color
                     UpdateColorButtonDisplay();                        // update button display
                 }
@@ -1290,35 +1303,60 @@ namespace ScreenGrab
             }
         }
         // == clean resources on form closing ==//
-        private void ImageEditorForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // unsubscribe event handlers
-            pictureBoxImage.MouseDown   -= pictureBoxImage_MouseDown;
-            pictureBoxImage.MouseMove   -= pictureBoxImage_MouseMove;
-            pictureBoxImage.MouseUp     -= pictureBoxImage_MouseUp; 
-            pictureBoxImage.Paint       -= pictureBoxImage_Paint;
-            pictureBoxImage.MouseWheel  -= pictureBoxImage_MouseWheel;
-            toolStripBtnCrop.Click      -= btnCrop_Click;
-            toolStripBtnResetCrop.Click -= btnResetCrop_Click;
-            this.KeyDown                -= ImageEditorForm_KeyDown;
+                private void ImageEditorForm_FormClosing(object sender, FormClosingEventArgs e)
+                {
+                    // prevent re-entrance or recursive calls
+                    if (_isClosing) return;                          // prevent re-entrance
+                    _isClosing = true;                               // set closing flag
+                    this.FormClosing -= ImageEditorForm_FormClosing; // unhook to prevent re-entrance
 
-            // dispose of undo stack
-            while (_undoStack.Count > 0)
-            {
-                _undoStack.Pop().Dispose();
+                    // unsubscribe event handlers
+                    pictureBoxImage.MouseDown   -= pictureBoxImage_MouseDown;
+                    pictureBoxImage.MouseMove   -= pictureBoxImage_MouseMove;
+                    pictureBoxImage.MouseUp     -= pictureBoxImage_MouseUp;
+                    pictureBoxImage.Paint       -= pictureBoxImage_Paint;
+                    pictureBoxImage.MouseWheel  -= pictureBoxImage_MouseWheel;
+                    toolStripBtnCrop.Click      -= btnCrop_Click;
+                    toolStripBtnResetCrop.Click -= btnResetCrop_Click;
+                    this.KeyDown                -= ImageEditorForm_KeyDown;
+                    this.Shown                  -= ImageEditorForm_Shown;
+                    this.Resize                 -= ImageEditorForm_Resize;
+                    try
+                    {
+                        pictureBoxImage.Image = null; // dispose of the image stored in picture box
+
+                        // dispose of undo stack
+                        while (_undoStack.Count > 0)
+                        {
+                            _undoStack.Pop()?.Dispose();
+                        }
+
+                        // dispose of resources
+                        try { _textFont?.Dispose(); }                catch { } // dispose text font
+                        try { btnSelectColor.Image?.Dispose(); }     catch { } // dispose of selected color image
+                        try { _currentImage?.Dispose(); }            catch { } // dispose loaded image
+                        try { _currentPen?.Dispose(); }              catch { } // dispose drawing pen
+                        try { _editableImage?.Dispose(); }           catch { } // dispose editable image
+                        try { _originalImageBeforeCrop?.Dispose(); } catch { } // dispose original image before crop
+                        _currentImage = null;            // clear reference
+                        _editableImage = null;           // clear reference
+                        _originalImageBeforeCrop = null; // clear reference
+                        this.Tag   = null;               // clear tag reference
+                        this.Owner = null;               // clear owner reference
+                        _freeformPoints.Clear();         // clear freeform points
+
+                        // force garbage collection to free up memory
+                        System.Runtime.GCSettings.LargeObjectHeapCompactionMode =
+                            System.Runtime.GCLargeObjectHeapCompactionMode.CompactOnce;
+                        GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true); // force garbage collection
+                        GC.WaitForPendingFinalizers();                                     // wait for finalizers to complete
+                        GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true); // force garbage collection
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error during form closing cleanup: {ex.Message}");
+                    }
+                    base.OnFormClosing(e); // call base class method
+                }
             }
-
-            // dispose of resources
-            btnSelectColor.Image?.Dispose();     // dispose of selected color image
-            _currentImage?.Dispose();            // dispose loaded image
-            _currentPen?.Dispose();              // dispose drawing pen
-            _editableImage?.Dispose();           // dispose editable image
-            _originalImageBeforeCrop?.Dispose(); // dispose original image before crop
-            _currentImage = null;                // clear reference
-            _editableImage = null;               // clear reference
-            _originalImageBeforeCrop = null;     // clear reference
-            _freeformPoints.Clear();             // clear freeform points
-            base.OnFormClosing(e);               // call base class method
         }
-    }
-}

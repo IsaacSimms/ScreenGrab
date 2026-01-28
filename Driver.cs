@@ -120,12 +120,20 @@ namespace ScreenGrab
                 Invoke(new Action<Bitmap>(OpenEditorWithBitmap), bitmap);
                 return;
             }
-            var imageEditorForm = new ImageEditorForm(bitmap)
+            try
             {
-                Tag = this, // set owner so ImageEditorForm can return to this instance instead of creating a new Driver // This is used in ImageEditorForm.cs for graceful transitions
-                ShowInTaskbar = true
-            };
-            imageEditorForm.Show();
+                var imageEditorForm = new ImageEditorForm(bitmap)
+                {
+                    Tag = this, // set owner so ImageEditorForm can return to this instance instead of creating a new Driver // This is used in ImageEditorForm.cs for graceful transitions
+                    ShowInTaskbar = true
+                };
+                imageEditorForm.Show();
+            }
+            catch
+            {
+                bitmap?.Dispose();
+                throw;
+            }
         }
         // == end methods for opening image editor with bitmap == //
 
