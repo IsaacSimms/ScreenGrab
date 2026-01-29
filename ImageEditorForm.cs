@@ -697,11 +697,19 @@ namespace ScreenGrab
             }
             else
             {
+                // reset color to red if highlight tool was previously selected
+                if (_activeDrawingTool == DrawingTool.Highlight && tool != DrawingTool.Highlight)
+                {
+                    _SelectedColor = Color.Red;                        // reset to default color
+                    _currentPen?.Dispose();                            // dispose previous pen
+                    _currentPen = new Pen(_SelectedColor, _brushSize); // create new pen with selected color
+                    UpdateColorButtonDisplay();                        // update button display
+                }
                 // sets default color to yellow if user selects highlight tool
                 if (tool == DrawingTool.Highlight)
                 {
                     _SelectedColor = Color.Yellow;                     // default highlight color
-                    _currentPen?.Dispose();                          // dispose previous pen
+                    _currentPen?.Dispose();                            // dispose previous pen
                     _currentPen = new Pen(_SelectedColor, _brushSize); // create new pen with selected color
                     UpdateColorButtonDisplay();                        // update button display
                 }
@@ -835,12 +843,12 @@ namespace ScreenGrab
                 {
                     using (Graphics g = Graphics.FromImage(_editableImage))
                     {
-                        g.SmoothingMode     = System.Drawing.Drawing2D.SmoothingMode.AntiAlias; // improve quality
-                        g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;          // improve text quality
-                        Point imagePoint    = ConvertToImageCoordinates(_textStartPoint);      // convert to image coordinates
+                        g.SmoothingMode     = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;       // improve quality
+                        g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit; // improve text quality
+                        Point imagePoint    = ConvertToImageCoordinates(_textStartPoint);             // convert to image coordinates
                         using (Brush textBrush = new SolidBrush(_SelectedColor))
                         {
-                            g.DrawString(text, _textFont, textBrush, imagePoint);           // draw text on image
+                            g.DrawString(text, _textFont, textBrush, imagePoint); // draw text on image
                         }
                     }
                     // update picture box with edited image
