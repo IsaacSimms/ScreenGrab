@@ -72,6 +72,10 @@
             txtChangeDelayTimerHeader = new TextBox();
             txtDelayTimerConfig = new TextBox();
             btnChangeDelayTimer = new Button();
+            txtPinToTaskbar = new TextBox();
+            txtRunOnStartup = new TextBox();
+            chkPinToTaskbar = new CheckBox();
+            chkRunOnStartup = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)settingsHeader).BeginInit();
             SuspendLayout();
             // 
@@ -268,7 +272,7 @@
             lblStatus.BorderStyle = BorderStyle.FixedSingle;
             lblStatus.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblStatus.ForeColor = SystemColors.Window;
-            lblStatus.Location = new Point(12, 334);
+            lblStatus.Location = new Point(12, 379);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(2, 23);
             lblStatus.TabIndex = 16;
@@ -369,7 +373,7 @@
             txtAutoCopyHeader.BackColor = SystemColors.Desktop;
             txtAutoCopyHeader.BorderStyle = BorderStyle.FixedSingle;
             txtAutoCopyHeader.ForeColor = SystemColors.Window;
-            txtAutoCopyHeader.Location = new Point(12, 216);
+            txtAutoCopyHeader.Location = new Point(12, 218);
             txtAutoCopyHeader.Name = "txtAutoCopyHeader";
             txtAutoCopyHeader.Size = new Size(153, 23);
             txtAutoCopyHeader.TabIndex = 25;
@@ -393,7 +397,7 @@
             txtAutoOpenEditorHeader.BackColor = SystemColors.Desktop;
             txtAutoOpenEditorHeader.BorderStyle = BorderStyle.FixedSingle;
             txtAutoOpenEditorHeader.ForeColor = SystemColors.Window;
-            txtAutoOpenEditorHeader.Location = new Point(12, 245);
+            txtAutoOpenEditorHeader.Location = new Point(12, 247);
             txtAutoOpenEditorHeader.Name = "txtAutoOpenEditorHeader";
             txtAutoOpenEditorHeader.Size = new Size(153, 23);
             txtAutoOpenEditorHeader.TabIndex = 27;
@@ -418,7 +422,7 @@
             txtFileSaveToggleHeader.BackColor = SystemColors.Desktop;
             txtFileSaveToggleHeader.BorderStyle = BorderStyle.FixedSingle;
             txtFileSaveToggleHeader.ForeColor = SystemColors.Window;
-            txtFileSaveToggleHeader.Location = new Point(12, 187);
+            txtFileSaveToggleHeader.Location = new Point(12, 189);
             txtFileSaveToggleHeader.Name = "txtFileSaveToggleHeader";
             txtFileSaveToggleHeader.Size = new Size(153, 23);
             txtFileSaveToggleHeader.TabIndex = 29;
@@ -454,21 +458,22 @@
             txtSystemCaptureModeToggleHeader.BackColor = SystemColors.Desktop;
             txtSystemCaptureModeToggleHeader.BorderStyle = BorderStyle.FixedSingle;
             txtSystemCaptureModeToggleHeader.ForeColor = SystemColors.Window;
-            txtSystemCaptureModeToggleHeader.Location = new Point(12, 274);
+            txtSystemCaptureModeToggleHeader.Location = new Point(12, 276);
             txtSystemCaptureModeToggleHeader.Multiline = true;
             txtSystemCaptureModeToggleHeader.Name = "txtSystemCaptureModeToggleHeader";
-            txtSystemCaptureModeToggleHeader.Size = new Size(188, 39);
+            txtSystemCaptureModeToggleHeader.Size = new Size(153, 23);
             txtSystemCaptureModeToggleHeader.TabIndex = 33;
-            txtSystemCaptureModeToggleHeader.Text = "Enable System Capture Mode: (Modifies active window capture)";
+            txtSystemCaptureModeToggleHeader.Text = "Enable System Capture:";
+            txtSystemCaptureModeToggleHeader.TextAlign = HorizontalAlignment.Center;
             // 
             // chkEnableSystemCapture
             // 
             chkEnableSystemCapture.CheckAlign = ContentAlignment.MiddleCenter;
             chkEnableSystemCapture.Checked = true;
             chkEnableSystemCapture.CheckState = CheckState.Checked;
-            chkEnableSystemCapture.Location = new Point(206, 271);
+            chkEnableSystemCapture.Location = new Point(206, 273);
             chkEnableSystemCapture.Name = "chkEnableSystemCapture";
-            chkEnableSystemCapture.Size = new Size(122, 40);
+            chkEnableSystemCapture.Size = new Size(122, 22);
             chkEnableSystemCapture.TabIndex = 34;
             chkEnableSystemCapture.UseVisualStyleBackColor = true;
             // 
@@ -577,12 +582,63 @@
             btnChangeDelayTimer.UseVisualStyleBackColor = false;
             btnChangeDelayTimer.Click += btnChangeDelayTimer_Click;
             // 
+            // txtPinToTaskbar
+            // 
+            txtPinToTaskbar.BackColor = SystemColors.Desktop;
+            txtPinToTaskbar.BorderStyle = BorderStyle.FixedSingle;
+            txtPinToTaskbar.ForeColor = SystemColors.Window;
+            txtPinToTaskbar.Location = new Point(12, 305);
+            txtPinToTaskbar.Name = "txtPinToTaskbar";
+            txtPinToTaskbar.Size = new Size(153, 23);
+            txtPinToTaskbar.TabIndex = 44;
+            txtPinToTaskbar.Text = "Pin to Taskbar:";
+            txtPinToTaskbar.TextAlign = HorizontalAlignment.Center;
+            // 
+            // txtRunOnStartup
+            // 
+            txtRunOnStartup.BackColor = SystemColors.Desktop;
+            txtRunOnStartup.BorderStyle = BorderStyle.FixedSingle;
+            txtRunOnStartup.ForeColor = SystemColors.Window;
+            txtRunOnStartup.Location = new Point(12, 334);
+            txtRunOnStartup.Name = "txtRunOnStartup";
+            txtRunOnStartup.Size = new Size(153, 23);
+            txtRunOnStartup.TabIndex = 45;
+            txtRunOnStartup.Text = "Run on Startup:";
+            txtRunOnStartup.TextAlign = HorizontalAlignment.Center;
+            // 
+            // chkPinToTaskbar
+            // 
+            chkPinToTaskbar.CheckAlign = ContentAlignment.MiddleCenter;
+            chkPinToTaskbar.Checked = true;
+            chkPinToTaskbar.CheckState = CheckState.Checked;
+            chkPinToTaskbar.Location = new Point(206, 302);
+            chkPinToTaskbar.Name = "chkPinToTaskbar";
+            chkPinToTaskbar.Size = new Size(122, 22);
+            chkPinToTaskbar.TabIndex = 46;
+            chkPinToTaskbar.UseVisualStyleBackColor = true;
+            // 
+            // chkRunOnStartup
+            // 
+            chkRunOnStartup.BackColor = SystemColors.Desktop;
+            chkRunOnStartup.CheckAlign = ContentAlignment.MiddleCenter;
+            chkRunOnStartup.Checked = true;
+            chkRunOnStartup.CheckState = CheckState.Checked;
+            chkRunOnStartup.Location = new Point(206, 331);
+            chkRunOnStartup.Name = "chkRunOnStartup";
+            chkRunOnStartup.Size = new Size(122, 22);
+            chkRunOnStartup.TabIndex = 47;
+            chkRunOnStartup.UseVisualStyleBackColor = false;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaptionText;
-            ClientSize = new Size(852, 406);
+            ClientSize = new Size(852, 411);
+            Controls.Add(chkRunOnStartup);
+            Controls.Add(chkPinToTaskbar);
+            Controls.Add(txtRunOnStartup);
+            Controls.Add(txtPinToTaskbar);
             Controls.Add(btnChangeDelayTimer);
             Controls.Add(txtDelayTimerConfig);
             Controls.Add(txtChangeDelayTimerHeader);
@@ -680,5 +736,9 @@
         private TextBox txtChangeDelayTimerHeader;
         private TextBox txtDelayTimerConfig;
         private Button btnChangeDelayTimer;
+        private TextBox txtPinToTaskbar;
+        private TextBox txtRunOnStartup;
+        private CheckBox chkPinToTaskbar;
+        private CheckBox chkRunOnStartup;
     }
 }
