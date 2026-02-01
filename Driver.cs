@@ -15,12 +15,14 @@ namespace ScreenGrab
 
         // == Class Variables == //
         private HotkeyScreenshot? _hotkeyScreenshot; // wire up HotkeyScreenshot class variable
-        private HotkeyConfig _hotkeyConfig;          // wir up hotkey configuration class variable
+        private HotkeyConfig      _hotkeyConfig;     // wire up hotkey configuration class variable
+        private readonly bool     _showFormOnLaunch; // true = show form, false = tray only
 
         // == constructor == //
-        public Driver()
+        public Driver(bool showFormOnLaunch = true)
         {
             InitializeComponent();
+            _showFormOnLaunch = showFormOnLaunch;
             _hotkeyConfig = ConfigurationManager.LoadConfiguration(); // load hotkey configuration from json file
             this.KeyPreview = true;                                   // enable key preview for esc key handling
             this.KeyDown += Driver_KeyDown;                           // wire up keydown event for esc key handling
@@ -53,6 +55,11 @@ namespace ScreenGrab
             SystemTrayIcon.BalloonTipTitle = "ScreenGrab";                         // set balloon tip title
             SystemTrayIcon.DoubleClick += SystemTrayIcon_DoubleClick;              // wire up double click event
             BuildTrayMenu();                                                       // build tray menu
+
+            if (_showFormOnLaunch)
+            {
+                ShowMainWindow();                                                  // show main window if configured to do so
+            }
         }
 
         // == Methods for system tray menu == //

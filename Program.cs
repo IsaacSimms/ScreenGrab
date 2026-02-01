@@ -8,10 +8,22 @@ namespace ScreenGrab
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            ApplicationConfiguration.Initialize();
-            Application.Run(new Driver());
+            // == force only one insdtance of app to run, if app is launched and instance is running bring it to foreground == //
+            if (!SingleInstanceManager.EnsureSingleInstance())
+            {
+                return;
+            }
+
+            try
+            {
+                ApplicationConfiguration.Initialize();                                // Initialize application configuration
+                bool showFormOnLaunch = !SingleInstanceManager.IsLaunchedOnStartup(); // Determine if the form should be shown on launch based on startup status
+                Application.Run(new Driver(showFormOnLaunch));                        // Run the main application form (Driver) with the specified visibility
+            }
+            finally
+            {
+                SingleInstanceManager.Release(); // Ensure the single instance mutex is released when the application exits
+            }
         }
     }
 }
