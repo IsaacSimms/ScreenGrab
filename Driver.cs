@@ -28,6 +28,17 @@ namespace ScreenGrab
             this.KeyDown += Driver_KeyDown;                           // wire up keydown event for esc key handling
         }
 
+        // == override WndProc to handle custom Windows messages for showing form when another instance launches == //
+        protected override void WndProc(ref Message m)
+        {
+            // Check if message is the custom "show driver" signal from another instance
+            if (m.Msg == SingleInstanceManager.WM_SHOWDRIVER)
+            {
+                ShowMainWindow(); // Show the form when signaled
+            }
+            base.WndProc(ref m);
+        }
+
         // == ovveride OnHandleCreated to account for hotkey registration after handle is created == //
         protected override void OnHandleCreated(EventArgs e)
         {
