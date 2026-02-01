@@ -26,17 +26,22 @@ namespace ScreenGrab
             _hotkeyConfig = ConfigurationManager.LoadConfiguration(); // load hotkey configuration from json file
             this.KeyPreview = true;                                   // enable key preview for esc key handling
             this.KeyDown += Driver_KeyDown;                           // wire up keydown event for esc key handling
+            
+            // Subscribe to single instance manager's show request event
+            SingleInstanceManager.OnShowDriverRequested += HandleShowDriverRequest;
         }
 
-        // == override WndProc to handle custom Windows messages for showing form when another instance launches == //
-        protected override void WndProc(ref Message m)
+        // == handle show driver request from another instance (must invoke on UI thread) == //
+        private void HandleShowDriverRequest()
         {
-            // Check if message is the custom "show driver" signal from another instance
-            if (m.Msg == SingleInstanceManager.WM_SHOWDRIVER)
+            // This is called from background thread, must invoke on UI thread
+            if (InvokeRequired)
             {
-                ShowMainWindow(); // Show the form when signaled
+                Invoke(new Action(HandleShowDriverRequest));
+                return;
             }
-            base.WndProc(ref m);
+
+            ShowMainWindow();
         }
 
         // == ovveride OnHandleCreated to account for hotkey registration after handle is created == //
@@ -66,6 +71,9 @@ namespace ScreenGrab
             SystemTrayIcon.BalloonTipTitle = "ScreenGrab";                         // set balloon tip title
             SystemTrayIcon.DoubleClick += SystemTrayIcon_DoubleClick;              // wire up double click event
             BuildTrayMenu();                                                       // build tray menu
+
+            // Start monitoring for show driver signals from other instances
+            SingleInstanceManager.StartMonitoring();
 
             if (_showFormOnLaunch)
             {
@@ -155,9 +163,6 @@ namespace ScreenGrab
         }
         // == end methods for opening image editor with bitmap == //
 
-
-
-
         // == open image editor with file path == //
         private void OpenEditorWithFile(string filePath)
         {
@@ -233,12 +238,16 @@ namespace ScreenGrab
                 this.Hide();
                 this.ShowInTaskbar = false;
                 return;
-
             }
+
+            // Unsubscribe from event
+            SingleInstanceManager.OnShowDriverRequested -= HandleShowDriverRequest;
+
             _hotkeyScreenshot?.Dispose();                  // clean up HotkeyScreenshot class
             _hotkeyScreenshot = null;                      // set to null
             base.OnFormClosing(e);                         // call base method
         }
+
         // == when button is clicked open up settings form  //additional logic for registering hotkeys after change == //
         private void SendToSettings_Click(object sender, EventArgs e)
         {

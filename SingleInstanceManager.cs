@@ -10,12 +10,14 @@ namespace ScreenGrab
         // private variables
         private static Mutex? _mutex;                                         // controls mutex for single instance
         private const string MutexName = "Global\\ScreenGrab_SingleInstance";
+        private const string EventName = "Global\\ScreenGrab_ShowDriverEvent"; // event for signaling
+        private static EventWaitHandle? _showDriverEvent;                     // event handle for IPC
+        private static Thread? _monitorThread;                                // background thread to monitor signals
+        private static bool _isMonitoring = false;                            // flag to control monitoring
         private const int SW_RESTORE = 9;                                     // Win32 constant for restoring a minimized window
-        private const int HWND_BROADCAST = 0xffff;                            // broadcast message to all windows
-        
-        // Use RegisterWindowMessage for reliable custom message
-        private static readonly int _showDriverMessage;
-        public static int WM_SHOWDRIVER => _showDriverMessage;
+
+        // Callback delegate for when show signal is received
+        public static event Action? OnShowDriverRequested;
 
         // Win32 API for bringing existing window to foreground
         [DllImport("user32.dll")]
@@ -24,20 +26,6 @@ namespace ScreenGrab
         // Win32 API for showing proper window
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        // Win32 API for registering a custom window message (system-wide unique)
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern int RegisterWindowMessage(string lpString);
-
-        // Win32 API for posting messages (non-blocking, better for broadcasts)
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern bool PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-        // Static constructor to register the custom message
-        static SingleInstanceManager()
-        {
-            _showDriverMessage = RegisterWindowMessage("ScreenGrab_ShowDriverForm");
-        }
 
         // == checks if instance is already running. brings to forground if returns false, meaning another instance is present. return true when there is not another instance, allowing app start == //
         public static bool EnsureSingleInstance()
@@ -51,6 +39,50 @@ namespace ScreenGrab
                 return false;
             }
             return true;
+        }
+
+        // == starts monitoring for show driver signals from other instances == //
+        public static void StartMonitoring()
+        {
+            if (_isMonitoring) return;
+
+            _isMonitoring = true;
+            _showDriverEvent = new EventWaitHandle(false, EventResetMode.AutoReset, EventName);
+
+            _monitorThread = new Thread(() =>
+            {
+                while (_isMonitoring)
+                {
+                    try
+                    {
+                        // Wait for signal from another instance (with timeout to allow clean shutdown)
+                        if (_showDriverEvent.WaitOne(500))
+                        {
+                            // Signal received - invoke the callback on main thread
+                            OnShowDriverRequested?.Invoke();
+                        }
+                    }
+                    catch
+                    {
+                        // Ignore errors during shutdown
+                    }
+                }
+            })
+            {
+                IsBackground = true,
+                Name = "SingleInstanceMonitor"
+            };
+
+            _monitorThread.Start();
+        }
+
+        // == stops monitoring and cleans up resources == //
+        public static void StopMonitoring()
+        {
+            _isMonitoring = false;
+            _monitorThread?.Join(1000); // wait up to 1 second for thread to finish
+            _showDriverEvent?.Close();
+            _showDriverEvent = null;
         }
 
         // == brings existing instance to front if it has a visible window == //
@@ -70,10 +102,21 @@ namespace ScreenGrab
             }
         }
 
-        // == signals the existing instance to show its Driver form via Windows message == //
+        // == signals the existing instance to show its Driver form via named event == //
         private static void SignalExistingInstance()
         {
-            PostMessage((IntPtr)HWND_BROADCAST, WM_SHOWDRIVER, IntPtr.Zero, IntPtr.Zero);
+            try
+            {
+                // Open the existing event and signal it
+                using (var existingEvent = EventWaitHandle.OpenExisting(EventName))
+                {
+                    existingEvent.Set(); // Signal the existing instance
+                }
+            }
+            catch
+            {
+                // Event doesn't exist yet or access denied - ignore
+            }
         }
 
         // == determines if app was launced at OS startup              == //
@@ -101,6 +144,8 @@ namespace ScreenGrab
         // == release mutex == //
         public static void Release()
         {
+            StopMonitoring();
+
             if (_mutex != null)
             {
                 _mutex.ReleaseMutex();
